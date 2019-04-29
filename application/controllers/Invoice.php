@@ -8,424 +8,640 @@ class Invoice extends CI_Controller {
 		parent::__construct();
 		$this->load->model('Invoice_model');
 		$this->load->model('Product_model');
-		$this->load->library('encrypt');	
+		
 		
 	}
 	
-	public function index()
-	{
-		$data['title'] = "HealthCare - Invoice Details";
-		$this->load->view('Home/header',$data);
-		$this->load->view('Home/menu');
-		$this->load->view('Invoice/invoice');
-		$this->load->view('Home/footer');
-		
-	}
 	
-	public function createinvoice()
-	{
-		$data['auto_code'] = $this->Invoice_model->get_invoicecode($_SESSION['ID']);
-	    $data['lineinvoice'] = $this->Invoice_model->view_record('DESC');
-		$id = $_SESSION['ID'];
-		$data['Mainsubtotal'] = $this->Invoice_model->get_total_amount($id);
-		$data['Maintaxpercent'] = $this->Invoice_model->get_total_tax_percent($id);
-		$data['MaintaxAmt'] = $this->Invoice_model->get_total_tax_amt($id);
-		$data['MainAmt'] = $this->Invoice_model->get_total_amt($id);
-		$data['prodcount'] = $this->Invoice_model->products_count($id) ;
+	public function billDetails() { //working as expected. 
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
+		$billStatusDetails = $this->Invoice_model->get_order_status_details();
+		$bills = $this->Invoice_model->bill_details('ASC', $entCode);				
 		
-		
-		$this->form_validation->set_rules('productname','Product Name','required');
-		$this->form_validation->set_rules('qty','Quantity','required|numeric|is_natural_no_zero');
-		
-		
-			
-			
-		if(($this->form_validation->run())==false)
-		{
-		$data['title'] = "HealthCare - New Invoice";
-		$this->load->view('Home/header',$data);
-		$this->load->view('Home/menu');
-		$this->load->view('Invoice/invoice',$data);
-		$this->load->view('Home/footer');
-		}
-		else
-		{
-		$uom = $this->input->post('cbo_uom');
-		$batch = $this->input->post('batchno');
-		$prodtype = $this->input->post('prodtype');
-		$data =array
-			(
-				'product_id'=>$this->input->post('productid'),
-				'product_code'=>$this->input->post('productcode'),
-				'product_name'=>$this->input->post('productname'),
-				'product_type'=>$prodtype,
-				'batchno'=>$batch,
-				'stock'=>$this->input->post('stock'),
-				'sale_rate'=>$this->input->post('salerate'),
-				'tax_percent'=>$this->input->post('tax'),
-				'product_uom'=>$uom,
-				'product_qty'=>$this->input->post('qty'),
-				'sub_total'=>$this->input->post('lineamount'),
-				'tax_amount'=>$this->input->post('linetaxamt'),
-				'total'=> round($this->input->post('linetaxamt') + $this->input->post('lineamount')),
-				'user_id'=>$_SESSION['ID']
-			);			
-			
-			$this->Invoice_model->add_record($data);
-			if($uom == 'Boxes'){
-				
-				if($prodtype == "Tablet"){
-					$upqty = (int)$this->input->post('qty') * (int)$this->input->post('stripsinbox') * (int)$this->input->post('pcsinstrip');
-					$stock = (int)$this->input->post('stockinpcs') - (int)$upqty;
-					//print_r($stock);
-					$data = array(
-						'product_qty'=>$stock,
-					);
-					$this->Product_model->update_stock($data,$batch);
-				}elseif($prodtype == "Liquid"){
-					$upqty = (int)$this->input->post('qty') * (int)$this->input->post('bottlesinbox') * (int)$this->input->post('mlinbottle');
-					$stock = (int)$this->input->post('stockinpcs') - (int)$upqty;
-					print_r($this->input->post('qty'));
-					$data = array(
-						'product_qty'=>$stock,
-					);
-					$this->Product_model->update_stock($data,$batch);
-					}
-			
-			
-				}else if($uom == 'Strips'){
-				$upqty = (int)$this->input->post('qty') * (int)$this->input->post('pcsinstrip');
-				$stock = (int)$this->input->post('stockinpcs') - (int)$upqty;
-				//print_r($stock);
-				$data = array(
-					'product_qty'=>$stock,
+		if (count($bills) >0) {
+			foreach($bills as $row)
+				$all_order[] = array(
+					'id'=>$row['id'],
+					'entCode'=>$row['ent_code'],
+					'userId'=>$row['user_id'],
+					'userFullName'=>$row['user_full_name'],
+					'userAddress'=>$row['user_address'],
+					'userPhoneNo'=>$row['user_phone_no'],
+					'orderNumber'=>$row['order_number'],
+					'orderTotalAmt'=>$row['order_total_amount'],
+					'orderTaxAmt'=>$row['order_tax_amount'],
+					'orderNetAmt'=>$row['order_net_amount'],
+					'orderStatus'=>$row['orderStatus'], 
+					'orderStatusIndex'=>$row['order_status_index'],
+					'orderViewStatus'=>$row['orderStatus'],
+					'orderViewStatusIndex'=>$row['order_view_status'],
+					'orderCreatedDatetime'=>$row['order_created_datetime'],
+					'orderhId'=>$row['order_h_id'],
+					'productCode'=>$row['product_code'],
+					'productName'=>$row['product_name'],
+					'productBatch'=>$row['product_batch'],
+					'productUomIndex'=>$row['product_uom_index'],
+					'productUom'=>$row['productUOM'],
+					'orderQty'=>$row['order_qty'],
+					'taxPercent'=>$row['tax_percent'],
+					'saleRate'=>$row['sale_rate'],
+					'productStockStatusIndex'=>$row['product_stock_status_index'],
+					'productStockStatus'=>$row['productStockStatus'],
+					'statusUpdatedDatetime'=>$row['status_updated_datetime']
 				);
-				$this->Product_model->update_stock($data,$batch);
-				}else if($uom == 'Pcs'){
-				$upqty = (int)$this->input->post('qty');
-				$stock = (int)$this->input->post('stockinpcs') - (int)$upqty;
-				//print_r($stock);
-				$data = array(
-					'product_qty'=>$stock,
-				);
-				$this->Product_model->update_stock($data,$batch);
-				}else if($uom == 'Bottles'){
-				$upqty = (int)$this->input->post('qty') * (int)$this->input->post('mlinbottle');
-				$stock = (int)$this->input->post('stockinpcs') - (int)$upqty;
-				print_r($this->input->post('qty'));
-				$data = array(
-					'product_qty'=>$stock,
-				);
-				$this->Product_model->update_stock($data,$batch);
-				}else if($uom == 'Ml'){
-				$upqty = (int)$this->input->post('qty');
-				print_r($upqty);
-				$stock = (int)$this->input->post('stockinpcs')- (int)$upqty;
-				print_r($this->input->post('qty'));
-				$data = array(
-					'product_qty'=>$stock,
-				);
-				$this->Product_model->update_stock($data,$batch);
-				}
 				
-				redirect(base_url().'Invoice/createinvoice');  
 			
-		
-		}
-	}
-	
-	
-		public function saveinvoice()
-		{
-		
-		
-	    $data['lineinvoice'] = $this->Invoice_model->view_record('DESC');
-		$id = $_SESSION['ID'];
-		$data['Mainsubtotal'] = $this->Invoice_model->get_total_amount($id);
-		$data['Maintaxpercent'] = $this->Invoice_model->get_total_tax_percent($id);
-		$data['MaintaxAmt'] = $this->Invoice_model->get_total_tax_amt($id);
-		$data['MainAmt'] = $this->Invoice_model->get_total_amt($id);
-		$data['prodcount'] = $this->Invoice_model->products_count($id) ;
-		
-	    // Field Validation
-		$this->form_validation->set_rules('patientname','Patient Name','required');
-		$this->form_validation->set_rules('cbo_gender','Patient Gender','required');
-		$this->form_validation->set_rules('patientphoneno','Patient PhoneNo','required|numeric');
-		$this->form_validation->set_rules('prodcount', 'Prodcount', 'callback_prodcount_check');
-		$this->form_validation->set_rules('fees','Fees','required|numeric|is_natural_no_zero');
-		$this->form_validation->set_rules('age','Age','required|numeric|is_natural_no_zero');
-		
-		if(($this->form_validation->run())==false)
-		{
-		$data['title'] = "HealthCare - New Invoice";
-		$this->load->view('Home/header',$data);
-		$this->load->view('Home/menu');
-		$this->load->view('Invoice/invoice',$data);
-		$this->load->view('Home/footer');
-		}
-		else
-		{
-		$datestring = date('Y-m-d');
-		$data =array
-			(
-				'user_id'=>$_SESSION['ID'],
-				'patient_name'=>$this->input->post('patientname'),
-				'patient_gender'=>$this->input->post('cbo_gender'),
-				'patient_phoneno'=>$this->input->post('patientphoneno'),
-				'age'=>$this->input->post('age'),
-				'patient_address'=>$this->input->post('address'),
-				'status'=>1
-				
-			);			
-			$this->Invoice_model->add_patient_record($data);
-			
-			$patientMaxId = $this->Invoice_model->get_patient_max_id();
-			$data['auto_code'] = $this->Invoice_model->get_invoicecode($_SESSION['ID']);
-			$invoicenum = (int)$data['auto_code']['continues_count'];
-			$data =array
-			(
-				'user_id'=>$_SESSION['ID'],
-				'invoice_amt'=>$this->input->post('totalamt'),
-				'total_tax_amt'=>$this->input->post('totaltaxamt'),
-				'created_date'=>$datestring,
-				'fees'=>$this->input->post('fees'),
-				'total_gross_amt'=>$this->input->post('totalgrossamt'),
-				'invoice_no'=>$data['auto_code']['series_id'].''.$data['auto_code']['user_id'].'-'.$data['auto_code']['continues_count'],
-				'patient_id'=>$patientMaxId
-				
-			);	
-			$this->Invoice_model->add_invoice_main_record($data);
-			
-			$data['lineinvoice'] = $this->Invoice_model->view_record('DESC');
-			$linecount = count($data['lineinvoice']);
-			for($i=0; $i < $linecount ; $i++){
-				$data['lineinvoice'] = $this->Invoice_model->view_record('DESC');
-				$data =array
-				(
-					'product_id'=>$data['lineinvoice'][$i]['product_id'],
-					'product_code'=>$data['lineinvoice'][$i]['product_code'],
-					'product_name'=>$data['lineinvoice'][$i]['product_name'],
-					'product_type'=>$data['lineinvoice'][$i]['product_type'],
-					'batchno'=>$data['lineinvoice'][$i]['batchno'],
-					'stock'=>$data['lineinvoice'][$i]['stock'],
-					'sale_rate'=>$data['lineinvoice'][$i]['sale_rate'],
-					'tax_percent'=>$data['lineinvoice'][$i]['tax_percent'],
-					'product_uom'=>$data['lineinvoice'][$i]['product_uom'],
-					'product_qty'=>$data['lineinvoice'][$i]['product_qty'],
-					'sub_total'=>$data['lineinvoice'][$i]['sub_total'],
-					'tax_amount'=>$data['lineinvoice'][$i]['tax_amount'],
-					'total'=> $data['lineinvoice'][$i]['total'],
-					'user_id'=>$data['lineinvoice'][$i]['user_id']
-				);			
-				$this->Invoice_model->add_invoice_record($data);
-			}
-			
-			
-			
-			$datestring = date('Y-m-d');			
-			$data =array
-			(
-				'last_updated'=>mdate($datestring),
-				'continues_count'=> $invoicenum + 1
-				
+			$all_order_data[] = array(
+				'getOrderNumber' => 'getOrderNumber', // on click of plus button
+				'getEachOrderDetails' => 'getEachOrderDetails', // clikcing on each order 
+				'orderDetailsBasedOnStatus' => 'orderDetailsBasedOnStatus', // on change of order status
+				'orderDetails' => $all_order,
+				'orderStatusDetails' => $orderStatusDetails,
 			);
-			//print_r($data);
-			$this->Invoice_model->incriment_invoice_no($data,$_SESSION['ENT_ID']);
+			//print_r(json_encode($all_order_data));
 			
-			$this->Invoice_model->delete_all_record($_SESSION['ID']);
+			echo"<pre>";
+			print_r($all_order_data);
+			echo"</pre>";
 			
-			$this->session->set_flashdata('msg','<div class="alert alert-success alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">x</button>
-                    
-                    <i class="icon fa fa-check"></i> Record Added Successfully.
-                  </div>
-				  ');
+		 } else {
+			$no_order_data[] = array(
+				'' => '',
+				'getOrderNumber' => 'getOrderNumber',
+				'orderStatusDetails' => $orderStatusDetails,
+			);
+				
+			print_r(json_encode($no_order_data));
+		}
+	}
+	
+	public function orderDetailsBasedOnStatus() { //working as expected. 
+		$OrderStatus = $this->input->post('OrderStatus');
+		$entCode = $this->input->post('entCode');
+		//$orderStatus = 10002;
+		//$entCode = 10002;
+		$orderStatusDetails = $this->Order_model->get_order_status_details();
+		$orders = $this->Order_model->order_details_by_status('ASC', $entCode,$orderStatus);				
+		
+		if (count($orders) >0) {
+			foreach($orders as $row)
+				$all_order[] = array(
+					'id'=>$row['id'],
+					'entCode'=>$row['ent_code'],
+					'userId'=>$row['user_id'],
+					'userFullName'=>$row['user_full_name'],
+					'useraddress'=>$row['user_address'],
+					'userPhoneNo'=>$row['user_phone_no'],
+					'orderNumber'=>$row['order_number'],
+					'orderTotalAmt'=>$row['order_total_amount'],
+					'orderTaxAmt'=>$row['order_tax_amount'],
+					'orderNetAmt'=>$row['order_net_amount'],
+					'orderStatus'=>$row['orderStatus'], 
+					'orderstatusIndex'=>$row['order_status_index'],
+					'orderViewStatus'=>$row['orderStatus'],
+					'orderViewStatusIndex'=>$row['order_view_status'],
+					'orderCreatedDatetime'=>$row['order_created_datetime'],
+					'orderHId'=>$row['order_h_id'],
+					'productCode'=>$row['product_code'],
+					'productName'=>$row['product_name'],
+					'productBatch'=>$row['product_batch'],
+					'productUomIndex'=>$row['product_uom_index'],
+					'productUom'=>$row['productUOM'],
+					'orderQty'=>$row['order_qty'],
+					'taxPercent'=>$row['tax_percent'],
+					'saleRate'=>$row['sale_rate'],
+					'productStockStatusIndex'=>$row['product_stock_status_index'],
+					'productStockStatus'=>$row['productStockStatus'],
+					'statusUpdatedDatetime'=>$row['status_updated_datetime']
+				);
+				
 			
-			redirect(base_url().'Invoice/invoicelist'); 
+			$all_order_data[] = array(
+				'getOrderNumber' => 'getOrderNumber', // on click of plus button
+				'getEachOrderDetails' => 'getEachOrderDetails', // clikcing on each order 
+				'orderDetails' => $all_order,
+				'orderStatusDetails' => $orderStatusDetails,
+			);
 			
-			
+			print_r(json_encode($all_order_data));
+		 } else {
+			$no_order_data[] = array(
+				'' => '',
+				'getOrderNumber' => 'getOrderNumber',
+				'orderStatusDetails' => $orderStatusDetails,
+			);
+				
+			print_r(json_encode($no_order_data));
 		}
 	}
 	
 	
-	
-	
-	
-	public function auto_search()
-	{
-		//$id = $_SESSION['ID'];
-		if(isset($_GET['term'])) 
-		{
-		 $proddetails = $this->Invoice_model->auto_featch($_GET['term'], $_SESSION['ID']);
-		
-		if(count($proddetails) >0){
-		foreach($proddetails as $row)
-		
-		$result_array[] = array('label' => $row->product_name,
-								'product_type' => $row->product_type,
-								'id' => $row->id,
-								'prodcode' => $row->product_code,
-								'batchno' => $row->batchno,
-								'stock' => $row->product_qty,
-								'price' => $row->salerate,
-								'tax' => $row->tax_percent,
-								'stripsinbox' =>$row->stripsinbox,
-								'bottlesinbox' => $row->bottlesinbox,
-								'mlinbottle' => $row->mlinbottle,
-								'pcsinstrip' =>$row->pcsinstrip,
-								'stockinbox' =>(int)((int)$row->product_qty /((int)$row->stripsinbox * (int)$row->pcsinstrip)),
-								'stockinstrips' =>(int)((int)$row->product_qty /(int)$row->pcsinstrip),
-								'botstockinbox' =>(int)((int)$row->product_qty /((int)$row->bottlesinbox * (int)$row->mlinbottle)),
-								'stockinbottle' =>(int)((int)$row->product_qty /(int)$row->mlinbottle),
+	public function getOrderNumber() {
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
+		$data['auto_code'] = $this->Order_model->get_order_number($entCode);
+		$UOMDetails = $this->Product_model->get_uom_details();
+		$products = $this->Product_model->stock_details('ASC', $entCode);	
+		$orderNumber = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
+		$orderCount = $data['auto_code']['continues_count'];
+		if (count($products) >0) {
+			foreach($products as $row)
+				$prod_details[] = array(
+					'id'=>$row['id'],
+					'entCode'=>$row['ent_code'],
+					'productCode'=>$row['product_code'],
+					'productName'=>$row['product_name'],
+					'productDescription'=>$row['product_description'],
+					'productStatus'=>$row['product_status_index_name'],
+					'productStatusindex'=>$row['product_status_index'],
+					'productCategory'=>$row['category_index_name'],
+					'productCategoryIndex'=>$row['category_index'],
+					'productSubCategory'=>$row['sub_category_index_name'],
+					'productSubCategoryIndex'=>$row['sub_category_index'],
+					'producthId' => $row['producthId'],
+					'productBatch' => $row['product_batch'],
+					'packetsInBox' => $row['packets_in_box'],
+					'productPackDate' =>$row['product_pack_date'],
+					'productExpDate' =>$row['product_exp_date'],
+					'mrp' =>$row['mrp'],
+					'taxPrecent' =>$row['tax_precent'],
+					'purchaseRate' =>$row['purchase_rate'],
+					'saleRate' =>$row['sale_rate'],
+					'purchaseQty' =>$row['purchase_qty'],
+					'productdId' => $row['productdId'],
+					'stockQty' =>$row['stock_qty'],
+					'stockQtyLimit' =>$row['stock_qty_limit'],
+					'onlineStockQty' =>$row['online_stock_qty'],
+					'offlineStockQty' =>$row['offline_stock_qty'],
+					'transitQty' =>$row['transit_qty'],
+					'createdDatetime' =>$row['created_datetime']
+				);
+		$order_data[] = array(
+			'createOrder' => 'createOrder', // clicking on save button
+			'orderNumber' => $orderNumber,
+			'orderCount' => $orderCount,
+			'productDetails' => $prod_details,
+			'uomDetails' => $UOMDetails,
 		);
 		
-		echo json_encode($result_array);
-		}
-		
-			
-		}
+		print_r(json_encode($order_data));
 		
 	}
+	}
 	
-	
-	
-	
-	public function delete_record($id=0)
-	{
-		$id = $this->uri->segment(3);
+	public function createorder() { // need to test with mobile code...
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
+		$userId = $this->input->post('userId');
+		//$userId = 10002;
+		$orderNumber = $this->input->post('orderNumber');
+		//$orderNumber = 10002;
+		$orderCount = $this->input->post('orderCount');
+		//$orderNumber = 10002;
+		$orderTotalAmt = $this->input->post('orderTotalAmt');
+		//$orderTotalAmt = 10002;
+		$orderTaxAmt = $this->input->post('orderTaxAmt');
+		//$orderTaxAmt = 10002;
+		$orderNetAmt = $this->input->post('orderNetAmt');
+		//$orderNetAmt = 10002;
 		
-		if ($id==0)
+		$data = array(
+			'ent_code'=>$entCode,
+			'user_id'=>$userId,
+			'order_number'=>$orderNumber,
+			'order_total_amount'=>$orderTotalAmt,
+			'order_tax_amount'=>$orderTaxAmt,
+			'order_net_amount'=>$orderNetAmt,
+			'order_status_index'=>10001,
+			'order_view_status'=>10001,
+		);
+		
+		$this->Order_model->add_order_h_details($data);
+		
+		$data = $this->input->post('orderProductList');
+		$data = json_decode($data);
+		$linecount = count($data);
+
+		$orderhId = $this->Order_model->get_max_order_h_id();
+		
+		
+		for ($i=0; $i < $linecount; $i++) 
 		{
-			$this->index();			
-		}	
-		
-		$tempproddetails = $this->Product_model->get_temp_record_by_id($id);
-		//print_r($tempproddetails );
-		$uom = $tempproddetails['product_uom'];
-		$batch = $tempproddetails['batchno'];
-		$proddetails = $this->Product_model->get_record_by_batch($batch);
-		
-		$this->Invoice_model->delete_record($id);
-		
-		if($uom === 'Boxes'){
-			
-			
-			
-			if($proddetails['product_type'] == "Tablet"){
-			$upqty = (int)$tempproddetails['product_qty'] * (int)$proddetails['stripsinbox'] * (int)$proddetails['pcsinstrip'];
-			$stock = (int)$proddetails['product_qty'] + (int)$upqty;
-			print_r($tempproddetails['product_qty']);
-			$data = array(
-				'product_qty'=>$stock,
-			);
-			$this->Product_model->update_stock($data,$batch);
-			}else if($proddetails['product_type'] == "Liquid"){
+			$data1 = $this->input->post('orderProductList');
+			$data1 = json_decode($data1);
 				
-			$upqty = (int)$tempproddetails['product_qty'] * (int)$proddetails['bottlesinbox'] * (int)$proddetails['mlinbottle'];
-			$stock = (int)$proddetails['product_qty'] + (int)$upqty;
-			print_r($tempproddetails['product_qty']);
-			$data = array(
-				'product_qty'=>$stock,
-			);
-			$this->Product_model->update_stock($data,$batch);
-			}
+			$prodCode = $data1[$i]->{'productCode'};
+			$prodName = $data1[$i]->{'productName'};
+			$prodBatchNo = $data1[$i]->{'productBatchNo'};	
+			$prodUomIndex = $data1[$i]->{'productUOMIndex'};
+			$prodUomName = $data1[$i]->{'productUOMName'};
+			$OrderQty = $data1[$i]->{'OrderQty'};
+			$prodTaxPer = $data1[$i]->{'productTaxPer'};	
+			$prodSaleRate = $data1[$i]->{'productSaleRate'};
+			$prodTaxAmt = $data1[$i]->{'productTaxAmt'};	
+			$subTotal = $data1[$i]->{'subTotal'};
 			
-			}else if($uom === 'Strips'){
-			$upqty = (int)$tempproddetails['product_qty'] *  (int)$proddetails['pcsinstrip'];
-			$stock = (int)$proddetails['product_qty'] + (int)$upqty;
-			
-			//print_r($stock);
 			$data = array(
-				'product_qty'=>$stock,
+				'order_h_id'=>$orderhId,
+				'product_code'=>$prodCode,
+				'product_name'=>$prodName,
+				'batchno'=>$prodBatchNo,
+				'product_uom_inddex'=>$prodUomIndex,
+				'order_qty'=>$OrderQty,
+				'tax_percent'=>$prodTaxPer,
+				'tax_amount'=>$prodTaxAmt,
+				'sale_rate'=>$prodSaleRate,
+				'sub_total'=> round($subTotal),
+				'product_stock_status_index'=> 10007,
 			);
-			$this->Product_model->update_stock($data,$batch);
-			}else if($uom === 'Pcs'){
-			$upqty = (int)$tempproddetails['product_qty'];
-			$stock = (int)$proddetails['product_qty'] + (int)$upqty;
-			//print_r($stock);
-			$data = array(
-				'product_qty'=>$stock,
-			);
-			$this->Product_model->update_stock($data,$batch);
-			}else if($uom === 'Bottles'){
 			
-			$upqty = (int)$tempproddetails['product_qty'] * (int)$proddetails['mlinbottle'];
-			$stock = (int)$proddetails['product_qty'] + (int)$upqty;
-			print_r($tempproddetails['product_qty']);
-			$data = array(
-				'product_qty'=>$stock,
-			);
-			$this->Product_model->update_stock($data,$batch);
-			}else if($uom === 'Ml'){
+			$this->Order_model->add_order_d_record($data);
 			
-			$upqty = (int)$tempproddetails['product_qty'];
-			$stock = (int)$proddetails['product_qty'] + (int)$upqty;
-			print_r($tempproddetails['product_qty']);
-			$data = array(
-				'product_qty'=>$stock,
-			);
-			$this->Product_model->update_stock($data,$batch);
-			}
+			$productDetails = $this->Product_model->stock_details_by_batchno($entCode,$prodBatchNo);
 			
-		redirect(base_url().'Invoice/createinvoice'); 
-	}
-	
-	public function prodcount_check($str)
-        {
-                if ($str == '0')
-                {
-                        $this->form_validation->set_message('prodcount_check', 'Add atleast one product to list');
-                        return FALSE;
-                }
-                else
-                {
-                        return TRUE;
-                }
-        }
-	
-	
-	public function invoicelist()
-	{
-		if(strtoupper($_SESSION['USER_TYPE']) == 'ADMIN'){	
-		$data['invoice'] = $this->Invoice_model->view_invoice_details_admin('DESC');
-		}else{
-		$data['invoice'] = $this->Invoice_model->view_invoice_details('DESC');
+		if($prodUomName == "Kg" ){
+		   $transitQty =  $productDetails['transit_qty'] + ($OrderQty * 1000) ;
+		   $stockQty =  $productDetails['stock_qty'] - ($OrderQty * 1000) ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] - ($OrderQty * 1000) ;
+		   
+		   $data = array(
+				'transit_qty'=>$transitQty,
+				'stock_qty'=>$stockQty,
+				'online_stock_qty'=>$onlineStockQty,
+			);
+		   
+		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
+		}else if($prodUomName == "Grams" || $prodUomName == "Packet" || $prodUomName == "Pcs"){
+		   $transitQty =  $productDetails['transit_qty'] + $OrderQty ;
+		   $stockQty =  $productDetails['stock_qty'] - $OrderQty ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] - $OrderQty ;
+		   
+		   $data = array(
+				'transit_qty'=>$transitQty,
+				'stock_qty'=>$stockQty,
+				'online_stock_qty'=>$onlineStockQty,
+			);
+		   
+		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
+		}else if($prodUomName == "Boxes" ){
+		   $transitQty =  $productDetails['transit_qty'] + ($OrderQty * $productDetails['packets_in_box']);
+		   $stockQty =  $productDetails['stock_qty'] - ($OrderQty * $productDetails['packets_in_box']) ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] - ($OrderQty * $productDetails['packets_in_box']);
+		   
+		   $data = array(
+				'transit_qty'=>$transitQty,
+				'stock_qty'=>$stockQty,
+				'online_stock_qty'=>$onlineStockQty,
+			);
+		   
+		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
 		}
-		$data['title'] = "Invoice Details";
-		$this->load->view('Home/header',$data);
-		$this->load->view('Home/menu');
-		$this->load->view('Invoice/invoicelist');
-		$this->load->view('Home/footer');
+		
+	  }
+	
+		$datestring = date('Y-m-d');			
+		$data = array(
+			'last_updated'=>mdate($datestring),
+			'continues_count' => (int)$orderCount + 1 
+		);
+		
+		$this->Order_model->incriment_order_no($data,$entCode);
+		
+		
+	$new_order_generated = array(
+			'message' => 'Order saved successfully'
+		);
+			
+		print_r(json_encode($new_order_generated));
 	}
 	
-	public function invoiceview()
-	{
-		$id = $this->uri->segment(3);
-		$userId = $_SESSION['ID'];
-		if ($id==0)
+	
+	public function getEachOrderDetails() {
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
+		$orderNumber = $this->input->post('orderNumber');
+		//$userId = 2;
+		//$invoiceh_id = 1;
+		$data['order_header'] = $this->Order_model->get_order_h_details($orderNumber,$entCode);
+	
+		$orderdetails = $this->Order_model->get_order_d_details($data['order_header']['id'],$entCode);
+		
+		foreach($orderdetails as $row)
+			$each_order_details[] = array(
+				'id'=>$row['id'],
+				'orderhId'=>$row['order_h_id'],
+				'productCode'=>$row['product_code'],
+				'productName'=>$row['product_name'],
+				'productBatch'=>$row['product_batch'],
+				'productUomIndex'=>$row['product_uom_index'],
+				'productUomIndexName'=>$row['product_uom_index_name'],
+				'orderQty'=>$row['order_qty'],
+				'taxPercent'=>$row['tax_percent'],
+				'taxAmount'=>$row['tax_amount'],
+				'saleRate'=>$row['sale_rate'],
+				'subTotal'=>$row['sub_total'],
+				'productStockStatusIndex'=>$row['product_stock_status_index'],
+				'productStockStatusIndexName'=>$row['product_stock_status_index_name'],
+				'rowInvalidated'=>$row['row_invalidated'],
+				'statusUpdatedDatetime'=>$row['status_updated_datetime'],
+			);
+			
+		$order_details[] = array(		
+			'orderProducts' => $each_order_details,		
+			'id'=>$data['order_header']['id'],
+            'entCode'=>$data['order_header']['ent_code'],
+            'userId'=>$data['order_header']['user_id'],
+            'orderNumber'=>$data['order_header']['order_number'],
+            'orderTotalAmount'=>$data['order_header']['order_total_amount'],
+            'orderTaxAmount'=>$data['order_header']['order_tax_amount'],
+            'orderNetAmount'=>$data['order_header']['order_net_amount'],
+            'orderStatusIndex'=>$data['order_header']['order_status_index'],
+            'orderStatusIndexName'=>$data['order_header']['order_status_index_name'],
+            'orderViewStatus'=>$data['order_header']['order_view_status'],
+			'orderViewStatusName'=>$data['order_header']['order_view_status_name'],
+			'orderCreatedDatetime'=>$data['order_header']['order_created_datetime'],
+			'userFullName'=>$data['order_header']['user_full_name'],
+			'userAddress'=>$data['order_header']['user_address'],
+			'userPhoneNo'=>$data['order_header']['user_phone_no'],
+		);
+		
+		$each_order_details[] = array(
+			'orderheaderdetails' => $order_details,
+			'cancelOrder' => 'Cancel',
+			'approveOrder' => 'Approve',
+			'getOrderDetailstoConvertintoBill' => 'Bill'
+		);
+		
+		print_r(json_encode($each_order_details));	
+	}
+	
+		
+	public function cancelOrder() {
+	//$entCode = 10002;
+	//$orderNumber = "#O-120001" ;
+	$entCode = $this->input->post('entCode');
+	$orderNumber = $this->input->post('orderNumber');
+		
+		$data = array(
+			'order_status_index'=>10005,
+			'order_view_status'=>10005,
+		);
+	
+	$this->Order_model->update_order_h_status($entCode,$orderNumber,$data);
+	
+	$data = $this->input->post('orderProductList');
+		$data = json_decode($data);
+		$linecount = count($data);
+		
+
+		$orderhId = $this->Order_model->get_max_order_h_id();
+		
+		
+		for ($i=0; $i < $linecount; $i++) {
+			$data1 = $this->input->post('orderProductList');
+			$data1 = json_decode($data1);
+				
+			$prodBatchNo = $data1[$i]->{'productBatchNo'};	
+			$prodUomIndex = $data1[$i]->{'productUOMIndex'};
+			$prodUomName = $data1[$i]->{'productUOMName'};
+			$OrderQty = $data1[$i]->{'OrderQty'};		
+							
+		
+		$productDetails = $this->Product_model->stock_details_by_batchno($entCode,$prodBatchNo);
+		
+		if($prodUomName == "Kg" ){
+		   $transitQty =  $productDetails['transit_qty'] - ($OrderQty * 1000) ;
+		   $stockQty =  $productDetails['stock_qty'] + ($OrderQty * 1000) ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] + ($OrderQty * 1000) ;
+		   
+		   $data = array(
+				'transit_qty'=>$transitQty,
+				'stock_qty'=>$stockQty,
+				'online_stock_qty'=>$onlineStockQty,
+			);
+		   
+		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
+		}else if($prodUomName == "Grams" || $prodUomName == "Packet" || $prodUomName == "Pcs"){
+		   $transitQty =  $productDetails['transit_qty'] - $OrderQty ;
+		   $stockQty =  $productDetails['stock_qty'] + $OrderQty ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] + $OrderQty ;
+		   
+		   $data = array(
+				'transit_qty'=>$transitQty,
+				'stock_qty'=>$stockQty,
+				'online_stock_qty'=>$onlineStockQty,
+			);
+		   
+		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
+		}else if($prodUomName == "Boxes" ){
+		   $transitQty =  $productDetails['transit_qty'] - ($OrderQty * $productDetails['packets_in_box']);
+		   $stockQty =  $productDetails['stock_qty'] + ($OrderQty * $productDetails['packets_in_box']) ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] + ($OrderQty * $productDetails['packets_in_box']);
+		   
+		   $data = array(
+				'transit_qty'=>$transitQty,
+				'stock_qty'=>$stockQty,
+				'online_stock_qty'=>$onlineStockQty,
+			);
+		   
+		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
+		}
+	}
+	
+	$order_cancallation = array(
+			'message' => 'Order Cancelled successfully'
+		);
+			
+		print_r(json_encode($order_cancallation));
+	
+	
+	}
+	
+	public function getOrderDetailstoConvertintoBill() {
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
+		$orderNumber = $this->input->post('orderNumber');
+		//$userId = 2;
+		//$invoiceh_id = 1;
+		$data['order_header'] = $this->Order_model->get_order_h_details($orderNumber,$entCode);
+	
+		$orderdetails = $this->Order_model->get_order_d_details($data['order_header']['id'],$entCode);
+		
+		foreach($orderdetails as $row)
+			$each_order_details[] = array(
+				'id'=>$row['id'],
+				'orderhId'=>$row['order_h_id'],
+				'productCode'=>$row['product_code'],
+				'productName'=>$row['product_name'],
+				'productBatch'=>$row['product_batch'],
+				'productUomIndex'=>$row['product_uom_index'],
+				'productUomIndexName'=>$row['product_uom_index_name'],
+				'orderQty'=>$row['order_qty'],
+				'taxPercent'=>$row['tax_percent'],
+				'taxAmount'=>$row['tax_amount'],
+				'saleRate'=>$row['sale_rate'],
+				'subTotal'=>$row['sub_total'],
+				'productStockStatusIndex'=>$row['product_stock_status_index'],
+				'productStockStatusIndexName'=>$row['product_stock_status_index_name'],
+				'rowInvalidated'=>$row['row_invalidated'],
+				'statusUpdatedDatetime'=>$row['status_updated_datetime'],
+			);
+			
+		$order_details[] = array(		
+			'orderProducts' => $each_order_details,		
+			'id'=>$data['order_header']['id'],
+            'entCode'=>$data['order_header']['ent_code'],
+            'userId'=>$data['order_header']['user_id'],
+            'orderNumber'=>$data['order_header']['order_number'],
+            'orderTotalAmount'=>$data['order_header']['order_total_amount'],
+            'orderTaxAmount'=>$data['order_header']['order_tax_amount'],
+            'orderNetAmount'=>$data['order_header']['order_net_amount'],
+            'orderStatusIndex'=>$data['order_header']['order_status_index'],
+            'orderStatusIndexName'=>$data['order_header']['order_status_index_name'],
+            'orderViewStatus'=>$data['order_header']['order_view_status'],
+			'orderViewStatusName'=>$data['order_header']['order_view_status_name'],
+			'orderCreatedDatetime'=>$data['order_header']['order_created_datetime'],
+			'userFullName'=>$data['order_header']['user_full_name'],
+			'userAddress'=>$data['order_header']['user_address'],
+			'userPhoneNo'=>$data['order_header']['user_phone_no'],
+		);
+		
+		$each_order_details[] = array(
+			'orderheaderdetails' => $order_details,
+			'createBill' => 'saveBill'
+		);
+		
+		print_r(json_encode($each_order_details));	
+	}
+	
+	
+	public function createBill() { // need to test with mobile code...
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
+		$userId = $this->input->post('userId');
+		//$userId = 10002;
+		$orderNumber = 0;
+		//$orderNumber = 10002;
+		$billCount = $this->input->post('billCount');
+		//$orderNumber = 10002;
+		$billTotalAmt = $this->input->post('billTotalAmt');
+		//$orderTotalAmt = 10002;
+		$billTaxAmt = $this->input->post('billTaxAmt');
+		//$orderTaxAmt = 10002;
+		$billNetAmt = $this->input->post('billNetAmt');
+		//$orderNetAmt = 10002;
+		
+		$data = array(
+			'ent_code'=>$entCode,
+			'user_id'=>$userId,
+			'order_number'=>$orderNumber,
+			'bill_number'=>$orderNumber,
+			'bill_total_amount'=>$orderTotalAmt,
+			'bill_tax_amount'=>$orderTaxAmt,
+			'bill_net_amount'=>$orderNetAmt,
+			
+		);
+		
+		$this->Order_model->add_order_h_details($data);
+		
+		$data = $this->input->post('billProductList');
+		$data = json_decode($data);
+		$linecount = count($data);
+
+		$billhId = $this->Order_model->get_max_order_h_id();
+		
+		
+		for ($i=0; $i < $linecount; $i++) 
 		{
-			$this->index();			
-		}	
+			$data1 = $this->input->post('orderProductList');
+			$data1 = json_decode($data1);
+				
+			$prodCode = $data1[$i]->{'productCode'};
+			$prodName = $data1[$i]->{'productName'};
+			$prodBatchNo = $data1[$i]->{'productBatchNo'};	
+			$prodUomIndex = $data1[$i]->{'productUOMIndex'};
+			$prodUomName = $data1[$i]->{'productUOMName'};
+			$OrderQty = $data1[$i]->{'OrderQty'};
+			$prodTaxPer = $data1[$i]->{'productTaxPer'};	
+			$prodSaleRate = $data1[$i]->{'productSaleRate'};
+			$prodTaxAmt = $data1[$i]->{'productTaxAmt'};	
+			$subTotal = $data1[$i]->{'subTotal'};
+			$productBillStatus = $data1[$i]->{'productBillStatus'};
+			
+			$data = array(
+				'order_h_id'=>$orderhId,
+				'product_code'=>$prodCode,
+				'product_name'=>$prodName,
+				'batchno'=>$prodBatchNo,
+				'product_uom_inddex'=>$prodUomIndex,
+				'order_qty'=>$OrderQty,
+				'tax_percent'=>$prodTaxPer,
+				'tax_amount'=>$prodTaxAmt,
+				'sale_rate'=>$prodSaleRate,
+				'sub_total'=> round($subTotal),
+				'product_bill_status'=> $productBillStatus,
+			);
+			
+			$this->Order_model->add_order_d_record($data);
+			
+			$productDetails = $this->Product_model->stock_details_by_batchno($entCode,$prodBatchNo);
+			
+		if($prodUomName == "Kg" ){
+		   $transitQty =  $productDetails['transit_qty'] + ($OrderQty * 1000) ;
+		   $stockQty =  $productDetails['stock_qty'] - ($OrderQty * 1000) ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] - ($OrderQty * 1000) ;
+		   
+		   $data = array(
+				'transit_qty'=>$transitQty,
+				'stock_qty'=>$stockQty,
+				'online_stock_qty'=>$onlineStockQty,
+			);
+		   
+		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
+		}else if($prodUomName == "Grams" || $prodUomName == "Packet" || $prodUomName == "Pcs"){
+		   $transitQty =  $productDetails['transit_qty'] + $OrderQty ;
+		   $stockQty =  $productDetails['stock_qty'] - $OrderQty ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] - $OrderQty ;
+		   
+		   $data = array(
+				'transit_qty'=>$transitQty,
+				'stock_qty'=>$stockQty,
+				'online_stock_qty'=>$onlineStockQty,
+			);
+		   
+		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
+		}else if($prodUomName == "Boxes" ){
+		   $transitQty =  $productDetails['transit_qty'] + ($OrderQty * $productDetails['packets_in_box']);
+		   $stockQty =  $productDetails['stock_qty'] - ($OrderQty * $productDetails['packets_in_box']) ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] - ($OrderQty * $productDetails['packets_in_box']);
+		   
+		   $data = array(
+				'transit_qty'=>$transitQty,
+				'stock_qty'=>$stockQty,
+				'online_stock_qty'=>$onlineStockQty,
+			);
+		   
+		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
+		}
 		
-		$data['invoice_header'] = $this->Invoice_model->get_invoice_header_details_to_view($id,$userId);
-		$data['invoice_body'] = $this->Invoice_model->get_invoice_product_details_to_view($id,$userId);
+	  }
+	
+		$datestring = date('Y-m-d');			
+		$data = array(
+			'last_updated'=>mdate($datestring),
+			'continues_count' => (int)$orderCount + 1 
+		);
 		
-		$data['title'] = "Invoice view";
-		$this->load->view('Home/header',$data);
-		$this->load->view('Home/menu');
-		$this->load->view('Invoice/invoiceview',$data);
-		$this->load->view('Home/footer'); 
+		$this->Order_model->incriment_order_no($data,$entCode);
+		
+		
+	$new_order_generated = array(
+			'message' => 'Order saved successfully'
+		);
+			
+		print_r(json_encode($new_order_generated));
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 }
