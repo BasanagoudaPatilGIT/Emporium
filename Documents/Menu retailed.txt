@@ -1,0 +1,32 @@
+Grocery Store
+
+1. collect shop details.
+2. no. of logins
+3. designations
+	i. Admin
+	ii. Owner
+	iii. Employee
+	iv. Customer
+
+2. Features
+
+1. Admin
+a. Add entity(shop details) and add corresponding owners.
+b. Upload entity specific product master.
+c. Views(owners, employees and customers).
+d. Add Category/Sub-Category.
+
+2. Owner
+a. Define Employees.
+b. Add/Edit Product master.
+c. View/Approve Orders.
+d. Order to Bill.
+e. Bill.
+f. Stock Browser.
+g. Reports.
+h. Stock Movement(maintain transfer type - Online-Offline/Offline-Online).
+
+3. Employee
+a. Order to Bill.
+b. Bill.
+c. Stock Browser.
