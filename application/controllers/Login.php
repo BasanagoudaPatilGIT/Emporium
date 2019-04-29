@@ -8,13 +8,13 @@
 	}
 	
 	function validate_login_credentials() {
-		$userName = "raghuram";
+		//$userName = "raghuram";
 		$imei = 0;
-		$userPassword = base64_encode("raghuram");
+		//$userPassword = base64_encode("raghuram");
 		
-		/*$userName = $this->input->post('userName');
-		$imei = $this->input->post('imei');
-		$userPassword = base64_encode($this->input->post('userPassword'));*/
+		$userName = $this->input->post('userName');
+		//$imei = $this->input->post('imei');
+		$userPassword = base64_encode($this->input->post('userPassword'));
 		
 		$query = $this->Login_model->validate($userName,$userPassword,$imei);
 		
