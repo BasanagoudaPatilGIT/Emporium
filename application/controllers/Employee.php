@@ -43,12 +43,11 @@
 	public function addNewEmployee()
 	{
 		$entCode = $this->input->post('entCode');
-		$userDesignationIndex = $this->input->post('userDesignationIndex');
 		//$entCode = 10001;
 		//$userDesignationIndex = 10015;
-		
-		
-		$userDesignation =  $this->Index_model->user_designation($userDesignationIndex);
+		$data['auto_code'] = $this->Order_model->get_order_number($entCode);
+		$empId = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
+		$empNum = $data['auto_code']['continues_count'];
 		$userGender=  $this->Index_model->user_gender();
 		
 		if (count($userDesignation) >0) {
@@ -70,6 +69,8 @@
 		$required_details[] = array(
 					'allUserGender'=>$all_userGender,
 					'UserDesignation' =>$user_designation,
+					'empId' =>$empId,
+					'empNum' =>$empNum,
 					'addEmployee' =>'addEmployee'
 				);
 		
@@ -81,6 +82,7 @@
 	{
 			
 		$entCode = $this->input->post('entCode');
+		$empNum= $this->input->post('empNum');
 		//$entCode = 10002;
 		$EmployeeCount = $this->Employee_model->employee_count($entCode);
 		$Employeelimit = $this->Entity_model->employee_limit($entCode);
@@ -120,15 +122,25 @@
 				'user_dob'=>$this->input->post('userDOB'),
 				'user_phone_no'=>$this->input->post('userPhoneNo'),
 				'user_email_id'=>$this->input->post('userEmailId'),
+				'user_flat_id'=>1,	
 				'user_address'=>$this->input->post('userAddress'),	
-				'user_address_prof'=>$this->input->post('userAddressProf'),	
+				//'user_address_prof'=>$this->input->post('userAddressProf'),	
 				'user_imei'=>$this->input->post('userIMEI'),	
-				'user_designation_index'=>$this->input->post('userDesignationIndex'),
+				'user_designation_index'=>10015,
 				'user_status_index'=>'10013',
-				'user_image'=>$userPictureName
+				'user_image'=>$userPictureName,
+				'user_emp_id'=>$this->input->post('empId'),
 				
 			);				
 			$this->Employee_model->add_record($data);
+			
+			$datestring = date('Y-m-d');			
+			$data = array(
+				'last_updated'=>mdate($datestring),
+				'continues_count' => (int)$empNum + 1 
+			);
+			
+			$this->Employee_model->incriment_emp_no($data,$entCode);
 			
 			$new_employee_added[] = array('message' => 'New Employee added successfully');
 
@@ -168,6 +180,7 @@
 				'userDesignation'=>$eachEmpDetails['user_designation'],
 				'userStatus'=>$eachEmpDetails['user_status'],
 				'userImage'=>$eachEmpDetails['user_image']
+				'userId'=>$eachEmpDetails['user_emp_id']
 				);
 		
 		if (count($userDesignation) >0) {

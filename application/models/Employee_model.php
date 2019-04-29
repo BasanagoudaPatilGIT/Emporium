@@ -23,6 +23,17 @@ class Employee_model extends CI_Model
 		return $this->db->insert('tab_user', $data);
 	}
 	
+	public function get_emp_number($entCode)
+    {
+	$this->db->select('p.*');
+	$this->db->from('tab_series as p');
+	$this->db->where('p.ent_code', $entCode);
+	$this->db->where('p.series_name', 'Employee Code');
+	$query = $this->db->get();
+	
+	return $query->row_array();
+    }
+	
 	
 	public function edit_record($id,$data)
     {
@@ -113,6 +124,13 @@ class Employee_model extends CI_Model
 	$this->db->where('ent_code', $entCode);
 	$query = $this->db->get();
     return $query->row_array();
+    }
+	
+	public function incriment_emp_no($data,$entCode)
+    {
+	$this->db->where('series_id', '#E');
+	$this->db->where('ent_code', $entCode);
+	$this->db->update('tab_series', $data);	
     }
 	
  }
