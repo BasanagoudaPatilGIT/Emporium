@@ -101,6 +101,8 @@
 					'userDetails' => $user_array,
 					'menuDetails' => $menu_array,
 					'availableVersion'=>'v1.0.0',
+					'lowStockCount'=>2,
+					'inStockCount'=>5,
 					'mainMenuDetails' => $main_menu_array
 				);
 				
