@@ -37,18 +37,7 @@ class Order extends CI_Controller {
 					'orderViewStatus'=>$row['orderStatus'],
 					'orderViewStatusIndex'=>$row['order_view_status'],
 					'orderCreatedDatetime'=>$row['order_created_datetime'],
-					'orderhId'=>$row['order_h_id'],
-					'productCode'=>$row['product_code'],
-					'productName'=>$row['product_name'],
-					'productBatch'=>$row['product_batch'],
-					'productUomIndex'=>$row['product_uom_index'],
-					'productUom'=>$row['productUOM'],
-					'orderQty'=>$row['order_qty'],
-					'taxPercent'=>$row['tax_percent'],
-					'saleRate'=>$row['sale_rate'],
-					'productStockStatusIndex'=>$row['product_stock_status_index'],
-					'productStockStatus'=>$row['productStockStatus'],
-					'statusUpdatedDatetime'=>$row['status_updated_datetime']
+					
 				);
 				
 			
@@ -59,11 +48,10 @@ class Order extends CI_Controller {
 				'orderDetails' => $all_order,
 				'orderStatusDetails' => $orderStatusDetails,
 			);
-			//print_r(json_encode($all_order_data));
+			print_r(json_encode($all_order_data));
 			
-			echo"<pre>";
-			print_r($all_order_data);
-			echo"</pre>";
+			
+			
 			
 		 } else {
 			$no_order_data[] = array(
@@ -77,7 +65,7 @@ class Order extends CI_Controller {
 	}
 	
 	public function orderDetailsBasedOnStatus() { //working as expected. 
-		$OrderStatus = $this->input->post('OrderStatus');
+		$OrderStatus = $this->input->post('orderStatus');
 		$entCode = $this->input->post('entCode');
 		//$orderStatus = 10002;
 		//$entCode = 10002;
@@ -91,8 +79,11 @@ class Order extends CI_Controller {
 					'entCode'=>$row['ent_code'],
 					'userId'=>$row['user_id'],
 					'userFullName'=>$row['user_full_name'],
-					'useraddress'=>$row['user_address'],
+					'userAddress'=>$row['user_address'],
 					'userPhoneNo'=>$row['user_phone_no'],
+					'flatNo'=>$row['flat_no'],
+					'wing'=>$row['wing'],
+					'apartmentName'=>$row['apartment_name'],
 					'orderNumber'=>$row['order_number'],
 					'orderTotalAmt'=>$row['order_total_amount'],
 					'orderTaxAmt'=>$row['order_tax_amount'],
@@ -102,18 +93,6 @@ class Order extends CI_Controller {
 					'orderViewStatus'=>$row['orderStatus'],
 					'orderViewStatusIndex'=>$row['order_view_status'],
 					'orderCreatedDatetime'=>$row['order_created_datetime'],
-					'orderHId'=>$row['order_h_id'],
-					'productCode'=>$row['product_code'],
-					'productName'=>$row['product_name'],
-					'productBatch'=>$row['product_batch'],
-					'productUomIndex'=>$row['product_uom_index'],
-					'productUom'=>$row['productUOM'],
-					'orderQty'=>$row['order_qty'],
-					'taxPercent'=>$row['tax_percent'],
-					'saleRate'=>$row['sale_rate'],
-					'productStockStatusIndex'=>$row['product_stock_status_index'],
-					'productStockStatus'=>$row['productStockStatus'],
-					'statusUpdatedDatetime'=>$row['status_updated_datetime']
 				);
 				
 			
@@ -190,7 +169,7 @@ class Order extends CI_Controller {
 	}
 	}
 	
-	public function createorder() { // need to test with mobile code...
+	public function createOrder() { // need to test with mobile code...
 		$entCode = $this->input->post('entCode');
 		//$entCode = 10002;
 		$userId = $this->input->post('userId');
@@ -236,7 +215,7 @@ class Order extends CI_Controller {
 			$prodBatchNo = $data1[$i]->{'productBatchNo'};	
 			$prodUomIndex = $data1[$i]->{'productUOMIndex'};
 			$prodUomName = $data1[$i]->{'productUOMName'};
-			$OrderQty = $data1[$i]->{'OrderQty'};
+			$OrderQty = $data1[$i]->{'orderQty'};
 			$prodTaxPer = $data1[$i]->{'productTaxPer'};	
 			$prodSaleRate = $data1[$i]->{'productSaleRate'};
 			$prodTaxAmt = $data1[$i]->{'productTaxAmt'};	
@@ -247,7 +226,7 @@ class Order extends CI_Controller {
 				'product_code'=>$prodCode,
 				'product_name'=>$prodName,
 				'batchno'=>$prodBatchNo,
-				'product_uom_inddex'=>$prodUomIndex,
+				'product_uom_index'=>$prodUomIndex,
 				'order_qty'=>$OrderQty,
 				'tax_percent'=>$prodTaxPer,
 				'tax_amount'=>$prodTaxAmt,
@@ -327,28 +306,7 @@ class Order extends CI_Controller {
 	
 		$orderdetails = $this->Order_model->get_order_d_details($data['order_header']['id'],$entCode);
 		
-		foreach($orderdetails as $row)
-			$each_order_details[] = array(
-				'id'=>$row['id'],
-				'orderhId'=>$row['order_h_id'],
-				'productCode'=>$row['product_code'],
-				'productName'=>$row['product_name'],
-				'productBatch'=>$row['product_batch'],
-				'productUomIndex'=>$row['product_uom_index'],
-				'productUomIndexName'=>$row['product_uom_index_name'],
-				'orderQty'=>$row['order_qty'],
-				'taxPercent'=>$row['tax_percent'],
-				'taxAmount'=>$row['tax_amount'],
-				'saleRate'=>$row['sale_rate'],
-				'subTotal'=>$row['sub_total'],
-				'productStockStatusIndex'=>$row['product_stock_status_index'],
-				'productStockStatusIndexName'=>$row['product_stock_status_index_name'],
-				'rowInvalidated'=>$row['row_invalidated'],
-				'statusUpdatedDatetime'=>$row['status_updated_datetime'],
-			);
-			
-		$order_details[] = array(		
-			'orderProducts' => $each_order_details,		
+		$order_header_details[] = array(				
 			'id'=>$data['order_header']['id'],
             'entCode'=>$data['order_header']['ent_code'],
             'userId'=>$data['order_header']['user_id'],
@@ -366,8 +324,33 @@ class Order extends CI_Controller {
 			'userPhoneNo'=>$data['order_header']['user_phone_no'],
 		);
 		
+		foreach($orderdetails as $row)
+		{
+			$order_details[] = array(
+				'id'=>$row['id'],
+				'orderhId'=>$row['order_h_id'],
+				'productCode'=>$row['product_code'],
+				'productName'=>$row['product_name'],
+				'productBatch'=>$row['product_batch'],
+				'productUomIndex'=>$row['product_uom_index'],
+				'productUomIndexName'=>$row['product_uom_index_name'],
+				'orderQty'=>$row['order_qty'],
+				'taxPercent'=>$row['tax_percent'],
+				'taxAmount'=>$row['tax_amount'],
+				'saleRate'=>$row['sale_rate'],
+				'subTotal'=>$row['sub_total'],
+				'productStockStatusIndex'=>$row['product_stock_status_index'],
+				'productStockStatusIndexName'=>$row['product_stock_status_index_name'],
+				'rowInvalidated'=>$row['row_invalidated'],
+				'statusUpdatedDatetime'=>$row['status_updated_datetime'],
+			);
+		}
+		
+		
+		
 		$each_order_details[] = array(
-			'orderheaderdetails' => $order_details,
+			'orderheaderdetails' => $order_header_details,
+			'orderDetails'=>$order_details,
 			'cancelOrder' => 'Cancel',
 			'approveOrder' => 'Approve',
 			'orderToBill' => 'Bill'
@@ -405,15 +388,15 @@ class Order extends CI_Controller {
 			$prodBatchNo = $data1[$i]->{'productBatchNo'};	
 			$prodUomIndex = $data1[$i]->{'productUOMIndex'};
 			$prodUomName = $data1[$i]->{'productUOMName'};
-			$OrderQty = $data1[$i]->{'OrderQty'};		
+			$orderQty = $data1[$i]->{'orderQty'};		
 							
 		
 		$productDetails = $this->Product_model->stock_details_by_batchno($entCode,$prodBatchNo);
 		
 		if($prodUomName == "Kg" ){
-		   $transitQty =  $productDetails['transit_qty'] - ($OrderQty * 1000) ;
-		   $stockQty =  $productDetails['stock_qty'] + ($OrderQty * 1000) ;
-		   $onlineStockQty = $productDetails['online_stock_qty'] + ($OrderQty * 1000) ;
+		   $transitQty =  $productDetails['transit_qty'] - ($orderQty * 1000) ;
+		   $stockQty =  $productDetails['stock_qty'] + ($orderQty * 1000) ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] + ($orderQty * 1000) ;
 		   
 		   $data = array(
 				'transit_qty'=>$transitQty,
@@ -423,9 +406,9 @@ class Order extends CI_Controller {
 		   
 		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
 		}else if($prodUomName == "Grams" || $prodUomName == "Packet" || $prodUomName == "Pcs"){
-		   $transitQty =  $productDetails['transit_qty'] - $OrderQty ;
-		   $stockQty =  $productDetails['stock_qty'] + $OrderQty ;
-		   $onlineStockQty = $productDetails['online_stock_qty'] + $OrderQty ;
+		   $transitQty =  $productDetails['transit_qty'] - $orderQty ;
+		   $stockQty =  $productDetails['stock_qty'] + $orderQty ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] + $orderQty ;
 		   
 		   $data = array(
 				'transit_qty'=>$transitQty,
@@ -435,9 +418,9 @@ class Order extends CI_Controller {
 		   
 		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
 		}else if($prodUomName == "Boxes" ){
-		   $transitQty =  $productDetails['transit_qty'] - ($OrderQty * $productDetails['packets_in_box']);
-		   $stockQty =  $productDetails['stock_qty'] + ($OrderQty * $productDetails['packets_in_box']) ;
-		   $onlineStockQty = $productDetails['online_stock_qty'] + ($OrderQty * $productDetails['packets_in_box']);
+		   $transitQty =  $productDetails['transit_qty'] - ($orderQty * $productDetails['packets_in_box']);
+		   $stockQty =  $productDetails['stock_qty'] + ($orderQty * $productDetails['packets_in_box']) ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] + ($orderQty * $productDetails['packets_in_box']);
 		   
 		   $data = array(
 				'transit_qty'=>$transitQty,
