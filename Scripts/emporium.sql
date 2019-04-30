@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 27, 2019 at 12:41 PM
+-- Generation Time: Apr 30, 2019 at 01:08 PM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -25,6 +25,26 @@ USE `emporium`;
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tab_apartment`
+--
+
+CREATE TABLE IF NOT EXISTS `tab_apartment` (
+  `id` int(10) NOT NULL,
+  `apartment_name` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tab_apartment`
+--
+
+INSERT INTO `tab_apartment` (`id`, `apartment_name`) VALUES
+(1, 'Other'),
+(2, 'Bala Apartments');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tab_bill_d`
 --
 
@@ -33,13 +53,24 @@ CREATE TABLE IF NOT EXISTS `tab_bill_d` (
   `bill_h_id` int(10) NOT NULL,
   `product_code` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `product_name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `batch_no` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `product_uom_index` int(10) NOT NULL,
   `order_qty` int(10) NOT NULL,
   `bill_qty` int(10) NOT NULL,
-  `mrp` double(65,2) NOT NULL,
-  `tax_percent` double(65,2) NOT NULL,
-  `sale_rate` double(65,2) NOT NULL
+  `mrp` double(65,4) NOT NULL,
+  `tax_percent` double(65,4) NOT NULL,
+  `sale_rate` double(65,4) NOT NULL,
+  `product_status_index` int(10) NOT NULL,
+  UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tab_bill_d`
+--
+
+INSERT INTO `tab_bill_d` (`id`, `bill_h_id`, `product_code`, `product_name`, `batch_no`, `product_uom_index`, `order_qty`, `bill_qty`, `mrp`, `tax_percent`, `sale_rate`, `product_status_index`) VALUES
+(1, 1, '#P10002-101', 'Tomato', '1234-1234', 10009, 2, 2, 2000.0000, 20.0000, 1600.0000, 0),
+(2, 1, '#P10002-101', 'Tomato', '1234-1234', 10009, 2, 2, 2000.0000, 20.0000, 1600.0000, 0);
 
 -- --------------------------------------------------------
 
@@ -52,12 +83,22 @@ CREATE TABLE IF NOT EXISTS `tab_bill_h` (
   `ent_code` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `user_id` int(10) NOT NULL,
   `bill_number` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `bill_total_amount` double(65,2) NOT NULL,
-  `bill_tax_amount` double(65,2) NOT NULL,
-  `bill_net_amount` double(65,2) NOT NULL,
+  `bill_total_amount` double(65,4) NOT NULL,
+  `bill_tax_amount` double(65,4) NOT NULL,
+  `delivery_charges` double(65,4) NOT NULL,
+  `bill_net_amount` double(65,4) NOT NULL,
   `bill_created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `order_id` int(10) NOT NULL
+  `order_id` int(10) NOT NULL,
+  `bill_status_index` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tab_bill_h`
+--
+
+INSERT INTO `tab_bill_h` (`id`, `ent_code`, `user_id`, `bill_number`, `bill_total_amount`, `bill_tax_amount`, `delivery_charges`, `bill_net_amount`, `bill_created_datetime`, `order_id`, `bill_status_index`) VALUES
+(1, '10002', 6, '#In-10002130001', 1600.0000, 20.0000, 0.0000, 1620.0000, '2019-04-30 10:59:35', 0, 10022);
 
 -- --------------------------------------------------------
 
@@ -107,6 +148,28 @@ INSERT INTO `tab_entity` (`id`, `ent_code`, `ent_name`, `emp_limit`, `created_da
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tab_flat_no`
+--
+
+CREATE TABLE IF NOT EXISTS `tab_flat_no` (
+  `id` int(10) NOT NULL,
+  `flat_no` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
+  `wing_id` int(10) NOT NULL,
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tab_flat_no`
+--
+
+INSERT INTO `tab_flat_no` (`id`, `flat_no`, `wing_id`) VALUES
+(1, 'Other', 1),
+(2, '101', 2),
+(3, '102', 2);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tab_index`
 --
 
@@ -129,8 +192,8 @@ INSERT INTO `tab_index` (`id`, `index_id`, `index_type`, `index_name`, `is_valid
 (3, 10003, 'order_status_index', 'Billed', 1),
 (4, 10004, 'order_status_index', 'Billed-Pending', 1),
 (5, 10005, 'order_status_index', 'Cancelled', 1),
-(6, 10006, 'product_stock_status_index', 'Billed', 1),
-(7, 10007, 'product_stock_status_index', 'Pending', 1),
+(6, 10006, 'product_status_index', 'Billed', 1),
+(7, 10007, 'product_status_index', 'Free item', 1),
 (8, 10008, 'product_uom_index', 'Grams', 1),
 (9, 10009, 'product_uom_index', 'Kg', 1),
 (10, 10010, 'product_uom_index', 'Bundle', 1),
@@ -144,7 +207,9 @@ INSERT INTO `tab_index` (`id`, `index_id`, `index_type`, `index_name`, `is_valid
 (18, 10018, 'user_designation_index', 'Customer', 1),
 (19, 10019, 'user_gender_index', 'Male', 1),
 (20, 10020, 'user_gender_index', 'Female', 1),
-(21, 10021, 'user_gender_index', 'Other', 1);
+(21, 10021, 'user_gender_index', 'Other', 1),
+(22, 10022, 'invoice_status_index', 'Billed', 1),
+(23, 10023, 'invoice_status_index', 'Cancelled', 1);
 
 -- --------------------------------------------------------
 
@@ -258,7 +323,7 @@ INSERT INTO `tab_series` (`id`, `series_name`, `series_id`, `continues_count`, `
 (1, 'Entity', 'Ent', 10003, '2019-04-12 00:00:00', 0),
 (2, 'Product Code', '#P', 104, '2019-04-14 07:59:43', 10002),
 (3, 'Employee Code', '#E', 1001, '2019-04-12 00:00:00', 10002),
-(4, 'User Id', '#U', 6, '2019-04-12 00:00:00', 10002),
+(4, 'User Id', '#U', 111003, '2019-04-12 00:00:00', 10002),
 (5, 'Orders', '#O', 120001, '2019-04-12 00:00:00', 10002),
 (6, 'Invoice', '#In', 130001, '2019-04-12 00:00:00', 10002);
 
@@ -314,7 +379,7 @@ CREATE TABLE IF NOT EXISTS `tab_stock_h` (
 --
 
 INSERT INTO `tab_stock_h` (`id`, `product_id`, `product_batch`, `packets_in_box`, `product_pack_date`, `product_exp_date`, `mrp`, `tax_precent`, `purchase_rate`, `sale_rate`, `purchase_qty`, `created_datetime`) VALUES
-(1, 1, '1234-1234', 1, '2019-04-23', '2019-08-31', 10.0000, 1.0000, 8.0000, 9.5000, 300, '2019-04-23 17:58:46');
+(1, 1, '1234-1234', 1, '2019-04-23', '2019-08-31', 1.0000, 1.0000, 0.5000, 0.8000, 200000, '2019-04-23 17:58:46');
 
 -- --------------------------------------------------------
 
@@ -389,8 +454,9 @@ CREATE TABLE IF NOT EXISTS `tab_user` (
   `user_image` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `user_login_status` int(10) NOT NULL,
   `created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `emp_id` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `user_emp_id` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `user_id` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `user_flat_id` int(10) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -398,13 +464,36 @@ CREATE TABLE IF NOT EXISTS `tab_user` (
 -- Dumping data for table `tab_user`
 --
 
-INSERT INTO `tab_user` (`id`, `ent_code`, `user_full_name`, `user_name`, `user_password`, `user_gender_index`, `user_age`, `user_dob`, `user_phone_no`, `user_email_id`, `user_address`, `user_address_prof`, `user_imei`, `user_designation_index`, `user_status_index`, `user_image`, `user_login_status`, `created_datetime`, `emp_id`, `user_id`) VALUES
-(1, '10001', 'Basanagouda Patil', 'basupatil', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 7259999282, 'basupail71@gmail.com', 'No Address', 'proof', 123456789009876, 10015, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', ''),
-(2, '10002', 'Raghu Ram .R', 'raghuram', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 0, 10016, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', ''),
-(3, '10002', 'BalaKumar', 'balakumar', 'YmFsYWt1bWFy', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009876, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', ''),
-(4, '10002', 'Ganesh', 'ganesh', 'Z2FuZXNo', 10019, '30', '1988-04-06', 8611429415, 'ganesh@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009877, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', ''),
-(5, '10002', 'Vijay', 'vijay', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654321, 'vijay@gmail.com', 'Address', 'Address proof', 645678765677879, 10017, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '', ''),
-(6, '10002', 'Ramesh R', 'Ramesh', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654321, 'ramesh@gmail.com', 'Address', 'Address proof', 645678765677879, 10018, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '', '');
+INSERT INTO `tab_user` (`id`, `ent_code`, `user_full_name`, `user_name`, `user_password`, `user_gender_index`, `user_age`, `user_dob`, `user_phone_no`, `user_email_id`, `user_address`, `user_address_prof`, `user_imei`, `user_designation_index`, `user_status_index`, `user_image`, `user_login_status`, `created_datetime`, `user_emp_id`, `user_id`, `user_flat_id`) VALUES
+(1, '10001', 'Basanagouda Patil', 'basupatil', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 7259999282, 'basupail71@gmail.com', 'No Address', 'proof', 123456789009876, 10015, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
+(2, '10002', 'Raghu Ram .R', 'raghuram', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 0, 10016, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
+(3, '10002', 'BalaKumar', 'balakumar', 'YmFsYWt1bWFy', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009876, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
+(4, '10002', 'Ganesh', 'ganesh', 'Z2FuZXNo', 10019, '30', '1988-04-06', 8611429415, 'ganesh@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009877, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
+(5, '10002', 'Vijay', 'vijay', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654321, 'vijay@gmail.com', 'Address', 'Address proof', 645678765677879, 10017, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '', '', 0),
+(6, '10002', 'Ramesh R', 'Ramesh', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654321, 'ramesh@gmail.com', 'Address', 'Address proof', 645678765677879, 10018, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '0', '111001', 2),
+(7, '10002', 'Akash M', 'Akash', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654322, 'akash@gmail.com', 'Address', 'Address proof', 645678765677871, 10018, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '0', '111002', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tab_wing`
+--
+
+CREATE TABLE IF NOT EXISTS `tab_wing` (
+  `id` int(10) NOT NULL,
+  `wing` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  `apartment_id` int(10) NOT NULL,
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tab_wing`
+--
+
+INSERT INTO `tab_wing` (`id`, `wing`, `apartment_id`) VALUES
+(1, 'Other', 1),
+(2, 'A', 2),
+(3, 'B', 2);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

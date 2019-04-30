@@ -39,16 +39,11 @@ class Order_model extends CI_Model
 	
 	public function order_details($order_by = '',$entCode)
     {
-    $this->db->select('o.*,d.*,o.*,i.index_name as orderStatus,id.index_name as productUOM,is.index_name as 
-	productStockStatus,u.user_full_name,u.user_address,u.user_phone_no');
+    $this->db->select('o.*,i.index_name as orderStatus,u.user_full_name,u.user_address,u.user_phone_no');
 	$this->db->from('tab_order_h as o');
 	$this->db->where('o.ent_code', $entCode);
-	$this->db->where('d.row_invalidated', 0);
-	$this->db->join('tab_order_d as d', 'd.order_h_id = o.id','left');
 	$this->db->join('tab_user as u', 'u.id = o.user_id','left');
 	$this->db->join('tab_index as i', 'i.index_id = o.order_status_index','left');
-	$this->db->join('tab_index as id', 'id.index_id = d.product_uom_index','left');
-	$this->db->join('tab_index as is', 'is.index_id = d.product_stock_status_index','left');
     if($order_by != ''){
     $this->db->order_by('o.id',$order_by);
     }
@@ -58,17 +53,12 @@ class Order_model extends CI_Model
 	
 	public function order_details_by_status($order_by = '',$entCode,$orderStatus)
     {
-    $this->db->select('o.*,d.*,o.*,i.index_name as orderStatus,id.index_name as productUOM,is.index_name as 
-	productStockStatus,u.user_full_name,u.user_address,u.user_phone_no');
+    $this->db->select('o.*,i.index_name as orderStatus,u.user_full_name,u.user_address,u.user_phone_no');
 	$this->db->from('tab_order_h as o');
 	$this->db->where('o.ent_code', $entCode);
 	$this->db->where('i.index_id', $orderStatus);
-	$this->db->where('d.row_invalidated', 0);
-	$this->db->join('tab_order_d as d', 'd.order_h_id = o.id','left');
 	$this->db->join('tab_user as u', 'u.id = o.user_id','left');
 	$this->db->join('tab_index as i', 'i.index_id = o.order_status_index','left');
-	$this->db->join('tab_index as id', 'id.index_id = d.product_uom_index','left');
-	$this->db->join('tab_index as is', 'is.index_id = d.product_stock_status_index','left');
     if($order_by != ''){
     $this->db->order_by('o.id',$order_by);
     }
@@ -116,10 +106,11 @@ class Order_model extends CI_Model
 	
 	public function get_order_d_details($orderhid,$entCode)
     {
-	$this->db->select('d.*');
+	$this->db->select('d.*,i.index_name as product_uom_index_name');
     $this->db->from('tab_order_d as d');
     $this->db->where('d.order_h_id', $orderhid);
     $this->db->where('d.row_invalidated', 0);
+	$this->db->join('tab_index as id', 'id.index_id = d.product_uom_index','left');
     $query = $this->db->get();
     return $query->result_array();
     }
