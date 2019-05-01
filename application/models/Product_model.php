@@ -245,7 +245,7 @@ class Product_model extends CI_Model
 	
 	public function get_product_category()
     {
-    $this->db->select('c.*');
+    $this->db->select('c.*,c.id as _id');
 	$this->db->from('tab_category as c');
 	$query = $this->db->get();		
     return $query->result_array();
@@ -253,7 +253,7 @@ class Product_model extends CI_Model
 	
 	public function get_product_sub_category()
     {
-    $this->db->select('c.*');
+    $this->db->select('c.*,c.id as _id');
 	$this->db->from('tab_sub_category as c');
 	$query = $this->db->get();		
     return $query->result_array();
@@ -261,7 +261,7 @@ class Product_model extends CI_Model
 
 	public function get_uom_details()
     {
-    $this->db->select('i.*,um.*');
+    $this->db->select('i.*,um.*,i.id as _id');
 	$this->db->from('tab_index as i');
 	$this->db->where('i.index_type','product_uom_index');
 	$this->db->join('tab_uom_mapping as um', 'um.index_id = i.index_id','left');
