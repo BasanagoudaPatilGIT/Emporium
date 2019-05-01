@@ -8,13 +8,13 @@
 	}
 	
 	function validate_login_credentials() {
-		//$userName = "raghuram";
+		$userName = "raghuram";
 		$imei = 0;
-		//$userPassword = base64_encode("raghuram");
+		$userPassword = base64_encode("raghuram");
 		
-		$userName = $this->input->post('userName');
+		//$userName = $this->input->post('userName');
 		//$imei = $this->input->post('imei');
-		$userPassword = base64_encode($this->input->post('userPassword'));
+		//$userPassword = base64_encode($this->input->post('userPassword'));
 		
 		$query = $this->Login_model->validate($userName,$userPassword,$imei);
 		
@@ -48,7 +48,13 @@
 					'emailId' => $data['login']['user_email_id'],
 					'imageName' => $data['login']['user_image'],
 					'designation' => $data['login']['index_name'],
-					'userAddress' => $data['login']['user_address'],		
+					'userAddress' => $data['login']['user_address'],
+					'userFullName'=>$data['login']['user_full_name'],
+					'userAddress'=>$data['login']['user_address'],
+					'userPhoneNo'=>$data['login']['user_phone_no'],
+					'flatNo'=>$data['login']['flat_no'],
+					'wing'=>$data['login']['wing'],
+					'apartmentName'=>$data['login']['apartment_name'],		
 				);
 				if($data['login']['index_name'] == 'Admin'){
 				$menu_array[] = array(

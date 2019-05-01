@@ -75,6 +75,9 @@ class Employee_model extends CI_Model
 	$this->db->where('u.user_designation_index','10017');
 	$this->db->where('i.index_type','user_designation_index');
 	}
+	$this->db->join('tab_flat_no as fl', 'fl.id = u.user_flat_id','left');
+	$this->db->join('tab_wing as w', 'w.id = fl.wing_id','left');
+	$this->db->join('tab_apartment as a', 'a.id = w.apartment_id','left');
     $this->db->order_by('u.id','DESC');
     $query = $this->db->get();		
     return $query->result_array();
@@ -87,7 +90,10 @@ class Employee_model extends CI_Model
 	$this->db->join('tab_index as des', 'des.index = u.user_designation_index','left');
 	$this->db->join('tab_index as st', 'st.index = u.user_status_index','left');
 	$this->db->join('tab_index as gen', 'gen.index = u.user_gender_index','left');
-	$this->db->where('u.id', $empId);
+	$this->db->join('tab_flat_no as fl', 'fl.id = u.user_flat_id','left');
+	$this->db->join('tab_wing as w', 'w.id = fl.wing_id','left');
+	$this->db->join('tab_apartment as a', 'a.id = w.apartment_id','left');
+	$this->db->where('u.user_emp_id', $empId);
 	$query = $this->db->get();
 	
 	return $query->row_array();

@@ -45,19 +45,11 @@
 		$entCode = $this->input->post('entCode');
 		//$entCode = 10001;
 		//$userDesignationIndex = 10015;
-		$data['auto_code'] = $this->Order_model->get_order_number($entCode);
+		$data['auto_code'] = $this->Employee_model->get_emp_number($entCode);
 		$empId = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
 		$empNum = $data['auto_code']['continues_count'];
 		$userGender=  $this->Index_model->user_gender();
 		
-		if (count($userDesignation) >0) {
-			foreach($userDesignation as $row)
-				$user_designation[] = array(
-					'index'=>$row['index'],
-					'index_name' =>$row['index_name'],
-				);
-		}
-
 		if (count($userGender) >0) {
 			foreach($userGender as $row)
 				$all_userGender[] = array(
@@ -66,9 +58,8 @@
 				);
 		}			
 			
-		$required_details[] = array(
+		$employee_details[] = array(
 					'allUserGender'=>$all_userGender,
-					'UserDesignation' =>$user_designation,
 					'empId' =>$empId,
 					'empNum' =>$empNum,
 					'addEmployee' =>'addEmployee'
@@ -76,7 +67,7 @@
 		
 		
 		//print_r($required_index);
-		print_r(json_encode($required_details));
+		print_r(json_encode($employee_details));
 	}
 	public function addEmployee()
 	{
@@ -126,7 +117,7 @@
 				'user_address'=>$this->input->post('userAddress'),	
 				//'user_address_prof'=>$this->input->post('userAddressProf'),	
 				'user_imei'=>$this->input->post('userIMEI'),	
-				'user_designation_index'=>10015,
+				'user_designation_index'=>10017,
 				'user_status_index'=>'10013',
 				'user_image'=>$userPictureName,
 				'user_emp_id'=>$this->input->post('empId'),
@@ -168,19 +159,22 @@
 		
 		$each_EmpDetails[] = array(
 				'entCode'=>$eachEmpDetails['ent_code'],
-				'userFullName'=>$eachEmpDetails['user_full_name'],
 				'userName'=>$eachEmpDetails['user_name'],
 				'userGender'=>$eachEmpDetails['user_gender'],
 				'userAge'=>$eachEmpDetails['user_age'],
 				'userDOB'=>$eachEmpDetails['user_dob'],
-				'userPhoneNo'=>$eachEmpDetails['user_phone_no'],
 				'userEmailId'=>$eachEmpDetails['user_email_id'],
-				'userAddress'=>$eachEmpDetails['user_address'],	
 				'userIMEI'=>$eachEmpDetails['user_imei'],	
 				'userDesignation'=>$eachEmpDetails['user_designation'],
 				'userStatus'=>$eachEmpDetails['user_status'],
-				'userImage'=>$eachEmpDetails['user_image']
-				'userId'=>$eachEmpDetails['user_emp_id']
+				'userImage'=>$eachEmpDetails['user_image'],
+				'userId'=>$eachEmpDetails['user_emp_id'],
+				'userFullName'=>$eachEmpDetails['user_full_name'],
+				'userAddress'=>$eachEmpDetails['user_address'],
+				'userPhoneNo'=>$eachEmpDetails['user_phone_no'],
+				'flatNo'=>$eachEmpDetails['flat_no'],
+				'wing'=>$eachEmpDetails['wing'],
+				'apartmentName'=>$eachEmpDetails['apartment_name'],
 				);
 		
 		if (count($userDesignation) >0) {
@@ -235,8 +229,8 @@
 			);				
 			$this->Employee_model->update_record($data,$empId);
 			
-			$new_employee_added[] = array('message' => 'Employee updated successfully');
+			$update_employee[] = array('message' => 'Employee updated successfully');
 
-			print_r(json_encode($new_employee_added));
+			print_r(json_encode($update_employee));
 	}
 }
