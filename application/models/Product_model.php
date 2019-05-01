@@ -271,7 +271,7 @@ class Product_model extends CI_Model
 
 	public function get_uom_details_based_on_filters($productCategory,$productSubCategory)
     {
-    $this->db->select('i.index_name');
+    $this->db->select('i.index_name,i.id as _id');
 	$this->db->from('tab_index as i');
 	$this->db->where('i.index_type','product_uom_index');
 	$this->db->join('tab_uom_mapping as um', 'um.index_id = i.index_id','left');
