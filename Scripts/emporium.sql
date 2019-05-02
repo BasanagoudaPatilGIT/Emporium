@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 30, 2019 at 01:08 PM
+-- Generation Time: May 02, 2019 at 01:34 PM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -209,7 +209,8 @@ INSERT INTO `tab_index` (`id`, `index_id`, `index_type`, `index_name`, `is_valid
 (20, 10020, 'user_gender_index', 'Female', 1),
 (21, 10021, 'user_gender_index', 'Other', 1),
 (22, 10022, 'invoice_status_index', 'Billed', 1),
-(23, 10023, 'invoice_status_index', 'Cancelled', 1);
+(23, 10023, 'invoice_status_index', 'Cancelled', 1),
+(24, 10024, 'product_uom_index', 'Box', 1);
 
 -- --------------------------------------------------------
 
@@ -409,6 +410,91 @@ INSERT INTO `tab_sub_category` (`id`, `sub_category_index`, `sub_category_name`,
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `tab_temp_product`
+--
+
+CREATE TABLE IF NOT EXISTS `tab_temp_product` (
+  `id` int(10) NOT NULL,
+  `ent_code` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  `product_code` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `product_name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `product_description` text COLLATE utf8_unicode_ci NOT NULL,
+  `product_status_index` int(10) NOT NULL,
+  `category_index` int(10) NOT NULL,
+  `sub_category_index` int(10) NOT NULL,
+  `created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `stock_qty_limit` int(10) DEFAULT NULL,
+  `upload_status` text COLLATE utf8_unicode_ci NOT NULL,
+  `upload_status_id` int(10) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tab_temp_product`
+--
+
+INSERT INTO `tab_temp_product` (`id`, `ent_code`, `product_code`, `product_name`, `product_description`, `product_status_index`, `category_index`, `sub_category_index`, `created_datetime`, `stock_qty_limit`, `upload_status`, `upload_status_id`) VALUES
+(1, '10002', '#P10002-101', 'Tomato', '', 10013, 11001, 20001, '2019-04-14 13:12:23', 50000, '', 0),
+(2, '10002', '#P10002-102', 'Potato', '', 10013, 11001, 20001, '2019-04-14 13:29:43', 250, '', 0),
+(3, '10002', '#P10002-103', 'Muli', '', 10013, 11001, 20002, '2019-04-14 13:29:43', 100, '', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tab_temp_stock_d`
+--
+
+CREATE TABLE IF NOT EXISTS `tab_temp_stock_d` (
+  `id` int(10) NOT NULL,
+  `stock_h_id` int(10) NOT NULL,
+  `stock_qty` int(10) NOT NULL,
+  `online_stock_qty` int(10) NOT NULL,
+  `offline_stock_qty` int(10) NOT NULL,
+  `transit_qty` int(10) NOT NULL,
+  `created_datetime` datetime NOT NULL,
+  `product_id` int(10) DEFAULT NULL,
+  UNIQUE KEY `id` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tab_temp_stock_d`
+--
+
+INSERT INTO `tab_temp_stock_d` (`id`, `stock_h_id`, `stock_qty`, `online_stock_qty`, `offline_stock_qty`, `transit_qty`, `created_datetime`, `product_id`) VALUES
+(2, 1, 190000, 140000, 50000, 10000, '2019-04-22 00:00:00', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tab_temp_stock_h`
+--
+
+CREATE TABLE IF NOT EXISTS `tab_temp_stock_h` (
+  `id` int(10) NOT NULL,
+  `product_id` int(10) NOT NULL,
+  `product_batch` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `packets_in_box` int(11) NOT NULL,
+  `product_pack_date` date NOT NULL,
+  `product_exp_date` date NOT NULL,
+  `mrp` double(65,4) NOT NULL,
+  `tax_precent` double(65,4) NOT NULL,
+  `purchase_rate` double(65,4) NOT NULL,
+  `sale_rate` double(65,4) NOT NULL,
+  `purchase_qty` int(10) NOT NULL,
+  `created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tab_temp_stock_h`
+--
+
+INSERT INTO `tab_temp_stock_h` (`id`, `product_id`, `product_batch`, `packets_in_box`, `product_pack_date`, `product_exp_date`, `mrp`, `tax_precent`, `purchase_rate`, `sale_rate`, `purchase_qty`, `created_datetime`) VALUES
+(1, 1, '1234-1234', 1, '2019-04-23', '2019-08-31', 1.0000, 1.0000, 0.5000, 0.8000, 200000, '2019-04-23 17:58:46');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `tab_uom_mapping`
 --
 
@@ -427,7 +513,12 @@ CREATE TABLE IF NOT EXISTS `tab_uom_mapping` (
 INSERT INTO `tab_uom_mapping` (`id`, `index_id`, `category_id`, `sub_category_id`) VALUES
 (1, 10008, 11001, 20001),
 (2, 10009, 11001, 20001),
-(3, 10010, 11001, 20002);
+(3, 10010, 11001, 20002),
+(4, 10008, 11002, 20003),
+(5, 10009, 11002, 20003),
+(6, 10011, 11002, 20004),
+(7, 10012, 11002, 20004),
+(8, 10024, 11002, 20004);
 
 -- --------------------------------------------------------
 

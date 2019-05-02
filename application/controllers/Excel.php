@@ -22,10 +22,11 @@ class Excel extends CI_Controller {
 			$objPHPExcel->getActiveSheet()->SetCellValue('A1','Category');
 			$objPHPExcel->getActiveSheet()->SetCellValue('B1','Sub Category');
 			$objPHPExcel->getActiveSheet()->SetCellValue('C1','Product Name');
+			$objPHPExcel->getActiveSheet()->SetCellValue('D1','Product Description');
 
 		 $objPHPExcel->getActiveSheet()->setTitle("Product Details");
-		  $objPHPExcel->getActiveSheet()->getStyle('A1:C1')->getAlignment()->setHorizontal('center');
-		  $objPHPExcel->getActiveSheet()->getStyle('A1:C1')->applyFromArray(array('font'=>array('size'=>12)));
+		  $objPHPExcel->getActiveSheet()->getStyle('A1:D1')->getAlignment()->setHorizontal('center');
+		  $objPHPExcel->getActiveSheet()->getStyle('A1:D1')->applyFromArray(array('font'=>array('size'=>12)));
 			  
 		 $filename = "ProductsUploadTemplate.xlsx"; 
  		  header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -49,7 +50,7 @@ class Excel extends CI_Controller {
 			$uploadedFile = "ProductsUploadTemplate.xlsx";
 			$object =  PHPExcel_IOFactory::load($config['upload_path'].$uploadedFile);
 				
-                          foreach($object->getWorksheetIterator() as $worksheet)
+                foreach($object->getWorksheetIterator() as $worksheet)
    				{
 				$highestRow = $worksheet->getHighestRow();
 				$highestColumn = $worksheet->getHighestColumn();
@@ -73,49 +74,103 @@ class Excel extends CI_Controller {
 				 $productName = $worksheet->getCellByColumnAndRow(2, $row)->getValue();
 				//print_r($productName);
 				
-                            if(count($categoryIndex['category_index']) == 1 && count($SubCategoryIndex['sub_category_index']) == 1 && $productName != ''){
-				$data = array(
+				if(count($categoryIndex['category_index']) == 1){
+					 if(count($SubCategoryIndex['sub_category_index']) == 1){
+						if($productName != ''){
+						$data = array(
 						'ent_code'=>$entCode,
-						'product_code'=>$prodcode,
 						'product_name'=>$productName,
 						'product_status_index'=>'10013',
-						'category_index'=>$categoryIndex['category_index'],
-						'sub_category_index'=>$SubCategoryIndex['sub_category_index'],
+						'category_index'=>$categoryIndex['_id'],
+						'sub_category_index'=>$SubCategoryIndex['_id'],
+						'upload_status_id' => 0,
+						'upload_status' => "",
+						);
+				
+						$this->Product_model->add_temp_product_details($data);
+						
+						//stock_h records
+						//stock_d records
+						$count = 1; 	
+						}else{
+						
+						$data = array(
+						'ent_code'=>$entCode,
+						'product_name'=>$productName,
+						'product_status_index'=>'10013',
+						'category_index'=>$categoryIndex['_id'],
+						'sub_category_index'=>$SubCategoryIndex['_id'],
+						'upload_status_id' => 1,
+						'upload_status' => "Invalid Or Empty Product",
 					);
 				
-                	$this->Product_model->add_record($data);
-					 $datestring = date('Y-m-d H:i:s');
-			 	$data =array(
+						$this->Product_model->add_temp_product_details($data);
+						
+						//stock_h records
+						//stock_d records
+						$count = 1; 						
+						}
+					
+					}else{
+						$data = array(
+						'ent_code'=>$entCode,
+						'product_name'=>$productName,
+						'product_status_index'=>'10013',
+						'category_index'=>$categoryIndex['_id'],
+						'sub_category_index'=>$SubCategoryIndex['_id'],
+						'upload_status_id' => 1,
+						'upload_status' => "Invalid Or Empty Sub Category",
+					);
+				
+                	$this->Product_model->add_temp_product_details($data);
+						
+						//stock_h records
+						//stock_d records
+					$count = 1;  
+					 }
+					 
+					
+				 }else{
+					$data = array(
+						'ent_code'=>$entCode,
+						'product_name'=>$productName,
+						'product_status_index'=>'10013',
+						'category_index'=>$categoryIndex['_id'],
+						'sub_category_index'=>$SubCategoryIndex['_id'],
+						'upload_status_id' => 1,
+						'upload_status' => "Invalid Or Empty Category",
+					);
+				
+                	$this->Product_model->add_temp_product_details($data);
+					
+						//stock_h records
+						//stock_d records
+					$count = 1; 
+				 }
+				
+				
+				if($count == 0){
+					$datestring = date('Y-m-d H:i:s');
+					$data =array(
 					'last_updated'=>mdate($datestring),
 					'continues_count'=> (int)$productcount + 1
 					);
-					
-                        $this->Product_model->incriment_productcode_no($data,$entCode);
-					
-				$file_upload_data[] = array(
-				'message' => 'Products Uploaded Successfully.'
-				);
-				
-				print_r(json_encode($file_upload_data));	
-				}else{
-				$file_upload_data[] = array(
-				'message' => 'Invalid Product name or Invalid Category or Sub Category at row ->'.$row
-				);
-				
-				print_r(json_encode($file_upload_data));
+
+					$this->Product_model->incriment_productcode_no($data,$entCode);
+
+					$file_upload_data[] = array(
+					'message' => 'Products Uploaded Successfully.'
+					);
+
+					print_r(json_encode($file_upload_data));
 				}
-				if(){
-				}
+				
+					
+				
 				 
 		};
 
-			}else{
-			$file_upload_data[] = array(
-				'message' => 'There is no data to upload, Empty file.'
-				);
-				
-				print_r(json_encode($file_upload_data));
-			}
+			
 		}
      }
     
