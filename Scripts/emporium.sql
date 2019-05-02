@@ -3,7 +3,11 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
+<<<<<<< HEAD
 -- Generation Time: May 02, 2019 at 01:34 PM
+=======
+-- Generation Time: May 02, 2019 at 11:46 AM
+>>>>>>> 42b991ded0719600e0b8343c0eb9df3a00733691
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
