@@ -22,10 +22,34 @@ class Product_model extends CI_Model
 		$data['id'] = $max_id;
 		return $this->db->insert('tab_product', $data);
 	}
+	
+	public function add_temp_product_details($data)
+	{
+		//SELECT MAX ID
+		$max_id = 1;
+		$this->db->select_max('id');
+		$query = $this->db->get('tab_temp_product');
+		$row = $query->row();
+		if (isset($row))
+		{
+			$max_id = $row->id + 1;
+		}
+		
+		$data['id'] = $max_id;
+		return $this->db->insert('tab_temp_product', $data);
+	}
 	public function get_max_product_id()
 	{
 		$this->db->select_max('id');
 		$query = $this->db->get('tab_product');
+		$row = $query->row();
+		return $row->id;
+	}
+	
+	public function get_max_temp_product_id()
+	{
+		$this->db->select_max('id');
+		$query = $this->db->get('tab_temp_product');
 		$row = $query->row();
 		return $row->id;
 	}
@@ -52,10 +76,34 @@ class Product_model extends CI_Model
 		return $this->db->insert('tab_stock_h', $data);
 	}
 	
+	public function add_temp_stock_h_details($data)
+	{
+		//SELECT MAX ID
+		$max_id = 1;
+		$this->db->select_max('id');
+		$query = $this->db->get('tab_temp_stock_h');
+		$row = $query->row();
+		if (isset($row))
+		{
+			$max_id = $row->id + 1;
+		}
+		
+		$data['id'] = $max_id;
+		return $this->db->insert('tab_temp_stock_h', $data);
+	}
+	
 	public function get_max_stock_h_id()
 	{
 		$this->db->select_max('id');
 		$query = $this->db->get('tab_stock_h');
+		$row = $query->row();
+		return $row->id;
+	}
+	
+	public function get_max_temp_stock_h_id()
+	{
+		$this->db->select_max('id');
+		$query = $this->db->get('tab_temp_stock_h');
 		$row = $query->row();
 		return $row->id;
 	}
@@ -82,6 +130,22 @@ class Product_model extends CI_Model
 		
 		$data['id'] = $max_id;
 		return $this->db->insert('tab_stock_d', $data);
+	}
+	
+	public function add_temp_stock_d_details($data)
+	{
+		//SELECT MAX ID
+		$max_id = 1;
+		$this->db->select_max('id');
+		$query = $this->db->get('tab_temp_stock_d');
+		$row = $query->row();
+		if (isset($row))
+		{
+			$max_id = $row->id + 1;
+		}
+		
+		$data['id'] = $max_id;
+		return $this->db->insert('tab_temp_stock_d', $data);
 	}
 	
 	public function update_stock_d_details($id,$productId, $data)
@@ -122,6 +186,27 @@ class Product_model extends CI_Model
 	$this->db->where('d.online_stock_qty > ', 0);
 	$this->db->join('tab_stock_h as h', 'h.product_id = p.id','left');
 	$this->db->join('tab_stock_d as d', 'd.stock_h_id = h.id','left');
+	$this->db->join('tab_category as cat', 'cat.category_index = p.category_index','left');
+	$this->db->join('tab_sub_category as sc', 'sc.sub_category_index = p.sub_category_index','left');
+	$this->db->join('tab_index as st', 'st.index_id = p.product_status_index','left');
+    if($order_by != ''){
+    $this->db->order_by('p.id',$order_by);
+    }
+    $query = $this->db->get();		
+    return $query->result_array();
+    }
+	
+	
+	public function temp_stock_details($order_by = '',$entCode)
+    {
+    $this->db->select('p.*,st.index_name as product_status_index_name,cat.category_index as category_index, cat.category_name as category_index_name,
+	sc.sub_category_index as sub_category_index, sc.sub_category_name as sub_category_index_name,h.id as producthId,h.product_batch,h.packets_in_box,
+	h.product_pack_date,h.product_exp_date,h.mrp,h.tax_precent,h.purchase_rate,h.sale_rate,h.purchase_qty,d.id as productdId, d.stock_qty,d.online_stock_qty, 
+	d.offline_stock_qty,d.transit_qty,d.created_datetime');
+	$this->db->from('tab_temp_product as p');
+	$this->db->where('p.ent_code', $entCode);
+	$this->db->join('tab_temp_stock_h as h', 'h.product_id = p.id','left');
+	$this->db->join('tab_temp_stock_d as d', 'd.stock_h_id = h.id','left');
 	$this->db->join('tab_category as cat', 'cat.category_index = p.category_index','left');
 	$this->db->join('tab_sub_category as sc', 'sc.sub_category_index = p.sub_category_index','left');
 	$this->db->join('tab_index as st', 'st.index_id = p.product_status_index','left');
@@ -245,7 +330,7 @@ class Product_model extends CI_Model
 	
 	public function get_product_category()
     {
-    $this->db->select('c.*,c.id as _id');
+    $this->db->select('c.*,c.category_index as _id');
 	$this->db->from('tab_category as c');
 	$query = $this->db->get();		
     return $query->result_array();
@@ -253,7 +338,7 @@ class Product_model extends CI_Model
 	
 	public function get_product_sub_category()
     {
-    $this->db->select('c.*,c.id as _id');
+    $this->db->select('c.*,c.sub_category_index as _id');
 	$this->db->from('tab_sub_category as c');
 	$query = $this->db->get();		
     return $query->result_array();
@@ -261,7 +346,7 @@ class Product_model extends CI_Model
 
 	public function get_uom_details()
     {
-    $this->db->select('i.*,um.*,i.id as _id');
+    $this->db->select('i.*,um.*,i.index_id as _id');
 	$this->db->from('tab_index as i');
 	$this->db->where('i.index_type','product_uom_index');
 	$this->db->join('tab_uom_mapping as um', 'um.index_id = i.index_id','left');
@@ -271,14 +356,12 @@ class Product_model extends CI_Model
 
 	public function get_uom_details_based_on_filters($productCategory,$productSubCategory)
     {
-    $this->db->select('i.index_name,i.id as _id');
+    $this->db->select('i.index_name,i.index_id as _id');
 	$this->db->from('tab_index as i');
 	$this->db->where('i.index_type','product_uom_index');
 	$this->db->join('tab_uom_mapping as um', 'um.index_id = i.index_id','left');
-	$this->db->join('tab_category as c', 'c.category_index = um.category_id','left');
-	$this->db->join('tab_sub_category as sc', 'sc.sub_category_index = um.sub_category_id','left');
-	$this->db->where('c.category_index',$productCategory);
-	$this->db->where('sc.sub_category_index',$productSubCategory);
+	$this->db->where('um.category_id',$productCategory);
+	$this->db->where('um.sub_category_id',$productSubCategory);
 	$query = $this->db->get();		
     return $query->result_array();
     }		
@@ -288,12 +371,12 @@ class Product_model extends CI_Model
     {
 	$this->db->where('stock_h_id', $stockhId);
     $this->db->update('tab_stock_d', $data);		
+    }	
+	
+	public function delete_records_from_temp_table($entCode)
+    {
+	$this->db->where('stock_h_id', $stockhId);
+    $this->db->update('tab_stock_d', $data);		
     }
-	
-	
-	
-	
-	
-	
 	
  }
