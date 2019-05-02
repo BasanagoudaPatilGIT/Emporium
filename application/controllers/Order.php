@@ -8,6 +8,7 @@ class Order extends CI_Controller {
 		parent::__construct();
 		$this->load->model('Order_model');
 		$this->load->model('Product_model');
+		$this->load->model('User_model');
 		
 		
 	}
@@ -25,8 +26,6 @@ class Order extends CI_Controller {
 					'id'=>$row['id'],
 					'entCode'=>$row['ent_code'],
 					'userId'=>$row['user_id'],
-					'userFullName'=>$row['user_full_name'],
-					'userAddress'=>$row['user_address'],
 					'userPhoneNo'=>$row['user_phone_no'],
 					'orderNumber'=>$row['order_number'],
 					'orderTotalAmt'=>$row['order_total_amount'],
@@ -37,6 +36,12 @@ class Order extends CI_Controller {
 					'orderViewStatus'=>$row['orderStatus'],
 					'orderViewStatusIndex'=>$row['order_view_status'],
 					'orderCreatedDatetime'=>$row['order_created_datetime'],
+					'userFullName'=>$row['user_full_name'],
+					'userAddress'=>$row['user_address'],
+					'userPhoneNo'=>$row['user_phone_no'],
+					'flatNo'=>$row['flat_no'],
+					'wing'=>$row['wing'],
+					'apartmentName'=>$row['apartment_name'],
 					
 				);
 				
@@ -78,12 +83,6 @@ class Order extends CI_Controller {
 					'id'=>$row['id'],
 					'entCode'=>$row['ent_code'],
 					'userId'=>$row['user_id'],
-					'userFullName'=>$row['user_full_name'],
-					'userAddress'=>$row['user_address'],
-					'userPhoneNo'=>$row['user_phone_no'],
-					'flatNo'=>$row['flat_no'],
-					'wing'=>$row['wing'],
-					'apartmentName'=>$row['apartment_name'],
 					'orderNumber'=>$row['order_number'],
 					'orderTotalAmt'=>$row['order_total_amount'],
 					'orderTaxAmt'=>$row['order_tax_amount'],
@@ -93,6 +92,12 @@ class Order extends CI_Controller {
 					'orderViewStatus'=>$row['orderStatus'],
 					'orderViewStatusIndex'=>$row['order_view_status'],
 					'orderCreatedDatetime'=>$row['order_created_datetime'],
+					'userFullName'=>$row['user_full_name'],
+					'userAddress'=>$row['user_address'],
+					'userPhoneNo'=>$row['user_phone_no'],
+					'flatNo'=>$row['flat_no'],
+					'wing'=>$row['wing'],
+					'apartmentName'=>$row['apartment_name'],
 				);
 				
 			
@@ -121,6 +126,9 @@ class Order extends CI_Controller {
 		//$entCode = 10002;
 		$data['auto_code'] = $this->Order_model->get_order_number($entCode);
 		$UOMDetails = $this->Product_model->get_uom_details();
+		$apartmentDetails = $this->Index_model->apartment_details($entCode);
+		$wingDetails = $this->Index_model->wing_details($entCode);
+		$flatDetails = $this->Index_model->flat_details($entCode);
 		$products = $this->Product_model->stock_details('ASC', $entCode);	
 		$orderNumber = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
 		$orderCount = $data['auto_code']['continues_count'];
@@ -162,6 +170,9 @@ class Order extends CI_Controller {
 			'orderCount' => $orderCount,
 			'productDetails' => $prod_details,
 			'uomDetails' => $UOMDetails,
+			'apartmentDetails' => $apartmentDetails,
+			'wingDetails' => $wingDetails,
+			'flatDetails' => $flatDetails,
 		);
 		
 		print_r(json_encode($order_data));

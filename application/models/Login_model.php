@@ -41,12 +41,15 @@ class Login_model extends CI_Model
 	
 	public function get_user_detail($userName,$userpassword)
 	{
-		$this->db->select('u.*,i.index_name,e.ent_name,e.ent_code');
+		$this->db->select('u.*,i.index_name,e.ent_name,e.ent_code,fl.flat_no,w.wing,a.apartment_name');
 		$this->db->from('tab_user as u');
 		$this->db->where('user_name', $userName);
 		$this->db->where('user_password', $userpassword);
 		$this->db->join('tab_index as i', 'i.index_id = u.user_designation_index','left');
 		$this->db->join('tab_entity as e', 'e.ent_code = u.ent_code','left');
+		$this->db->join('tab_flat_no as fl', 'fl.id = u.user_flat_id','left');
+		$this->db->join('tab_wing as w', 'w.id = fl.wing_id','left');
+		$this->db->join('tab_apartment as a', 'a.id = w.apartment_id','left');
 		$query = $this->db->get();
 		
 		return $query->row_array();

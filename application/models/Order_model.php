@@ -39,11 +39,14 @@ class Order_model extends CI_Model
 	
 	public function order_details($order_by = '',$entCode)
     {
-    $this->db->select('o.*,i.index_name as orderStatus,u.user_full_name,u.user_address,u.user_phone_no');
+    $this->db->select('o.*,i.index_name as orderStatus,u.user_full_name,u.user_address,u.user_phone_no,fl.flat_no,w.wing,a.apartment_name');
 	$this->db->from('tab_order_h as o');
 	$this->db->where('o.ent_code', $entCode);
 	$this->db->join('tab_user as u', 'u.id = o.user_id','left');
 	$this->db->join('tab_index as i', 'i.index_id = o.order_status_index','left');
+	$this->db->join('tab_flat_no as fl', 'fl.id = u.user_flat_id','left');
+	$this->db->join('tab_wing as w', 'w.id = fl.wing_id','left');
+	$this->db->join('tab_apartment as a', 'a.id = w.apartment_id','left');
     if($order_by != ''){
     $this->db->order_by('o.id',$order_by);
     }
@@ -53,12 +56,15 @@ class Order_model extends CI_Model
 	
 	public function order_details_by_status($order_by = '',$entCode,$orderStatus)
     {
-    $this->db->select('o.*,i.index_name as orderStatus,u.user_full_name,u.user_address,u.user_phone_no');
+    $this->db->select('o.*,i.index_name as orderStatus,u.user_full_name,u.user_address,u.user_phone_no,fl.flat_no,w.wing,a.apartment_name');
 	$this->db->from('tab_order_h as o');
 	$this->db->where('o.ent_code', $entCode);
 	$this->db->where('i.index_id', $orderStatus);
 	$this->db->join('tab_user as u', 'u.id = o.user_id','left');
 	$this->db->join('tab_index as i', 'i.index_id = o.order_status_index','left');
+	$this->db->join('tab_flat_no as fl', 'fl.id = u.user_flat_id','left');
+	$this->db->join('tab_wing as w', 'w.id = fl.wing_id','left');
+	$this->db->join('tab_apartment as a', 'a.id = w.apartment_id','left');
     if($order_by != ''){
     $this->db->order_by('o.id',$order_by);
     }

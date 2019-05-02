@@ -1,5 +1,4 @@
-<?php
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Index_model extends CI_Model
 {
 	public function __construct()
@@ -22,7 +21,7 @@ class Index_model extends CI_Model
 	
 	function all_product_stock_status()
     { 
-        $this->db->select('index');
+        $this->db->select('index as _id');
         $this->db->select('index_name');
         $this->db->from('tab_index');
         $this->db->where('index_type','product_stock_status_index');
@@ -34,7 +33,7 @@ class Index_model extends CI_Model
 	
 	function all_product_uom()
     { 
-        $this->db->select('index');
+        $this->db->select('index as _id');
         $this->db->select('index_name');
         $this->db->from('tab_index');
         $this->db->where('index_type','product_uom_index');
@@ -46,7 +45,7 @@ class Index_model extends CI_Model
 	
 	function user_status()
     { 
-        $this->db->select('index');
+        $this->db->select('index as _id');
         $this->db->select('index_name');
         $this->db->from('tab_index');
         $this->db->where('index_type','user_status_index');
@@ -58,7 +57,7 @@ class Index_model extends CI_Model
 	
 	function product_status()
     { 
-        $this->db->select('index');
+        $this->db->select('index as _id');
         $this->db->select('index_name');
         $this->db->from('tab_index');
         $this->db->where('index_type','user_status_index');
@@ -70,7 +69,7 @@ class Index_model extends CI_Model
 	
 	function user_designation($userDesignationIndex)
     { 
-        $this->db->select('index');
+        $this->db->select('index as _id');
         $this->db->select('index_name');
         $this->db->from('tab_index');
         $this->db->where('index_type','user_designation_index');
@@ -85,7 +84,7 @@ class Index_model extends CI_Model
 	
 	function user_gender()
     { 
-        $this->db->select('index');
+        $this->db->select('index as _id');
         $this->db->select('index_name');
         $this->db->from('tab_index');
         $this->db->where('index_type','user_gender_index');
@@ -97,7 +96,7 @@ class Index_model extends CI_Model
 	
 	function product_category_based_on_param($productCategoryName)
     { 
-        $this->db->select('category_index');
+        $this->db->select('category_index as _id');
         $this->db->from('tab_category');
         $this->db->where('category_name',$productCategoryName);
 		$this->db->order_by('category_name', 'ASC');
@@ -108,7 +107,7 @@ class Index_model extends CI_Model
 	
 	function product_sub_category_based_on_param($productSubCategoryName,$categoryIndexId)
     { 
-        $this->db->select('sub_category_index');
+        $this->db->select('sub_category_index as _id');
         $this->db->from('tab_sub_category');
         $this->db->where('sub_category_name',$productSubCategoryName);
         $this->db->where('category_index_id',$categoryIndexId);
@@ -116,6 +115,27 @@ class Index_model extends CI_Model
         $query = $this->db->get();
 
         return $query->row_array();
+    }
+	
+	function apartment_details($entCode)
+    { 
+    $sql = "SELECT *,id as _id FROM tab_apartment where ent_code in (1,?)";
+    $query = $this->db->query($sql,array($entCode,'Active'));
+    return $query->result_array();
+    }
+	
+	function wing_details($entCode)
+    { 
+    $sql = "SELECT *,id as _id FROM tab_wing where ent_code in (1,?)";
+    $query = $this->db->query($sql,array($entCode,'Active'));
+    return $query->result_array();
+    }
+	
+	function flat_details($entCode)
+    { 
+    $sql = "SELECT *,id as _id FROM tab_flat_no where ent_code in (1,?)";
+    $query = $this->db->query($sql,array($entCode,'Active'));
+    return $query->result_array();
     }
 	
 }

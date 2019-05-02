@@ -1,247 +1,230 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed');
-
-class User extends CI_Controller {
+<?php class User extends CI_Controller {
 
 	public function __construct()
 	{
 		// Call the Model constructor
 		parent::__construct();
 		
-		if (!isset( $_SESSION['IS_LOGGED_IN'] )) { 
-			redirect(base_url()); 
-		}
-		
 		$this->load->model('User_model');
-		$this->load->model('Combo_model');	
+		$this->load->model('Entity_model');
+		$this->load->model('Index_model');	
 		$this->load->library('encryption');
 	}
 	
-	public function index()
+	public function userDetials()
 	{
-		redirect(base_url().'Users/userlist'); 
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
+		$allUserDetails = $this->User_model->get_all_employee_details($entCode);
+		$UserCount = $this->User_model->user_count($entCode);
+			
+		if($UserCount > 1){
+		$user_details[] = array(
+					'allUserDetails' =>$allUserDetails,
+					'addNewUser' => 'New User',
+					'viewUser' =>'view User',
+				);
+		
+		
+		//print_r($required_index);
+		print_r(json_encode($user_details));
+		}else{
+		$user_details[] = array(
+					'' =>'',
+				);
+		
+		
+		//print_r($required_index);
+		print_r(json_encode($user_details));
+		}
+		
 	}
 	
-	
-	public function adduser()
+	public function addNewUser()
 	{
-		$data['cbo_user_type'] = $this->Combo_model->cbo_designation();
-		$data['cbo_speciality'] = $this->Combo_model->cbo_speciality();
-	    // Field Validation
-		$this->form_validation->set_rules('firstname','First Name','required');
-		$this->form_validation->set_rules('lastname','Last Name','required');
-		$this->form_validation->set_rules('email_id','Email Id','required|valid_email|is_unique[tab_registration.email_id]');
-		$this->form_validation->set_rules('password','Passowrd','required|max_length[12]|min_length[8]');
-		$this->form_validation->set_rules('cpassword','Confirm Password','required|max_length[12]|min_length[8]|matches[password]');
-		$this->form_validation->set_rules('mobileno','Phone Number','required');
-		$this->form_validation->set_rules('cbo_user_type','User Type','required');
-		$this->form_validation->set_rules('cbo_speciality','Speciality','required');
-		$this->form_validation->set_rules('cbo_gender','Gender','required');
-		$this->form_validation->set_rules('address','Address','required');
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10001;
+		//$userDesignationIndex = 10015;
+		$data['auto_code'] = $this->User_model->get_user_number($entCode);
+		$userId = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
+		$userNum = $data['auto_code']['continues_count'];
+		$userGender=  $this->Index_model->user_gender();
 		
 		
-		if(($this->form_validation->run())==false)
-		{
-		$data['title'] = "HealthCare - Add Users";
-		$this->load->view('Home/header',$data);
-		$this->load->view('Home/menu');
-		$this->load->view('Users/adduser',$data);
-		$this->load->view('Home/footer');
-		//print_r("hi");
+
+		if (count($userGender) >0) {
+			foreach($userGender as $row)
+				$all_userGender[] = array(
+					'index'=>$row['index'],
+					'index_name' =>$row['index_name'],
+				);
+		}			
+			
+		$user_details[] = array(
+					'allUserGender'=>$all_userGender,
+					'userId' =>$userId,
+					'userNum' =>$userNum,
+					'addUser' =>'addUser'
+				);
+		
+		
+		//print_r($required_index);
+		print_r(json_encode($user_details));
+	}
+	public function addUser()
+	{
+			
+		$entCode = $this->input->post('entCode');
+		$userNum= $this->input->post('userNum');
+		//$entCode = 10002;
+		
+		$userPassword = base64_encode($this->input->post('userPassword'));
+		/* $userGenderIndex=10019;
+		$userAge=28;
+		$userDOB="1990-04-01";
+		$userPhoneNo="9087654321";
+		$userEmailId="vijay@gmail.com";
+		$userAddress="Address";
+		$userAddressProf="Address proof";
+		$userIMEI="645678765677879";
+		$userDesignationIndex="10017"; */
+				
+		
+		$imageString ='';
+		//$imageString =$this->input->post('imageString');
+		
+		//Conveting of string to image need to be implemented.
+		
+		if($imageString == ''){
+		$userPictureName ='Capture.jpg';	
+		}else{
+		$userPictureName = $this->input->post('userPictureName');
 		}
-		else
-		{
-		
-		//UPLOAD STARTS
-			$config['upload_path'] = './upload/Profile/';
-			$config['allowed_types'] = 'jpg|png|jpeg';
-			$config['overwrite'] = TRUE;
-			//$config['max_size'] = '';
-			
-			$this->load->library('upload', $config);
-			
-			$displaypicture ='Capture.jpg';
-			//echo($displaypicture);
-			if( !$this->upload->do_upload('displaypicture') ){
-				print_r($this->upload->display_errors());
-			}else{
-				$displaypicture = $_FILES['displaypicture']['name'];
-			}
-			$password = base64_encode($this->input->post('password'));
 		$data =array
 			(
-				'status'=>'Active',
-				'user_type'=>$this->input->post('cbo_user_type'),
-				'speciality'=>$this->input->post('cbo_speciality'),
-				'gender'=>$this->input->post('cbo_gender'),
-				'first_name'=>$this->input->post('firstname'),
-				'middle_name'=>$this->input->post('middlename'),
-				'last_name'=>$this->input->post('lastname'),
-				'email_id'=>$this->input->post('email_id'),
-				'mobile_no'=>$this->input->post('mobileno'),
-				'password'=>$password,
-				'address'=>$this->input->post('address'),
-				'img_name'=>$displaypicture
+				'ent_code'=>$this->input->post('entCode'),
+				'user_full_name'=>$this->input->post('userFullName'),
+				'user_name'=>$this->input->post('userName'),
+				'user_password'=>$userPassword,
+				'user_gender_index'=>$this->input->post('userGenderIndex'),
+				'user_age'=>$this->input->post('userAge'),
+				'user_dob'=>$this->input->post('userDOB'),
+				'user_phone_no'=>$this->input->post('userPhoneNo'),
+				'user_email_id'=>$this->input->post('userEmailId'),
+				'user_flat_id'=>$this->input->post('userFlatId'),	
+				'user_address'=>$this->input->post('userAddress'),	
+				//'user_address_prof'=>$this->input->post('userAddressProf'),	
+				'user_imei'=>$this->input->post('userIMEI'),	
+				'user_designation_index'=>10018,
+				'user_status_index'=>'10013',
+				'user_image'=>$userPictureName,
+				'user_id'=>$this->input->post('userId'),
 				
 			);				
 			$this->User_model->add_record($data);
 			
-			$this->session->set_flashdata('msg','<div class="alert alert-success alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">x</button>
-                    
-                    <i class="icon fa fa-check"></i> Record Added Successfully.
-                  </div>
-				  ');
+			$datestring = date('Y-m-d');			
+			$data = array(
+				'last_updated'=>mdate($datestring),
+				'continues_count' => (int)$empNum + 1 
+			);
 			
-			redirect(base_url().'User/userlist'); 
+			$this->User_model->incriment_user_no($data,$entCode);
+			
+			$new_user_added[] = array('message' => 'New User added successfully');
 
-		}
+			print_r(json_encode($new_user_added));
+			 
 	}
 	
-	
-	
-	public function updateuser()
+	public function viewUser()
 	{
-	
-		$id = $this->uri->segment(3);
-	
-		if (empty($id))
-		{
-			show_404();
+		$entCode = $this->input->post('entCode');
+		$userDesignationIndex = $this->input->post('userDesignationIndex');
+		$userId = $this->input->post('userId');
+		/*$entCode = 10001;
+		$userDesignationIndex = 10015;
+		$empId = 1;*/
+		
+		$userDesignation =  $this->Index_model->user_designation($userDesignationIndex);
+		$userGender=  $this->Index_model->user_gender();
+		
+		$eachUserDetails = $this->Employee_model->get_employee_details_by_id($userId);
+		
+		$each_UserDetails[] = array(
+				'entCode'=>$eachUserDetails['ent_code'],
+				'userName'=>$eachUserDetails['user_name'],
+				'userGender'=>$eachUserDetails['user_gender'],
+				'userAge'=>$eachUserDetails['user_age'],
+				'userDOB'=>$eachUserDetails['user_dob'],
+				'userEmailId'=>$eachUserDetails['user_email_id'],
+				'userIMEI'=>$eachUserDetails['user_imei'],	
+				'userDesignation'=>$eachUserDetails['user_designation'],
+				'userStatus'=>$eachUserDetails['user_status'],
+				'userImage'=>$eachUserDetails['user_image'],
+				'userId'=>$eachUserDetails['user_emp_id'],
+				'userFullName'=>$eachUserDetails['user_full_name'],
+				'userAddress'=>$eachUserDetails['user_address'],
+				'userPhoneNo'=>$eachUserDetails['user_phone_no'],
+				'flatNo'=>$eachUserDetails['flat_no'],
+				'wing'=>$eachUserDetails['wing'],
+				'apartmentName'=>$eachUserDetails['apartment_name'],
+				);
+		
+		if (count($userDesignation) >0) {
+			foreach($userDesignation as $row)
+				$user_designation[] = array(
+					'index'=>$row['index'],
+					'index_name' =>$row['index_name'],
+				);
 		}
-		
-		$data['cbo_user_type'] = $this->Combo_model->cbo_designation();
-		$data['cbo_speciality'] = $this->Combo_model->cbo_speciality();
-		//GET DATA FROM TABLE
-		$data['user_row'] = $this->User_model->get_record_by_id($id);
-		
-	    // Field Validation
-		$this->form_validation->set_rules('firstname','First Name','required');
-		$this->form_validation->set_rules('lastname','Last Name','required');
-		$this->form_validation->set_rules('emailid','Email Id','required|valid_email');
-		$this->form_validation->set_rules('mobileno','Phone Number','required');
-		$this->form_validation->set_rules('cbo_user_type','User Type','required');
-		$this->form_validation->set_rules('address','Address','required');
-		$this->form_validation->set_rules('cbo_user_type','User Type','required');
-		$this->form_validation->set_rules('cbo_speciality','Speciality','required');
-		$this->form_validation->set_rules('cbo_gender','Gender','required');
-		
-		
-		if(($this->form_validation->run())==false)
-		{
-		$data['title'] = "HealthCare - Update Users";
-		$this->load->view('Home/header',$data);
-		$this->load->view('Home/menu');
-		$this->load->view('Users/updateuser',$data);
-		$this->load->view('Home/footer');
-		}
-		else
-		{
-		
-		//UPLOAD STARTS
-			$config['upload_path'] = './upload/Profile/';
-			$config['allowed_types'] = 'jpg|png|jpeg';
-			$config['overwrite'] = TRUE;
-			//$config['max_size'] = '';
+
+		if (count($userGender) >0) {
+			foreach($userGender as $row)
+				$all_userGender[] = array(
+					'index'=>$row['index'],
+					'index_name' =>$row['index_name'],
+				);
+		}			
 			
-			$this->load->library('upload', $config);
-			
-			//IMAGE UPLOAD
-			$displaypicture =$this->input->post('displaypicture_hidden');
-			if( !$this->upload->do_upload('displaypicture') ){
-				//echo "n";
-				print_r($this->upload->display_errors());
-			}else{
-				//echo "y";
-				$displaypicture = $_FILES['displaypicture']['name'];
-			}
+		$user_details[] = array(
+					'eachUserDetails'=>$each_UserDetails,
+					'allUserGender'=>$all_userGender,
+					'UserDesignation' =>$user_designation,
+					'UpdateUser' =>'Update User',
+				);
 		
-			
+		
+		//print_r($required_index);
+		print_r(json_encode($user_details));
+	}
+	
+	public function updateUser()
+	{
+		$entCode = $this->input->post('entCode');
+		$userId = $this->input->post('userId');
+		$userStatus=  $this->Index_model->user_status();
+		/*$entCode = 10001;
+		$userDesignationIndex = 10015;
+		$empId = 1;*/
+		
 		$data =array
 			(
-				'status'=>$this->input->post('cbo_status'),
-				'speciality'=>$this->input->post('cbo_speciality'),
-				'gender'=>$this->input->post('cbo_gender'),
-				'user_type'=>$this->input->post('cbo_user_type'),
-				'first_name'=>$this->input->post('firstname'),
-				'middle_name'=>$this->input->post('middlename'),
-				'last_name'=>$this->input->post('lastname'),
-				'email_id'=>$this->input->post('emailid'),
-				'mobile_no'=>$this->input->post('mobileno'),
-				'ent_id'=>$this->input->post('entid'),
-				'address'=>$this->input->post('address'),
-				'img_name'=>$displaypicture,
+				'user_full_name'=>$this->input->post('userFullName'),
+				'user_dob'=>$this->input->post('userDOB'),
+				'user_phone_no'=>$this->input->post('userPhoneNo'),
+				'user_email_id'=>$this->input->post('userEmailId'),
+				'user_address'=>$this->input->post('userAddress'),	
+				//'user_address_prof'=>$this->input->post('userAddressProf'),	
+				'user_imei'=>$this->input->post('userIMEI'),	
+				'user_status_index'=>$this->input->post('userStatusIndex'),
+				'user_image'=>$userPictureName
 				
-			);		
-			//print_r($data);		
-			$this->User_model->edit_record($id,$data);
+			);				
+			$this->User_model->update_record($data,$userId);
 			
-			$this->session->set_flashdata('msg','<div class="alert alert-success alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">x</button>
-                    
-                    <i class="icon fa fa-check"></i> Record Updated Successfully.
-                  </div>
-				  ');
-			
-			redirect(base_url().'User/userlist'); 
+			$update_user[] = array('message' => 'User updated successfully');
 
-		}
+			print_r(json_encode($update_user));
 	}
-	
-	public function userlist()
-	{
-		//GET DATA FROM TABLE
-		$order_by = 'DESC';	
-		//$usertype = 'Admin';	
-		$data['user'] = $this->User_model->view_record('');
-		
-		$data['title'] = "HealthCare - Users List";
-		$this->load->view('Home/header',$data);
-		$this->load->view('Home/menu');
-		$this->load->view('Users/userlist',$data);
-		$this->load->view('Home/footer');	
-	}
-	
-	public function delete_record($id=0)
-	{
-		$id = $this->uri->segment(3);
-	
-		if ($id==0)
-		{
-			$this->index();			
-		}	
-				
-		$this->User_model->delete_record($id);
-		
-		
-		$this->session->set_flashdata('msg','<div class="alert alert-success alert-dismissible">
-                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">x</button>
-                    
-                    <i class="icon fa fa-trash-o"></i> Record Deleted Successfully.
-                  </div>
-				  ');
-		
-		redirect(base_url().'User/userlist'); 
-	}
-	
-	public function user_view()
-	{
-		$id = $this->uri->segment(3);
-	
-		if (empty($id))
-		{
-			show_404();
-		}
-		
-		//GET DATA FROM TABLE
-		$data['user_row'] = $this->User_model->get_record_by_id($id);
-		
-		$data['title'] = "HealthCare - view Users";
-		$this->load->view('Home/header',$data);
-		$this->load->view('Home/menu');
-		$this->load->view('Users/userview',$data);
-		$this->load->view('Home/footer');	
-	}
-	
-	
-	
 }
