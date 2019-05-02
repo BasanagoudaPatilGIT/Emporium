@@ -245,7 +245,7 @@ class Product_model extends CI_Model
 	
 	public function get_product_category()
     {
-    $this->db->select('c.*,c.id as _id');
+    $this->db->select('c.*,c.category_index as _id');
 	$this->db->from('tab_category as c');
 	$query = $this->db->get();		
     return $query->result_array();
@@ -253,7 +253,7 @@ class Product_model extends CI_Model
 	
 	public function get_product_sub_category()
     {
-    $this->db->select('c.*,c.id as _id');
+    $this->db->select('c.*,c.sub_category_index as _id');
 	$this->db->from('tab_sub_category as c');
 	$query = $this->db->get();		
     return $query->result_array();
@@ -261,7 +261,7 @@ class Product_model extends CI_Model
 
 	public function get_uom_details()
     {
-    $this->db->select('i.*,um.*,i.id as _id');
+    $this->db->select('i.*,um.*,i.index_id as _id');
 	$this->db->from('tab_index as i');
 	$this->db->where('i.index_type','product_uom_index');
 	$this->db->join('tab_uom_mapping as um', 'um.index_id = i.index_id','left');
@@ -271,14 +271,12 @@ class Product_model extends CI_Model
 
 	public function get_uom_details_based_on_filters($productCategory,$productSubCategory)
     {
-    $this->db->select('i.index_name,i.id as _id');
+    $this->db->select('i.index_name,i.index_id as _id');
 	$this->db->from('tab_index as i');
 	$this->db->where('i.index_type','product_uom_index');
 	$this->db->join('tab_uom_mapping as um', 'um.index_id = i.index_id','left');
-	$this->db->join('tab_category as c', 'c.category_index = um.category_id','left');
-	$this->db->join('tab_sub_category as sc', 'sc.sub_category_index = um.sub_category_id','left');
-	$this->db->where('c.category_index',$productCategory);
-	$this->db->where('sc.sub_category_index',$productSubCategory);
+	$this->db->where('um.category_id',$productCategory);
+	$this->db->where('um.sub_category_id',$productSubCategory);
 	$query = $this->db->get();		
     return $query->result_array();
     }		
@@ -288,12 +286,6 @@ class Product_model extends CI_Model
     {
 	$this->db->where('stock_h_id', $stockhId);
     $this->db->update('tab_stock_d', $data);		
-    }
-	
-	
-	
-	
-	
-	
+    }	
 	
  }

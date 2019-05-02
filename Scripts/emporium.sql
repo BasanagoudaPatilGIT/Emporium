@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Apr 30, 2019 at 01:08 PM
+-- Generation Time: May 02, 2019 at 11:46 AM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -209,7 +209,8 @@ INSERT INTO `tab_index` (`id`, `index_id`, `index_type`, `index_name`, `is_valid
 (20, 10020, 'user_gender_index', 'Female', 1),
 (21, 10021, 'user_gender_index', 'Other', 1),
 (22, 10022, 'invoice_status_index', 'Billed', 1),
-(23, 10023, 'invoice_status_index', 'Cancelled', 1);
+(23, 10023, 'invoice_status_index', 'Cancelled', 1),
+(24, 10024, 'product_uom_index', 'Box', 1);
 
 -- --------------------------------------------------------
 
@@ -427,7 +428,12 @@ CREATE TABLE IF NOT EXISTS `tab_uom_mapping` (
 INSERT INTO `tab_uom_mapping` (`id`, `index_id`, `category_id`, `sub_category_id`) VALUES
 (1, 10008, 11001, 20001),
 (2, 10009, 11001, 20001),
-(3, 10010, 11001, 20002);
+(3, 10010, 11001, 20002),
+(4, 10008, 11002, 20003),
+(5, 10009, 11002, 20003),
+(6, 10011, 11002, 20004),
+(7, 10012, 11002, 20004),
+(8, 10024, 11002, 20004);
 
 -- --------------------------------------------------------
 
