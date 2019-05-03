@@ -205,6 +205,7 @@ class Product_model extends CI_Model
 	d.offline_stock_qty,d.transit_qty,d.created_datetime');
 	$this->db->from('tab_temp_product as p');
 	$this->db->where('p.ent_code', $entCode);
+	$this->db->where('p.upload_status_id', 0);
 	$this->db->join('tab_temp_stock_h as h', 'h.product_id = p.id','left');
 	$this->db->join('tab_temp_stock_d as d', 'd.stock_h_id = h.id','left');
 	$this->db->join('tab_category as cat', 'cat.category_index = p.category_index','left');
@@ -373,10 +374,29 @@ class Product_model extends CI_Model
     $this->db->update('tab_stock_d', $data);		
     }	
 	
-	public function delete_records_from_temp_table($entCode)
+	public function delete_records_from_tab_temp_product($entCode)
     {
-	$this->db->where('stock_h_id', $stockhId);
-    $this->db->update('tab_stock_d', $data);		
+	$this->db->where('ent_code', $entCode);
+	return $this->db->delete('tab_temp_product');	
+    }
+	
+	public function delete_records_from_tab_temp_stock_h($entCode)
+    {
+	$this->db->where('ent_code', $entCode);	
+	return $this->db->delete('tab_temp_stock_h');	
+    }
+	
+	public function delete_records_from_tab_temp_stock_d($entCode)
+    {
+	$this->db->where('ent_code', $entCode);
+	return $this->db->delete('tab_temp_stock_d');	
+    }
+	
+	
+	public function update_stock_movement_details($data, $productDID)
+    {
+	$this->db->where('d.id', $productDID);
+    $this->db->update('tab_stock_d as d', $data);		
     }
 	
  }

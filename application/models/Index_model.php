@@ -8,7 +8,7 @@ class Index_model extends CI_Model
 	
 	function all_order_status()
     { 
-        $this->db->select('index');
+        $this->db->select('index_id as _id');
         $this->db->select('index_name');
         $this->db->from('tab_index');
         $this->db->where('index_type','order_status_index');
@@ -21,7 +21,7 @@ class Index_model extends CI_Model
 	
 	function all_product_stock_status()
     { 
-        $this->db->select('index as _id');
+        $this->db->select('index_id as _id');
         $this->db->select('index_name');
         $this->db->from('tab_index');
         $this->db->where('index_type','product_stock_status_index');
@@ -33,7 +33,7 @@ class Index_model extends CI_Model
 	
 	function all_product_uom()
     { 
-        $this->db->select('index as _id');
+        $this->db->select('index_id as _id');
         $this->db->select('index_name');
         $this->db->from('tab_index');
         $this->db->where('index_type','product_uom_index');
@@ -43,9 +43,18 @@ class Index_model extends CI_Model
         return $query->result_array();
     }
 	
+	function get_uom_index_by_name($uom)
+    { 
+        $this->db->select('index_id as _id');
+        $this->db->from('tab_index');
+        $this->db->where('index_name',$uom);
+        $query = $this->db->get();
+		return $query->row_array();
+    }
+	
 	function user_status()
     { 
-        $this->db->select('index as _id');
+        $this->db->select('index_id as _id');
         $this->db->select('index_name');
         $this->db->from('tab_index');
         $this->db->where('index_type','user_status_index');
@@ -57,7 +66,7 @@ class Index_model extends CI_Model
 	
 	function product_status()
     { 
-        $this->db->select('index as _id');
+        $this->db->select('index_id as _id');
         $this->db->select('index_name');
         $this->db->from('tab_index');
         $this->db->where('index_type','user_status_index');
@@ -69,14 +78,14 @@ class Index_model extends CI_Model
 	
 	function user_designation($userDesignationIndex)
     { 
-        $this->db->select('index as _id');
+        $this->db->select('index_id as _id');
         $this->db->select('index_name');
         $this->db->from('tab_index');
         $this->db->where('index_type','user_designation_index');
 		if($userDesignationIndex == '10016'){
-		$this->db->where('index','10017');	
+		$this->db->where('index_id','10017');	
 		}
-		$this->db->order_by('index', 'ASC');
+		$this->db->order_by('index_id', 'ASC');
         $query = $this->db->get();
 
        return $query->result_array();
@@ -84,7 +93,7 @@ class Index_model extends CI_Model
 	
 	function user_gender()
     { 
-        $this->db->select('index as _id');
+        $this->db->select('index_id as _id');
         $this->db->select('index_name');
         $this->db->from('tab_index');
         $this->db->where('index_type','user_gender_index');

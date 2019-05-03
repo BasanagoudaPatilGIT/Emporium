@@ -26,7 +26,6 @@ class Order extends CI_Controller {
 					'id'=>$row['id'],
 					'entCode'=>$row['ent_code'],
 					'userId'=>$row['user_id'],
-					'userPhoneNo'=>$row['user_phone_no'],
 					'orderNumber'=>$row['order_number'],
 					'orderTotalAmt'=>$row['order_total_amount'],
 					'orderTaxAmt'=>$row['order_tax_amount'],
@@ -75,8 +74,11 @@ class Order extends CI_Controller {
 		//$orderStatus = 10002;
 		//$entCode = 10002;
 		$orderStatusDetails = $this->Order_model->get_order_status_details();
-		$orders = $this->Order_model->order_details_by_status('ASC', $entCode,$orderStatus);				
-		
+		if($OrderStatus != 10025){
+		$orders = $this->Order_model->order_details_by_status('ASC', $entCode,$orderStatus);	
+		}else{
+			$orders = $this->Order_model->order_details('ASC', $entCode);
+		}
 		if (count($orders) >0) {
 			foreach($orders as $row)
 				$all_order[] = array(

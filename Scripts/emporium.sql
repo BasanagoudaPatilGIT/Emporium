@@ -3,11 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
-<<<<<<< HEAD
--- Generation Time: May 02, 2019 at 01:34 PM
-=======
--- Generation Time: May 02, 2019 at 11:46 AM
->>>>>>> 42b991ded0719600e0b8343c0eb9df3a00733691
+-- Generation Time: May 03, 2019 at 01:30 PM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -35,7 +31,8 @@ USE `emporium`;
 CREATE TABLE IF NOT EXISTS `tab_apartment` (
   `id` int(10) NOT NULL,
   `apartment_name` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
-  UNIQUE KEY `id` (`id`)
+  UNIQUE KEY `id` (`id`),
+  KEY `apid` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -65,7 +62,8 @@ CREATE TABLE IF NOT EXISTS `tab_bill_d` (
   `tax_percent` double(65,4) NOT NULL,
   `sale_rate` double(65,4) NOT NULL,
   `product_status_index` int(10) NOT NULL,
-  UNIQUE KEY `id` (`id`)
+  UNIQUE KEY `id` (`id`),
+  KEY `bhid` (`bill_h_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -94,15 +92,18 @@ CREATE TABLE IF NOT EXISTS `tab_bill_h` (
   `bill_created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `order_id` int(10) NOT NULL,
   `bill_status_index` int(10) NOT NULL,
-  PRIMARY KEY (`id`)
+  `payment_status` int(10) NOT NULL,
+  `payment_mode` int(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `tbhid` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `tab_bill_h`
 --
 
-INSERT INTO `tab_bill_h` (`id`, `ent_code`, `user_id`, `bill_number`, `bill_total_amount`, `bill_tax_amount`, `delivery_charges`, `bill_net_amount`, `bill_created_datetime`, `order_id`, `bill_status_index`) VALUES
-(1, '10002', 6, '#In-10002130001', 1600.0000, 20.0000, 0.0000, 1620.0000, '2019-04-30 10:59:35', 0, 10022);
+INSERT INTO `tab_bill_h` (`id`, `ent_code`, `user_id`, `bill_number`, `bill_total_amount`, `bill_tax_amount`, `delivery_charges`, `bill_net_amount`, `bill_created_datetime`, `order_id`, `bill_status_index`, `payment_status`, `payment_mode`) VALUES
+(1, '10002', 6, '#In-10002130001', 1600.0000, 20.0000, 0.0000, 1620.0000, '2019-04-30 10:59:35', 0, 10022, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -115,7 +116,8 @@ CREATE TABLE IF NOT EXISTS `tab_category` (
   `category_index` int(10) NOT NULL,
   `category_name` varchar(80) COLLATE utf8_unicode_ci NOT NULL,
   `is_valid` int(10) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `ciid` (`category_index`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -139,7 +141,8 @@ CREATE TABLE IF NOT EXISTS `tab_entity` (
   `emp_limit` int(10) NOT NULL,
   `created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `service_expiry_date` date NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `teid` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -159,7 +162,8 @@ CREATE TABLE IF NOT EXISTS `tab_flat_no` (
   `id` int(10) NOT NULL,
   `flat_no` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `wing_id` int(10) NOT NULL,
-  UNIQUE KEY `id` (`id`)
+  UNIQUE KEY `id` (`id`),
+  KEY `wiid` (`wing_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -183,7 +187,8 @@ CREATE TABLE IF NOT EXISTS `tab_index` (
   `index_type` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `index_name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `is_valid` int(10) NOT NULL,
-  UNIQUE KEY `id` (`id`)
+  UNIQUE KEY `id` (`id`),
+  KEY `iiid` (`index_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -214,7 +219,10 @@ INSERT INTO `tab_index` (`id`, `index_id`, `index_type`, `index_name`, `is_valid
 (21, 10021, 'user_gender_index', 'Other', 1),
 (22, 10022, 'invoice_status_index', 'Billed', 1),
 (23, 10023, 'invoice_status_index', 'Cancelled', 1),
-(24, 10024, 'product_uom_index', 'Box', 1);
+(24, 10024, 'product_uom_index', 'Box', 1),
+(25, 10025, 'order_status_index', 'All', 1),
+(26, 10026, 'stock_movement_index', 'Offline To Online', 1),
+(27, 10027, 'stock_movement_index', 'Online To Offline', 1);
 
 -- --------------------------------------------------------
 
@@ -237,7 +245,8 @@ CREATE TABLE IF NOT EXISTS `tab_order_d` (
   `product_stock_status_index` int(10) NOT NULL,
   `row_invalidated` int(10) NOT NULL,
   `status_updated_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `ohid` (`order_h_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -265,7 +274,8 @@ CREATE TABLE IF NOT EXISTS `tab_order_h` (
   `order_status_index` int(10) NOT NULL,
   `order_view_status` int(10) NOT NULL,
   `order_created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `tohid` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -292,7 +302,8 @@ CREATE TABLE IF NOT EXISTS `tab_product` (
   `sub_category_index` int(10) NOT NULL,
   `created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `stock_qty_limit` int(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `tpid` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -300,9 +311,9 @@ CREATE TABLE IF NOT EXISTS `tab_product` (
 --
 
 INSERT INTO `tab_product` (`id`, `ent_code`, `product_code`, `product_name`, `product_description`, `product_status_index`, `category_index`, `sub_category_index`, `created_datetime`, `stock_qty_limit`) VALUES
-(1, '10002', '#P10002-101', 'Tomato', '', 10013, 11001, 20001, '2019-04-14 13:12:23', 50000),
-(2, '10002', '#P10002-102', 'Potato', '', 10013, 11001, 20001, '2019-04-14 13:29:43', 250),
-(3, '10002', '#P10002-103', 'Muli', '', 10013, 11001, 20002, '2019-04-14 13:29:43', 100);
+(1, '10002', '#P10002-104', 'Brinjal', 'Brinjal is a very beautiful vegetable.\nit dark purple in colour.In northern sides people eat baingan ka bharta which is very tasty.brinjal is mostly grown in India and sri Lanka.brinjal is very good for health.\nbrinjal is very tasty.', 10013, 11001, 20001, '2019-05-03 16:35:31', 10000),
+(2, '10002', '#P10002-105', 'broccoli', 'Broccoli is popular and widely eaten. It has a distinctive ‘mustardy’ taste and well known health benefits. The stalks, buds and most of the leaves of broccoli are edible.', 10013, 11001, 20001, '2019-05-03 16:35:31', 10000),
+(3, '10002', '#P10002-106', 'Puha', 'Traditionally it was one of the staple green vegetables of the Maori and is still eaten today. Puha can be found growing wild. The smooth leaved puha is the most popular, however, the slightly bitter and prickly leaved puha is also eaten.', 10013, 11001, 20002, '2019-05-03 16:35:31', 15);
 
 -- --------------------------------------------------------
 
@@ -317,7 +328,8 @@ CREATE TABLE IF NOT EXISTS `tab_series` (
   `continues_count` int(10) NOT NULL,
   `last_updated` datetime NOT NULL,
   `ent_code` int(10) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `tsid` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -326,7 +338,7 @@ CREATE TABLE IF NOT EXISTS `tab_series` (
 
 INSERT INTO `tab_series` (`id`, `series_name`, `series_id`, `continues_count`, `last_updated`, `ent_code`) VALUES
 (1, 'Entity', 'Ent', 10003, '2019-04-12 00:00:00', 0),
-(2, 'Product Code', '#P', 104, '2019-04-14 07:59:43', 10002),
+(2, 'Product Code', '#P', 107, '2019-05-03 11:05:31', 10002),
 (3, 'Employee Code', '#E', 1001, '2019-04-12 00:00:00', 10002),
 (4, 'User Id', '#U', 111003, '2019-04-12 00:00:00', 10002),
 (5, 'Orders', '#O', 120001, '2019-04-12 00:00:00', 10002),
@@ -345,9 +357,10 @@ CREATE TABLE IF NOT EXISTS `tab_stock_d` (
   `online_stock_qty` int(10) NOT NULL,
   `offline_stock_qty` int(10) NOT NULL,
   `transit_qty` int(10) NOT NULL,
-  `created_datetime` datetime NOT NULL,
+  `created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `product_id` int(10) DEFAULT NULL,
-  UNIQUE KEY `id` (`id`)
+  UNIQUE KEY `id` (`id`),
+  KEY `shid` (`stock_h_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -355,7 +368,9 @@ CREATE TABLE IF NOT EXISTS `tab_stock_d` (
 --
 
 INSERT INTO `tab_stock_d` (`id`, `stock_h_id`, `stock_qty`, `online_stock_qty`, `offline_stock_qty`, `transit_qty`, `created_datetime`, `product_id`) VALUES
-(2, 1, 190000, 140000, 50000, 10000, '2019-04-22 00:00:00', 1);
+(1, 1, 15000, 10000, 5000, 0, '2019-05-03 16:35:31', 1),
+(2, 2, 20000, 15000, 5000, 0, '2019-05-03 16:35:31', 2),
+(3, 3, 25, 15, 10, 0, '2019-05-03 16:35:31', 3);
 
 -- --------------------------------------------------------
 
@@ -376,7 +391,8 @@ CREATE TABLE IF NOT EXISTS `tab_stock_h` (
   `sale_rate` double(65,4) NOT NULL,
   `purchase_qty` int(10) NOT NULL,
   `created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `pid` (`product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -384,7 +400,9 @@ CREATE TABLE IF NOT EXISTS `tab_stock_h` (
 --
 
 INSERT INTO `tab_stock_h` (`id`, `product_id`, `product_batch`, `packets_in_box`, `product_pack_date`, `product_exp_date`, `mrp`, `tax_precent`, `purchase_rate`, `sale_rate`, `purchase_qty`, `created_datetime`) VALUES
-(1, 1, '1234-1234', 1, '2019-04-23', '2019-08-31', 1.0000, 1.0000, 0.5000, 0.8000, 200000, '2019-04-23 17:58:46');
+(1, 1, '#P10002-1042019-06-03150000.0220', 0, '2019-05-03', '2019-06-03', 0.0220, 2.0000, 0.0200, 0.0220, 15000, '2019-05-03 16:35:31'),
+(2, 2, '#P10002-1052019-06-03200000.0200', 0, '2019-05-03', '2019-06-03', 0.0200, 2.0000, 0.0180, 0.0200, 20000, '2019-05-03 16:35:31'),
+(3, 3, '#P10002-1062019-06-032510.0000', 0, '2019-05-03', '2019-06-03', 10.0000, 3.0000, 8.0000, 10.0000, 25, '2019-05-03 16:35:31');
 
 -- --------------------------------------------------------
 
@@ -398,7 +416,8 @@ CREATE TABLE IF NOT EXISTS `tab_sub_category` (
   `sub_category_name` varchar(80) COLLATE utf8_unicode_ci NOT NULL,
   `is_valid` int(10) NOT NULL,
   `category_index_id` int(10) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `cid` (`category_index_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -430,17 +449,9 @@ CREATE TABLE IF NOT EXISTS `tab_temp_product` (
   `stock_qty_limit` int(10) DEFAULT NULL,
   `upload_status` text COLLATE utf8_unicode_ci NOT NULL,
   `upload_status_id` int(10) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `ttpid` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `tab_temp_product`
---
-
-INSERT INTO `tab_temp_product` (`id`, `ent_code`, `product_code`, `product_name`, `product_description`, `product_status_index`, `category_index`, `sub_category_index`, `created_datetime`, `stock_qty_limit`, `upload_status`, `upload_status_id`) VALUES
-(1, '10002', '#P10002-101', 'Tomato', '', 10013, 11001, 20001, '2019-04-14 13:12:23', 50000, '', 0),
-(2, '10002', '#P10002-102', 'Potato', '', 10013, 11001, 20001, '2019-04-14 13:29:43', 250, '', 0),
-(3, '10002', '#P10002-103', 'Muli', '', 10013, 11001, 20002, '2019-04-14 13:29:43', 100, '', 0);
 
 -- --------------------------------------------------------
 
@@ -450,22 +461,17 @@ INSERT INTO `tab_temp_product` (`id`, `ent_code`, `product_code`, `product_name`
 
 CREATE TABLE IF NOT EXISTS `tab_temp_stock_d` (
   `id` int(10) NOT NULL,
+  `ent_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `stock_h_id` int(10) NOT NULL,
   `stock_qty` int(10) NOT NULL,
   `online_stock_qty` int(10) NOT NULL,
   `offline_stock_qty` int(10) NOT NULL,
   `transit_qty` int(10) NOT NULL,
-  `created_datetime` datetime NOT NULL,
+  `created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `product_id` int(10) DEFAULT NULL,
-  UNIQUE KEY `id` (`id`)
+  UNIQUE KEY `id` (`id`),
+  KEY `shid` (`stock_h_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `tab_temp_stock_d`
---
-
-INSERT INTO `tab_temp_stock_d` (`id`, `stock_h_id`, `stock_qty`, `online_stock_qty`, `offline_stock_qty`, `transit_qty`, `created_datetime`, `product_id`) VALUES
-(2, 1, 190000, 140000, 50000, 10000, '2019-04-22 00:00:00', 1);
 
 -- --------------------------------------------------------
 
@@ -475,6 +481,7 @@ INSERT INTO `tab_temp_stock_d` (`id`, `stock_h_id`, `stock_qty`, `online_stock_q
 
 CREATE TABLE IF NOT EXISTS `tab_temp_stock_h` (
   `id` int(10) NOT NULL,
+  `ent_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `product_id` int(10) NOT NULL,
   `product_batch` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `packets_in_box` int(11) NOT NULL,
@@ -486,15 +493,9 @@ CREATE TABLE IF NOT EXISTS `tab_temp_stock_h` (
   `sale_rate` double(65,4) NOT NULL,
   `purchase_qty` int(10) NOT NULL,
   `created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `prid` (`product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `tab_temp_stock_h`
---
-
-INSERT INTO `tab_temp_stock_h` (`id`, `product_id`, `product_batch`, `packets_in_box`, `product_pack_date`, `product_exp_date`, `mrp`, `tax_precent`, `purchase_rate`, `sale_rate`, `purchase_qty`, `created_datetime`) VALUES
-(1, 1, '1234-1234', 1, '2019-04-23', '2019-08-31', 1.0000, 1.0000, 0.5000, 0.8000, 200000, '2019-04-23 17:58:46');
 
 -- --------------------------------------------------------
 
@@ -507,7 +508,8 @@ CREATE TABLE IF NOT EXISTS `tab_uom_mapping` (
   `index_id` int(10) NOT NULL,
   `category_id` int(10) NOT NULL,
   `sub_category_id` int(10) NOT NULL,
-  UNIQUE KEY `id` (`id`)
+  UNIQUE KEY `id` (`id`),
+  KEY `tumid` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -552,7 +554,8 @@ CREATE TABLE IF NOT EXISTS `tab_user` (
   `user_emp_id` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `user_id` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `user_flat_id` int(10) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `tuid` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -578,7 +581,8 @@ CREATE TABLE IF NOT EXISTS `tab_wing` (
   `id` int(10) NOT NULL,
   `wing` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `apartment_id` int(10) NOT NULL,
-  UNIQUE KEY `id` (`id`)
+  UNIQUE KEY `id` (`id`),
+  KEY `aid` (`apartment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
