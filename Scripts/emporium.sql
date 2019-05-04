@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 03, 2019 at 01:30 PM
+-- Generation Time: May 04, 2019 at 11:34 AM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -116,6 +116,7 @@ CREATE TABLE IF NOT EXISTS `tab_category` (
   `category_index` int(10) NOT NULL,
   `category_name` varchar(80) COLLATE utf8_unicode_ci NOT NULL,
   `is_valid` int(10) NOT NULL,
+  `ent_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `ciid` (`category_index`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -124,9 +125,9 @@ CREATE TABLE IF NOT EXISTS `tab_category` (
 -- Dumping data for table `tab_category`
 --
 
-INSERT INTO `tab_category` (`id`, `category_index`, `category_name`, `is_valid`) VALUES
-(1, 11001, 'Vegetables', 1),
-(2, 11002, 'Grocery', 1);
+INSERT INTO `tab_category` (`id`, `category_index`, `category_name`, `is_valid`, `ent_code`) VALUES
+(1, 11001, 'Vegetables', 1, '10002'),
+(2, 11002, 'Grocery', 1, '10002');
 
 -- --------------------------------------------------------
 
@@ -508,6 +509,7 @@ CREATE TABLE IF NOT EXISTS `tab_uom_mapping` (
   `index_id` int(10) NOT NULL,
   `category_id` int(10) NOT NULL,
   `sub_category_id` int(10) NOT NULL,
+  `ent_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   UNIQUE KEY `id` (`id`),
   KEY `tumid` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -516,15 +518,15 @@ CREATE TABLE IF NOT EXISTS `tab_uom_mapping` (
 -- Dumping data for table `tab_uom_mapping`
 --
 
-INSERT INTO `tab_uom_mapping` (`id`, `index_id`, `category_id`, `sub_category_id`) VALUES
-(1, 10008, 11001, 20001),
-(2, 10009, 11001, 20001),
-(3, 10010, 11001, 20002),
-(4, 10008, 11002, 20003),
-(5, 10009, 11002, 20003),
-(6, 10011, 11002, 20004),
-(7, 10012, 11002, 20004),
-(8, 10024, 11002, 20004);
+INSERT INTO `tab_uom_mapping` (`id`, `index_id`, `category_id`, `sub_category_id`, `ent_code`) VALUES
+(1, 10008, 11001, 20001, '10002'),
+(2, 10009, 11001, 20001, '10002'),
+(3, 10010, 11001, 20002, '10002'),
+(4, 10008, 11002, 20003, '10002'),
+(5, 10009, 11002, 20003, '10002'),
+(6, 10011, 11002, 20004, '10002'),
+(7, 10012, 11002, 20004, '10002'),
+(8, 10024, 11002, 20004, '10002');
 
 -- --------------------------------------------------------
 
