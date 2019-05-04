@@ -93,7 +93,6 @@
 				'sub_category_index'=>$subCategoryid ,
 				'sub_category_name'=>$this->input->post('subCategoryName'),
 				'is_valid'=>1,
-			);				$rowcheckbox_arr[$i]
 			$this->CategorySubCategory_model->add_category_record($data);
 		
 		for($i=0; $i < $uomcount; $i++)
