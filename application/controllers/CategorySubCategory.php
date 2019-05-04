@@ -93,7 +93,8 @@
 				'sub_category_index'=>$subCategoryid ,
 				'sub_category_name'=>$this->input->post('subCategoryName'),
 				'is_valid'=>1,
-			$this->CategorySubCategory_model->add_category_record($data);
+			);
+		$this->CategorySubCategory_model->add_category_record($data);
 		
 		for($i=0; $i < $uomcount; $i++)
 			{
@@ -101,7 +102,8 @@
 				'category_id'=>$categoryid,
 				'sub_category_id'=>$subCategoryid ,
 				'index_id'=>$uom_arr[$i],
-				'ent_code'=>$entCode);				
+				'ent_code'=>$entCode
+				);				
 			$this->CategorySubCategory_model->add_uom_mapping_record($data);
 			}
 			
