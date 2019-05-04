@@ -20,7 +20,7 @@ class Product extends CI_Controller
 		$entCode = $this->input->post('entCode');
 		//$entCode = 10002;
 		$data['auto_code'] = $this->Product_model->get_productcode($entCode);
-		$categoryList = $this->Product_model->get_product_category();
+		$categoryList = $this->Product_model->get_product_category($entCode);
 		$subCategoryList = $this->Product_model->get_product_sub_category();
 		$UOMDetails = $this->Product_model->get_uom_details();
 		$prodCode = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].'-'.$data['auto_code']['continues_count'];
@@ -84,7 +84,7 @@ class Product extends CI_Controller
 		$batchno = $this->input->post('batchNo');
 		
 		
-		$categoryList = $this->Product_model->get_product_category();
+		$categoryList = $this->Product_model->get_product_category($entCode);
 		$subCategoryList = $this->Product_model->get_product_sub_category();
 		$UOMDetails = $this->Product_model->get_uom_details();			
 		$products = $this->Product_model->product_details_by_id('ASC',$ProductCode, $entCode,$batchno);				

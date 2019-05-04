@@ -329,10 +329,11 @@ class Product_model extends CI_Model
     }
 	
 	
-	public function get_product_category()
+	public function get_product_category($entCode)
     {
     $this->db->select('c.*,c.category_index as _id');
 	$this->db->from('tab_category as c');
+	$this->db->where('c.ent_code',$entCode);
 	$query = $this->db->get();		
     return $query->result_array();
     }

@@ -6,6 +6,45 @@ class Index_model extends CI_Model
 		$this->load->database();
 	}
 	
+	function get_uom_mapping_details($entCode)
+    { 
+        $this->db->select('GROUP_CONCAT(i.index_name) AS indexName,c.category_index as catIndex,c.category_name, sc.sub_category_index as subCatIndex,sc.sub_category_name');
+        $this->db->from('tab_uom_mapping um');
+		$this->db->where('um.ent_code',$entCode);
+		$this->db->join('tab_index as i', 'i.index_id = um.index_id','left');
+		$this->db->join('tab_category as c', 'c.category_index = um.category_id','left');
+		$this->db->join('tab_sub_category as sc', 'sc.sub_category_index = um.sub_category_id','left');
+		//$this->db->order_by('um.id', 'ASC');
+		$this->db->group_by('sc.sub_category_index');
+        $query = $this->db->get();
+		return $query->result_array();
+    }
+	
+	function get_uom_mapping_details_admin()
+    { 
+        $this->db->select('GROUP_CONCAT(i.index_name) AS indexName,c.category_index as catIndex,c.category_name, sc.sub_category_index as subCatIndex,sc.sub_category_name,um.ent_code');
+        $this->db->from('tab_uom_mapping um');
+		$this->db->join('tab_index as i', 'i.index_id = um.index_id','left');
+		$this->db->join('tab_category as c', 'c.category_index = um.category_id','left');
+		$this->db->join('tab_sub_category as sc', 'sc.sub_category_index = um.sub_category_id','left');
+		//$this->db->order_by('um.id', 'ASC');
+		$this->db->group_by('sc.sub_category_index,um.ent_code');
+        $query = $this->db->get();
+		return $query->result_array();
+    }
+	
+	
+	function get_ent_details()
+    { 
+        $this->db->select('ent_code as _id,ent_name as entName');
+        $this->db->from('tab_entity');
+		$this->db->order_by('ent_name', 'DESC');
+        $query = $this->db->get();
+
+        
+        return $query->result_array();
+    }
+	
 	function all_order_status()
     { 
         $this->db->select('index_id as _id');
@@ -42,6 +81,34 @@ class Index_model extends CI_Model
 
         return $query->result_array();
     }
+	
+	function category_details()
+    { 
+        $this->db->select('category_index as _id,category_name');
+        $this->db->from('tab_category');
+		$this->db->order_by('category_name', 'ASC');
+        $query = $this->db->get();
+
+        return $query->result_array();
+    }
+	
+	public function max_category_id()
+	{
+		
+		$this->db->select_max('category_index');
+		$query = $this->db->get('tab_category');
+		$row = $query->row();
+		return $row->category_index;
+	}
+	
+	public function max_sub_category_id()
+	{
+		
+		$this->db->select_max('sub_category_index');
+		$query = $this->db->get('tab_sub_category');
+		$row = $query->row();
+		return $row->sub_category_index;
+	}
 	
 	function get_uom_index_by_name($uom)
     { 
