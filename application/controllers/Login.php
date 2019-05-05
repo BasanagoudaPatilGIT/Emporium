@@ -10,12 +10,12 @@
 	function validate_login_credentials() {
 		//$userName = "raghuram";
 		//$userPhoneno = "9611429415";
-		$imei = 0;
+		//$imei = 0;
 		//$userPassword = base64_encode("raghuram");
 		
 		$userName = $this->input->post('userName');
 		$userPhoneno = $this->input->post('userName');
-		//$imei = $this->input->post('userIMEI');
+		$imei = $this->input->post('userIMEI');
 		$userPassword = base64_encode($this->input->post('userPassword'));
 		
 		$query = $this->Login_model->validate($userName,$userPhoneno,$userPassword,$imei);
@@ -49,6 +49,7 @@
 					'mobileNo' => $data['login']['user_phone_no'],
 					'emailId' => $data['login']['user_email_id'],
 					'imageName' => $data['login']['user_image'],
+					'designationIndex' => $data['login']['user_designation_index'],
 					'designation' => $data['login']['index_name'],
 					'userAddress' => $data['login']['user_address'],
 					'userFullName'=>$data['login']['user_full_name'],

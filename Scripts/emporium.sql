@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 05, 2019 at 08:49 AM
+-- Generation Time: May 05, 2019 at 02:19 PM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -348,7 +348,7 @@ INSERT INTO `tab_series` (`id`, `series_name`, `series_id`, `continues_count`, `
 (1, 'Entity', 'Ent', 10003, '2019-04-12 00:00:00', 0),
 (2, 'Product Code', '#P', 107, '2019-05-03 11:05:31', 10002),
 (3, 'Employee Code', '#E', 1001, '2019-04-12 00:00:00', 10002),
-(4, 'User Id', '#U', 111003, '2019-04-12 00:00:00', 10002),
+(4, 'User Id', '#U', 111005, '2019-05-05 00:00:00', 10002),
 (5, 'Orders', '#O', 120001, '2019-04-12 00:00:00', 10002),
 (6, 'Invoice', '#In', 130001, '2019-04-12 00:00:00', 10002);
 
@@ -394,7 +394,7 @@ CREATE TABLE IF NOT EXISTS `tab_stock_h` (
   `product_pack_date` date NOT NULL,
   `product_exp_date` date NOT NULL,
   `mrp` double(65,4) NOT NULL,
-  `tax_precent` double(65,4) NOT NULL,
+  `tax_precent` double(65,2) NOT NULL,
   `purchase_rate` double(65,4) NOT NULL,
   `sale_rate` double(65,4) NOT NULL,
   `purchase_qty` int(10) NOT NULL,
@@ -408,9 +408,9 @@ CREATE TABLE IF NOT EXISTS `tab_stock_h` (
 --
 
 INSERT INTO `tab_stock_h` (`id`, `product_id`, `product_batch`, `packets_in_box`, `product_pack_date`, `product_exp_date`, `mrp`, `tax_precent`, `purchase_rate`, `sale_rate`, `purchase_qty`, `created_datetime`) VALUES
-(1, 1, '#P10002-1042019-06-03150000.0220', 0, '2019-05-03', '2019-06-03', 0.0220, 2.0000, 0.0200, 0.0220, 15000, '2019-05-03 16:35:31'),
-(2, 2, '#P10002-1052019-06-03200000.0200', 0, '2019-05-03', '2019-06-03', 0.0200, 2.0000, 0.0180, 0.0200, 20000, '2019-05-03 16:35:31'),
-(3, 3, '#P10002-1062019-06-032510.0000', 0, '2019-05-03', '2019-06-03', 10.0000, 3.0000, 8.0000, 10.0000, 25, '2019-05-03 16:35:31');
+(1, 1, '#P10002-1042019-06-03150000.0220', 0, '2019-05-03', '2019-06-03', 0.0220, 2.00, 0.0200, 0.0220, 15000, '2019-05-03 16:35:31'),
+(2, 2, '#P10002-1052019-06-03200000.0200', 0, '2019-05-03', '2019-06-03', 0.0200, 2.00, 0.0180, 0.0200, 20000, '2019-05-03 16:35:31'),
+(3, 3, '#P10002-1062019-06-032510.0000', 0, '2019-05-03', '2019-06-03', 10.0000, 3.00, 8.0000, 10.0000, 25, '2019-05-03 16:35:31');
 
 -- --------------------------------------------------------
 
@@ -594,12 +594,13 @@ CREATE TABLE IF NOT EXISTS `tab_user` (
 
 INSERT INTO `tab_user` (`id`, `ent_code`, `user_full_name`, `user_name`, `user_password`, `user_gender_index`, `user_age`, `user_dob`, `user_phone_no`, `user_email_id`, `user_address`, `user_address_prof`, `user_imei`, `user_designation_index`, `user_status_index`, `user_image`, `user_login_status`, `created_datetime`, `user_emp_id`, `user_id`, `user_flat_id`) VALUES
 (1, '10001', 'Basanagouda Patil', 'basupatil', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 7259999282, 'basupail71@gmail.com', 'No Address', 'proof', 123456789009876, 10015, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
-(2, '10002', 'Raghu Ram .R', 'raghuram', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 0, 10016, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
-(3, '10002', 'BalaKumar', 'balakumar', 'YmFsYWt1bWFy', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009876, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
-(4, '10002', 'Ganesh', 'ganesh', 'Z2FuZXNo', 10019, '30', '1988-04-06', 8611429415, 'ganesh@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009877, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
+(2, '10002', 'Raghu Ram .R', 'raghuram', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 358240051111110, 10016, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
+(3, '10002', 'BalaKumar', 'balakumar', 'YmFsYWt1bWFy', 10019, '28', '1990-04-06', 9611429417, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009876, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
+(4, '10002', 'Ganesh', 'ganesh', 'Z2FuZXNo', 10019, '30', '1988-04-06', 8611429418, 'ganesh@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009877, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (5, '10002', 'Vijay', 'vijay', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654321, 'vijay@gmail.com', 'Address', 'Address proof', 645678765677879, 10017, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '', '', 0),
-(6, '10002', 'Ramesh R', 'Ramesh', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654321, 'ramesh@gmail.com', 'Address', 'Address proof', 645678765677879, 10018, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '0', '111001', 2),
-(7, '10002', 'Akash M', 'Akash', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654322, 'akash@gmail.com', 'Address', 'Address proof', 645678765677871, 10018, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '0', '111002', 1);
+(6, '10002', 'Ramesh R', 'Ramesh', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654329, 'ramesh@gmail.com', 'Address', 'Address proof', 645678765677879, 10018, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '0', '111001', 2),
+(7, '10002', 'Akash M', 'Akash', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654322, 'akash@gmail.com', 'Address', 'Address proof', 645678765677871, 10018, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '0', '111002', 1),
+(8, '10002', 'John Snow', '9685743210', 'Sm9oblNub3c=', 10019, '', '1958-05-05', 9685743210, 'john.snow@gmail.com', '', '', 358240051111111, 10018, 10013, 'Capture.jpg', 1, '2019-05-05 16:31:00', '', '#U10002111003', 2);
 
 -- --------------------------------------------------------
 
