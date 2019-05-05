@@ -348,7 +348,8 @@ class Product_model extends CI_Model
 
 	public function get_uom_details()
     {
-    $this->db->select('i.*,um.*,i.index_id as _id');
+    $this->db->select('i.index_id as _id,i.index_id as indexId, i.index_name as indexName,um.category_id as categoryId,
+	um.sub_category_id as subCategoryId');
 	$this->db->from('tab_index as i');
 	$this->db->where('i.index_type','product_uom_index');
 	$this->db->join('tab_uom_mapping as um', 'um.index_id = i.index_id','left');

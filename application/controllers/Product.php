@@ -63,7 +63,7 @@ class Product extends CI_Controller
 					'createdDatetime' =>$row['created_datetime']
 				);
 		
-		$product_data[] = array(
+		$all_stock_data[] = array(
 			'addUpdateProduct' => 'Add/Update Product', // on click of save button on add new product screen
 			'getSelectedProductDetails' => 'getSelectedProductDetails', // on click of each product call this method
 			'productCode' => $prodCode,
@@ -74,7 +74,7 @@ class Product extends CI_Controller
 			'productCount' =>$data['auto_code']['continues_count']
 		);
 		
-		print_r(json_encode($product_data));
+		print_r(json_encode($all_stock_data));
 	}
 	}
 	

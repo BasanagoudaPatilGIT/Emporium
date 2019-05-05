@@ -66,8 +66,8 @@
 	}
 	public function addUser()
 	{
-			
 		$entCode = $this->input->post('entCode');
+		$entCode = 10002;
 		$data['auto_code'] = $this->User_model->get_user_number($entCode);
 		$userId = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
 		$userNum = $data['auto_code']['continues_count'];
@@ -75,7 +75,7 @@
 		
 		//$entCode = 10002;
 		
-		$userPassword = base64_encode($this->input->post('userPassword'));
+		$userPassword = base64_encode("JohnSnow");
 		/* $userGenderIndex=10019;
 		$userAge=28;
 		$userDOB="1990-04-01";
@@ -104,26 +104,37 @@
 				'user_name'=>$this->input->post('userName'),
 				'user_password'=>$userPassword,
 				'user_gender_index'=>$this->input->post('userGenderIndex'),
-				'user_age'=>$this->input->post('userAge'),
 				'user_dob'=>$this->input->post('userDOB'),
 				'user_phone_no'=>$this->input->post('userPhoneNo'),
 				'user_email_id'=>$this->input->post('userEmailId'),
-				'user_flat_id'=>$this->input->post('userFlatId'),	
-				'user_address'=>$this->input->post('userAddress'),	
-				//'user_address_prof'=>$this->input->post('userAddressProf'),	
+				'user_flat_id'=>$this->input->post('userFlatId'),		
 				'user_imei'=>$this->input->post('userIMEI'),	
 				'user_designation_index'=>10018,
 				'user_status_index'=>'10013',
 				'user_image'=>$userPictureName,
 				'user_id'=>$userId,
-				'flat_no'=>$this->input->post('flatId'),
+				
+				/*'ent_code'=>10002,
+				'user_full_name'=>"John Snow",
+				'user_name'=>"9685743210",
+				'user_password'=>$userPassword,
+				'user_gender_index'=>10019,
+				'user_dob'=>"1994-05-05",
+				'user_phone_no'=>"9685743210",
+				'user_email_id'=>"john.snow@gmail.com",
+				'user_flat_id'=>1,	
+				'user_imei'=>"358240051111110",	
+				'user_designation_index'=>10018,
+				'user_status_index'=>'10013',
+				'user_image'=>$userPictureName,
+				'user_id'=>$userId,*/
+				
+				
 				
 			);				
 			$this->User_model->add_record($data);
-			
-			$datestring = date('Y-m-d');			
+
 			$data = array(
-				'last_updated'=>mdate($datestring),
 				'continues_count' => (int)$userNum + 1 
 			);
 			

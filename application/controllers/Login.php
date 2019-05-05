@@ -8,15 +8,17 @@
 	}
 	
 	function validate_login_credentials() {
-		$userName = "raghuram";
+		//$userName = "raghuram";
+		//$userPhoneno = "9611429415";
 		$imei = 0;
-		$userPassword = base64_encode("raghuram");
+		//$userPassword = base64_encode("raghuram");
 		
-		//$userName = $this->input->post('userName');
-		//$imei = $this->input->post('imei');
-		//$userPassword = base64_encode($this->input->post('userPassword'));
+		$userName = $this->input->post('userName');
+		$userPhoneno = $this->input->post('userName');
+		//$imei = $this->input->post('userIMEI');
+		$userPassword = base64_encode($this->input->post('userPassword'));
 		
-		$query = $this->Login_model->validate($userName,$userPassword,$imei);
+		$query = $this->Login_model->validate($userName,$userPhoneno,$userPassword,$imei);
 		
 		if ($query) {
 			$todaysdate = date('Y-m-d');
@@ -31,7 +33,7 @@
 				
 				return $login_failed_data;
 			} else {
-				$data['login'] = $this->Login_model->get_user_detail($userName,$userPassword);
+				$data['login'] = $this->Login_model->get_user_detail($userName,$userPhoneno,$userPassword);
 				$mobilogin = 1;
 				$userid = $data['login']['id'];
 				$data = array(
@@ -39,7 +41,7 @@
 				);
 								
 				$this->Login_model->update_logout($data,$userid);
-				$data['login'] = $this->Login_model->get_user_detail($userName,$userPassword);
+				$data['login'] = $this->Login_model->get_user_detail($userName,$userPhoneno,$userPassword);
 				$user_array[] = array(
 					'userId' => $data['login']['id'],
 					'entCode' => $data['login']['ent_code'],
@@ -58,48 +60,46 @@
 				);
 				if($data['login']['index_name'] == 'Admin'){
 				$menu_array[] = array(
-					'addEntity' => "Entity",
-					'addOwner' => "Owners",
+					'entityDetails' => "Entity",
 					'AddCategoryOrSubCategory' => "Add CategorySubCategory",
 				);
 				
 				$main_menu_array[] = array(
-					'stockDetails' => "Stock",
-					'invoiceList' => "Bills",
-					'getReport'=>"Expence Report",
-					'getExpiredStockDetails'=>"Exp.Medicine",
+					'getProductDetails' => "Stock",
+					'invoiceDetails' => "Invoice",
+					'getReport'=>"Expense Report",
 					'mobiLogout' => "Logout"
 				);	
 				}else if($data['login']['index_name'] == 'Owner'){
 					$menu_array[] = array(
 					'purchaseProductDetails' => "Purchase",
-					'stockDetails' => "Stock",
+					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
-					'invoiceList' => "Bills",
+					'invoiceDetails' => "Invoice",
 				);
 				
 				$main_menu_array[] = array(
 					'purchaseProductDetails' => "Purchase",
-					'stockDetails' => "Stock",
+					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
-					'invoiceList' => "Bills",
+					'invoiceDetails' => "Invoice",
 					'loadUploadProducts' => "Upload Products",
-					'employeeDetials' => "Employee",
-					'getReport' => "Expence Report",
+					'employeeDetails' => "Employee",
+					'getReport' => "Expense Report",
 					'mobiLogout' => "Logout"
 				);	
-				}else{
+				}else if($data['login']['index_name'] == 'Customer') {
 					$menu_array[] = array(
-					'stockDetails' => "Stock",
+					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
-					'invoiceList' => "Bills",
+					'invoiceDetails' => "Invoice",
+					'getReport' => "Expence Report",
 					);
 					$main_menu_array[] = array(
-					'stockDetails' => "Stock",
+					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
-					'invoiceList' => "Bills",
-					'loadUploadProducts' => "Upload Products",
-					'getReport' => "Expence Report",
+					'invoiceDetails' => "Invoice",
+					'getReport' => "Expense Report",
 					'mobiLogout' => "Logout"
 				);	
 				}
@@ -127,10 +127,9 @@
 	}
 	
         public function mobiLogout()
-	{
-		$this->load->model('Login_model');	
+	{	
 		$Mobilogout = 0;
-		$userid = $_SESSION['ID'];
+		$userid = $this->input->post('userId');
 		$data = array(
 			'user_login_status' => $Mobilogout
 		);
