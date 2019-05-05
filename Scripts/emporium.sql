@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 04, 2019 at 11:34 AM
+-- Generation Time: May 05, 2019 at 08:49 AM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -31,6 +31,7 @@ USE `emporium`;
 CREATE TABLE IF NOT EXISTS `tab_apartment` (
   `id` int(10) NOT NULL,
   `apartment_name` varchar(60) COLLATE utf8_unicode_ci NOT NULL,
+  `ent_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   UNIQUE KEY `id` (`id`),
   KEY `apid` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -39,9 +40,10 @@ CREATE TABLE IF NOT EXISTS `tab_apartment` (
 -- Dumping data for table `tab_apartment`
 --
 
-INSERT INTO `tab_apartment` (`id`, `apartment_name`) VALUES
-(1, 'Other'),
-(2, 'Bala Apartments');
+INSERT INTO `tab_apartment` (`id`, `apartment_name`, `ent_code`) VALUES
+(0, '-Select-', '1'),
+(1, 'Other', '1'),
+(2, 'Bala Apartments', '10002');
 
 -- --------------------------------------------------------
 
@@ -126,6 +128,7 @@ CREATE TABLE IF NOT EXISTS `tab_category` (
 --
 
 INSERT INTO `tab_category` (`id`, `category_index`, `category_name`, `is_valid`, `ent_code`) VALUES
+(0, 0, '-Select-', 1, '1'),
 (1, 11001, 'Vegetables', 1, '10002'),
 (2, 11002, 'Grocery', 1, '10002');
 
@@ -151,7 +154,8 @@ CREATE TABLE IF NOT EXISTS `tab_entity` (
 --
 
 INSERT INTO `tab_entity` (`id`, `ent_code`, `ent_name`, `emp_limit`, `created_datetime`, `service_expiry_date`) VALUES
-(1, '10002', 'SS Stores', 3, '2019-04-08 23:04:40', '2020-12-31');
+(1, '0', '-Select-', 0, '2019-04-08 23:04:40', '2020-12-31'),
+(2, '10002', 'SS Stores', 2, '2019-04-08 23:04:40', '2020-12-31');
 
 -- --------------------------------------------------------
 
@@ -163,6 +167,7 @@ CREATE TABLE IF NOT EXISTS `tab_flat_no` (
   `id` int(10) NOT NULL,
   `flat_no` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `wing_id` int(10) NOT NULL,
+  `ent_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   UNIQUE KEY `id` (`id`),
   KEY `wiid` (`wing_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -171,10 +176,11 @@ CREATE TABLE IF NOT EXISTS `tab_flat_no` (
 -- Dumping data for table `tab_flat_no`
 --
 
-INSERT INTO `tab_flat_no` (`id`, `flat_no`, `wing_id`) VALUES
-(1, 'Other', 1),
-(2, '101', 2),
-(3, '102', 2);
+INSERT INTO `tab_flat_no` (`id`, `flat_no`, `wing_id`, `ent_code`) VALUES
+(0, '-Select-', 1, '1'),
+(1, 'Other', 1, '1'),
+(2, '101', 2, '10002'),
+(3, '102', 2, '10002');
 
 -- --------------------------------------------------------
 
@@ -223,7 +229,8 @@ INSERT INTO `tab_index` (`id`, `index_id`, `index_type`, `index_name`, `is_valid
 (24, 10024, 'product_uom_index', 'Box', 1),
 (25, 10025, 'order_status_index', 'All', 1),
 (26, 10026, 'stock_movement_index', 'Offline To Online', 1),
-(27, 10027, 'stock_movement_index', 'Online To Offline', 1);
+(27, 10027, 'stock_movement_index', 'Online To Offline', 1),
+(28, 10028, 'select_index', '-Select-', 1);
 
 -- --------------------------------------------------------
 
@@ -426,6 +433,7 @@ CREATE TABLE IF NOT EXISTS `tab_sub_category` (
 --
 
 INSERT INTO `tab_sub_category` (`id`, `sub_category_index`, `sub_category_name`, `is_valid`, `category_index_id`) VALUES
+(0, 0, '-Select-', 1, 1),
 (1, 20001, 'sub category 1', 1, 11001),
 (2, 20002, 'sub category 2', 1, 11001),
 (3, 20003, 'sub category 3', 1, 11002),
@@ -497,6 +505,26 @@ CREATE TABLE IF NOT EXISTS `tab_temp_stock_h` (
   PRIMARY KEY (`id`),
   KEY `prid` (`product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tab_union`
+--
+
+CREATE TABLE IF NOT EXISTS `tab_union` (
+  `id` int(10) NOT NULL,
+  `union_name` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `ent_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tab_union`
+--
+
+INSERT INTO `tab_union` (`id`, `union_name`, `ent_code`) VALUES
+(0, 'Select', '1');
 
 -- --------------------------------------------------------
 
@@ -583,6 +611,7 @@ CREATE TABLE IF NOT EXISTS `tab_wing` (
   `id` int(10) NOT NULL,
   `wing` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
   `apartment_id` int(10) NOT NULL,
+  `ent_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   UNIQUE KEY `id` (`id`),
   KEY `aid` (`apartment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -591,10 +620,11 @@ CREATE TABLE IF NOT EXISTS `tab_wing` (
 -- Dumping data for table `tab_wing`
 --
 
-INSERT INTO `tab_wing` (`id`, `wing`, `apartment_id`) VALUES
-(1, 'Other', 1),
-(2, 'A', 2),
-(3, 'B', 2);
+INSERT INTO `tab_wing` (`id`, `wing`, `apartment_id`, `ent_code`) VALUES
+(0, '-Select-', 1, '1'),
+(1, 'Other', 1, '1'),
+(2, 'A', 2, '10002'),
+(3, 'B', 2, '10002');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

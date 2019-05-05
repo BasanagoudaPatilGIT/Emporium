@@ -49,20 +49,13 @@
 		$empId = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
 		$empNum = $data['auto_code']['continues_count'];
 		$userGender=  $this->Index_model->user_gender();
-		
-		if (count($userGender) >0) {
-			foreach($userGender as $row)
-				$all_userGender[] = array(
-					'index'=>$row['index'],
-					'index_name' =>$row['index_name'],
-				);
-		}			
+				
 			
 		$employee_details[] = array(
 					'allUserGender'=>$all_userGender,
 					'empId' =>$empId,
 					'empNum' =>$empNum,
-					'addEmployee' =>'addEmployee'
+					'addEmployee' =>'addEmployee',
 				);
 		
 		
@@ -104,7 +97,7 @@
 		}
 		$data =array
 			(
-				'ent_code'=>$this->input->post('entCode'),
+				'ent_code'=>$entCode,
 				'user_full_name'=>$this->input->post('userFullName'),
 				'user_name'=>$this->input->post('userName'),
 				'user_password'=>$userPassword,
@@ -146,13 +139,11 @@
 	public function viewEmployee()
 	{
 		$entCode = $this->input->post('entCode');
-		$userDesignationIndex = $this->input->post('userDesignationIndex');
 		$empId = $this->input->post('empId');
 		/*$entCode = 10001;
 		$userDesignationIndex = 10015;
 		$empId = 1;*/
 		
-		$userDesignation =  $this->Index_model->user_designation($userDesignationIndex);
 		$userGender=  $this->Index_model->user_gender();
 		
 		$eachEmpDetails = $this->Employee_model->get_employee_details_by_id($empId);
@@ -177,25 +168,7 @@
 				'apartmentName'=>$eachEmpDetails['apartment_name'],
 				);
 		
-		if (count($userDesignation) >0) {
-			foreach($userDesignation as $row)
-				$user_designation[] = array(
-					'index'=>$row['index'],
-					'index_name' =>$row['index_name'],
-				);
-		}
-
-		if (count($userGender) >0) {
-			foreach($userGender as $row)
-				$all_userGender[] = array(
-					'index'=>$row['index'],
-					'index_name' =>$row['index_name'],
-				);
-		}			
-			
 		$required_details[] = array(
-					'eachEmpDetails'=>$each_EmpDetails,
-					'allUserGender'=>$all_userGender,
 					'UserDesignation' =>$user_designation,
 					'UpdateEmployee' =>'Update Employee',
 				);
@@ -213,7 +186,13 @@
 		/*$entCode = 10001;
 		$userDesignationIndex = 10015;
 		$empId = 1;*/
+		$imageString ='';
 		
+		if($imageString == ''){
+		$userPictureName ='Capture.jpg';	
+		}else{
+		$userPictureName = $this->input->post('userPictureName');
+		}
 		$data =array
 			(
 				'user_full_name'=>$this->input->post('userFullName'),

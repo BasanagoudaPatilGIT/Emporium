@@ -1,4 +1,4 @@
-<?php class User extends CI_Controller {
+<?php class Customer extends CI_Controller {
 
 	public function __construct()
 	{
@@ -11,11 +11,11 @@
 		$this->load->library('encryption');
 	}
 	
-	public function getUserDetails()
+	public function customerDetials()
 	{
-		//$entCode = $this->input->post('entCode');
-		$entCode = 10002;
-		$allUserDetails = $this->User_model->get_all_user_details($entCode);
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
+		$allUserDetails = $this->User_model->get_all_employee_details($entCode);
 		$UserCount = $this->User_model->user_count($entCode);
 			
 		if($UserCount > 1){
@@ -42,22 +42,29 @@
 	
 	public function addNewUser()
 	{
-		//$entCode = $this->input->post('entCode');
-		//$entCode = 10002;
-		//$userDesignationIndex = 10015
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10001;
+		//$userDesignationIndex = 10015;
+		$data['auto_code'] = $this->User_model->get_user_number($entCode);
+		$userId = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
+		$userNum = $data['auto_code']['continues_count'];
 		$userGender=  $this->Index_model->user_gender();
-		$apartmentDetails = $this->Index_model->all_apartment_details();
-		$wingDetails = $this->Index_model->all_wing_details();
-		$flatDetails = $this->Index_model->all_flat_details();
-		$entDetails = $this->Index_model->get_ent_details();
 		
+		
+
+		if (count($userGender) >0) {
+			foreach($userGender as $row)
+				$all_userGender[] = array(
+					'index'=>$row['index'],
+					'index_name' =>$row['index_name'],
+				);
+		}			
+			
 		$user_details[] = array(
-					'userGender'=>$userGender,
-					'addUser' =>'addUser',
-					'apartmentDetails' => $apartmentDetails,
-					'wingDetails' => $wingDetails,
-					'flatDetails' => $flatDetails,
-					'entDetails' => $entDetails,
+					'allUserGender'=>$all_userGender,
+					'userId' =>$userId,
+					'userNum' =>$userNum,
+					'addUser' =>'addUser'
 				);
 		
 		
@@ -68,11 +75,7 @@
 	{
 			
 		$entCode = $this->input->post('entCode');
-		$data['auto_code'] = $this->User_model->get_user_number($entCode);
-		$userId = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
-		$userNum = $data['auto_code']['continues_count'];
-		
-		
+		$userNum= $this->input->post('userNum');
 		//$entCode = 10002;
 		
 		$userPassword = base64_encode($this->input->post('userPassword'));
@@ -99,7 +102,7 @@
 		}
 		$data =array
 			(
-				'ent_code'=>$entCode,
+				'ent_code'=>$this->input->post('entCode'),
 				'user_full_name'=>$this->input->post('userFullName'),
 				'user_name'=>$this->input->post('userName'),
 				'user_password'=>$userPassword,
@@ -115,8 +118,7 @@
 				'user_designation_index'=>10018,
 				'user_status_index'=>'10013',
 				'user_image'=>$userPictureName,
-				'user_id'=>$userId,
-				'flat_no'=>$this->input->post('flatId'),
+				'user_id'=>$this->input->post('userId'),
 				
 			);				
 			$this->User_model->add_record($data);
@@ -124,7 +126,7 @@
 			$datestring = date('Y-m-d');			
 			$data = array(
 				'last_updated'=>mdate($datestring),
-				'continues_count' => (int)$userNum + 1 
+				'continues_count' => (int)$empNum + 1 
 			);
 			
 			$this->User_model->incriment_user_no($data,$entCode);
@@ -138,14 +140,16 @@
 	public function viewUser()
 	{
 		$entCode = $this->input->post('entCode');
+		$userDesignationIndex = $this->input->post('userDesignationIndex');
 		$userId = $this->input->post('userId');
 		/*$entCode = 10001;
 		$userDesignationIndex = 10015;
 		$empId = 1;*/
 		
+		$userDesignation =  $this->Index_model->user_designation($userDesignationIndex);
 		$userGender=  $this->Index_model->user_gender();
 		
-		$eachUserDetails = $this->User_model->get_user_details_by_id($userId);
+		$eachUserDetails = $this->Employee_model->get_employee_details_by_id($userId);
 		
 		$each_UserDetails[] = array(
 				'entCode'=>$eachUserDetails['ent_code'],
@@ -167,9 +171,26 @@
 				'apartmentName'=>$eachUserDetails['apartment_name'],
 				);
 		
-		
-	$user_details[] = array(
+		if (count($userDesignation) >0) {
+			foreach($userDesignation as $row)
+				$user_designation[] = array(
+					'index'=>$row['index'],
+					'index_name' =>$row['index_name'],
+				);
+		}
+
+		if (count($userGender) >0) {
+			foreach($userGender as $row)
+				$all_userGender[] = array(
+					'index'=>$row['index'],
+					'index_name' =>$row['index_name'],
+				);
+		}			
+			
+		$user_details[] = array(
 					'eachUserDetails'=>$each_UserDetails,
+					'allUserGender'=>$all_userGender,
+					'UserDesignation' =>$user_designation,
 					'UpdateUser' =>'Update User',
 				);
 		
@@ -186,13 +207,6 @@
 		/*$entCode = 10001;
 		$userDesignationIndex = 10015;
 		$empId = 1;*/
-		$imageString ='';
-		
-		if($imageString == ''){
-		$userPictureName ='Capture.jpg';	
-		}else{
-		$userPictureName = $this->input->post('userPictureName');
-		}
 		
 		$data =array
 			(

@@ -84,6 +84,7 @@
 					'orderDetails' => "Orders",
 					'invoiceList' => "Bills",
 					'loadUploadProducts' => "Upload Products",
+					'employeeDetials' => "Employee",
 					'getReport' => "Expence Report",
 					'mobiLogout' => "Logout"
 				);	

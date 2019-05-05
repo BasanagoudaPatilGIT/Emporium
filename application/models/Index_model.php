@@ -38,7 +38,7 @@ class Index_model extends CI_Model
     { 
         $this->db->select('ent_code as _id,ent_name as entName');
         $this->db->from('tab_entity');
-		$this->db->order_by('ent_name', 'DESC');
+		$this->db->order_by('_id', 'ASC');
         $query = $this->db->get();
 
         
@@ -47,11 +47,12 @@ class Index_model extends CI_Model
 	
 	function all_order_status()
     { 
+		$where = "i.index_type= 'order_status_index' or i.index_type='select_index'";
         $this->db->select('index_id as _id');
         $this->db->select('index_name');
         $this->db->from('tab_index');
-        $this->db->where('index_type','order_status_index');
-		$this->db->order_by('index_name', 'DESC');
+        $this->db->where($where);
+		$this->db->order_by('_id', 'DESC');
         $query = $this->db->get();
 
         
@@ -60,11 +61,12 @@ class Index_model extends CI_Model
 	
 	function all_product_stock_status()
     { 
-        $this->db->select('index_id as _id');
+        $where = "i.index_type= 'product_stock_status_index' or i.index_type='select_index'";
+		$this->db->select('index_id as _id');
         $this->db->select('index_name');
-        $this->db->from('tab_index');
-        $this->db->where('index_type','product_stock_status_index');
-		$this->db->order_by('index_name', 'ASC');
+        $this->db->from('tab_index as i');
+        $this->db->where($where);
+		$this->db->order_by('_id', 'DESC');
         $query = $this->db->get();
 
         return $query->result_array();
@@ -72,11 +74,12 @@ class Index_model extends CI_Model
 	
 	function all_product_uom()
     { 
-        $this->db->select('index_id as _id');
+        $where = "i.index_type= 'product_uom_index' or i.index_type='select_index'";
+		$this->db->select('index_id as _id');
         $this->db->select('index_name');
-        $this->db->from('tab_index');
-        $this->db->where('index_type','product_uom_index');
-		$this->db->order_by('index_name', 'ASC');
+        $this->db->from('tab_index as i');
+        $this->db->where($where);
+		$this->db->order_by('_id', 'DESC');
         $query = $this->db->get();
 
         return $query->result_array();
@@ -121,11 +124,12 @@ class Index_model extends CI_Model
 	
 	function user_status()
     { 
-        $this->db->select('index_id as _id');
+        $where = "i.index_type= 'user_status_index' or i.index_type='select_index'";
+		$this->db->select('index_id as _id');
         $this->db->select('index_name');
-        $this->db->from('tab_index');
-        $this->db->where('index_type','user_status_index');
-		$this->db->order_by('index_name', 'ASC');
+        $this->db->from('tab_index as i');
+        $this->db->where($where);
+		$this->db->order_by('_id', 'DESC');
         $query = $this->db->get();
 
         return $query->result_array();
@@ -133,11 +137,12 @@ class Index_model extends CI_Model
 	
 	function product_status()
     { 
-        $this->db->select('index_id as _id');
+        $where = "i.index_type= 'user_status_index' or i.index_type='select_index'";
+		$this->db->select('index_id as _id');
         $this->db->select('index_name');
-        $this->db->from('tab_index');
-        $this->db->where('index_type','user_status_index');
-		$this->db->order_by('index_name', 'ASC');
+        $this->db->from('tab_index as i');
+        $this->db->where($where);
+		$this->db->order_by('_id', 'DESC');
         $query = $this->db->get();
 
         return $query->result_array();
@@ -145,14 +150,15 @@ class Index_model extends CI_Model
 	
 	function user_designation($userDesignationIndex)
     { 
-        $this->db->select('index_id as _id');
+        $where = "i.index_type= 'user_designation_index' or i.index_type='select_index'";
+		$this->db->select('index_id as _id');
         $this->db->select('index_name');
-        $this->db->from('tab_index');
-        $this->db->where('index_type','user_designation_index');
+        $this->db->from('tab_index as i');
+        $this->db->where($where);
 		if($userDesignationIndex == '10016'){
 		$this->db->where('index_id','10017');	
 		}
-		$this->db->order_by('index_id', 'ASC');
+		$this->db->order_by('_id', 'DESC');
         $query = $this->db->get();
 
        return $query->result_array();
@@ -160,11 +166,12 @@ class Index_model extends CI_Model
 	
 	function user_gender()
     { 
+		$where = "i.index_type= 'user_gender_index' or i.index_type='select_index'";
         $this->db->select('index_id as _id');
         $this->db->select('index_name');
-        $this->db->from('tab_index');
-        $this->db->where('index_type','user_gender_index');
-		$this->db->order_by('index_name', 'ASC');
+        $this->db->from('tab_index as i');
+        $this->db->where($where);
+		$this->db->order_by('_id', 'DESC');
         $query = $this->db->get();
 
         return $query->result_array();
@@ -196,23 +203,68 @@ class Index_model extends CI_Model
 	function apartment_details($entCode)
     { 
     $sql = "SELECT *,id as _id FROM tab_apartment where ent_code in (1,?)";
-    $query = $this->db->query($sql,array($entCode,'Active'));
+    $query = $this->db->query($sql,array($entCode));
     return $query->result_array();
     }
 	
 	function wing_details($entCode)
     { 
     $sql = "SELECT *,id as _id FROM tab_wing where ent_code in (1,?)";
-    $query = $this->db->query($sql,array($entCode,'Active'));
+    $query = $this->db->query($sql,array($entCode));
     return $query->result_array();
     }
 	
 	function flat_details($entCode)
     { 
     $sql = "SELECT *,id as _id FROM tab_flat_no where ent_code in (1,?)";
-    $query = $this->db->query($sql,array($entCode,'Active'));
+    $query = $this->db->query($sql,array($entCode));
     return $query->result_array();
     }
+	
+	
+	function all_apartment_details()
+    { 
+    $sql = "SELECT *,id as _id FROM tab_apartment order by _id ASC";
+    $query = $this->db->query($sql,array());
+    return $query->result_array();
+    }
+	
+	function all_wing_details()
+    { 
+    $sql = "SELECT *,id as _id FROM tab_wing order by _id ASC";
+    $query = $this->db->query($sql,array());
+    return $query->result_array();
+    }
+	
+	function all_flat_details()
+    { 
+    $sql = "SELECT *,id as _id FROM tab_flat_no order by _id ASC";
+    $query = $this->db->query($sql,array());
+    return $query->result_array();
+    }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }
       

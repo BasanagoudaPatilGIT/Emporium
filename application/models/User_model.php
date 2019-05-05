@@ -35,6 +35,7 @@ class User_model extends CI_Model
     }
 	
 	
+	
 	public function edit_record($id,$data)
     {
     $this->db->where('id', $id);
@@ -66,7 +67,7 @@ class User_model extends CI_Model
     {
     $this->db->select('u.*,i.index_name');
 	$this->db->from('tab_user as u');
-	$this->db->join('tab_index as i', 'i.index = u.user_designation_index','left');
+	$this->db->join('tab_index as i', 'i.index_id = u.user_designation_index','left');
 	if($entCode != '10001'){
 	$this->db->where('u.ent_code', $entCode);
 	$this->db->where('u.user_designation_index','10018');
