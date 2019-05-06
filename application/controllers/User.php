@@ -75,7 +75,7 @@
 		
 		//$entCode = 10002;
 		
-		$userPassword = base64_encode("JohnSnow");
+		$userPassword = base64_encode($this->input->post('userPassword'));
 		/* $userGenderIndex=10019;
 		$userAge=28;
 		$userDOB="1990-04-01";
@@ -112,24 +112,7 @@
 				'user_designation_index'=>10018,
 				'user_status_index'=>'10013',
 				'user_image'=>$userPictureName,
-				'user_id'=>$userId,
-				
-				/*'ent_code'=>10002,
-				'user_full_name'=>"John Snow",
-				'user_name'=>"9685743210",
-				'user_password'=>$userPassword,
-				'user_gender_index'=>10019,
-				'user_dob'=>"1994-05-05",
-				'user_phone_no'=>"9685743210",
-				'user_email_id'=>"john.snow@gmail.com",
-				'user_flat_id'=>1,	
-				'user_imei'=>"358240051111110",	
-				'user_designation_index'=>10018,
-				'user_status_index'=>'10013',
-				'user_image'=>$userPictureName,
-				'user_id'=>$userId,*/
-				
-				
+				'user_id'=>$userId,	
 				
 			);				
 			$this->User_model->add_record($data);

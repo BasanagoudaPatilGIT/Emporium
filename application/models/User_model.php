@@ -23,6 +23,17 @@ class User_model extends CI_Model
 		return $this->db->insert('tab_user', $data);
 	}
 	
+	public function get_max_user_id()
+	{
+		
+		$this->db->select_max('id');
+		$query = $this->db->get('tab_user');
+		$row = $query->row();
+		$max_id = $row->id + 1;
+		
+		return $max_id;
+	}
+	
 	public function get_user_number($entCode)
     {
 	$this->db->select('p.*');

@@ -55,6 +55,8 @@ class Entity_model extends CI_Model
     {
     $this->db->select('*');
 	$this->db->from('tab_entity as e');
+	$this->db->join('tab_user as u','u.ent_code = e.ent_code');
+	$this->db->where('u.user_designation_index', 10016);
 	$this->db->order_by('e.id','DESC');
     $query = $this->db->get();		
     return $query->result_array();

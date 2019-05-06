@@ -20,11 +20,18 @@ class Invoice extends CI_Controller {
 		echo"</pre>";
 	}
 	public function billDetails() { //working as expected. 
-		//$entCode = $this->input->post('entCode');
-		$entCode = 10002;
+		$entCode = $this->input->post('entCode');
+		$userId = $this->input->post('userId');
+		$userTypeId = $this->input->post('userTypeId');
+		/* $entCode = 10002;
+		$userId = 6;
+		$userTypeId = 10018; */
 		$billStatusDetails = $this->Invoice_model->get_bill_status_details();
-		$bills = $this->Invoice_model->bill_details('ASC', $entCode);				
-		
+		if($userTypeId == 10018){
+		$bills = $this->Invoice_model->customer_bill_details($order_by = '',$entCode,$userId,$userTypeId);
+		}else{
+		$bills = $this->Invoice_model->bill_details('ASC', $entCode);
+		}
 		if (count($bills) >0) {
 			foreach($bills as $row)
 				$all_bills[] = array(
@@ -73,12 +80,29 @@ class Invoice extends CI_Controller {
 	}
 	
 	public function billDetailsBasedOnStatus() { //working as expected. 
-		//$billStatus = $this->input->post('billStatus');
-		//$entCode = $this->input->post('entCode');
-		$billStatus = 10023;
-		$entCode = 10002;
+		$billStatus = $this->input->post('billStatus');
+		$entCode = $this->input->post('entCode');
+		$userId = $this->input->post('userId');
+		$userTypeId = $this->input->post('userTypeId');
+		/* $entCode = 10002;
+		$billStatus =10024;
+		$userId = 6;
+		$userTypeId = 10018; */
 		$billStatusDetails = $this->Invoice_model->get_bill_status_details();
-		$bills = $this->Invoice_model->bill_details_by_status('ASC', $entCode,$billStatus);				
+		
+		if($userTypeId == 10018){
+				if($billStatus != 10025){
+					$bills = $this->Invoice_model->customer_bill_details_by_status($order_by = '',$entCode,$billStatus,$userId,$userTypeId);
+				}else{
+					$bills = $this->Invoice_model->customer_bill_details_by_all_status($order_by = '',$entCode,$userId,$userTypeId);
+				}
+		}else{
+			if($billStatus != 10025){
+					$bills = $this->Invoice_model->bill_details_by_status($order_by = '',$entCode,$billStatus);
+				}else{
+					$bills = $this->Invoice_model->bill_details($order_by = '',$entCode);
+				}
+		}		
 		
 		if (count($bills) >0) {
 			foreach($bills as $row)
@@ -186,6 +210,36 @@ class Invoice extends CI_Controller {
 		$billNetAmt = $this->input->post('billNetAmt');
 		$delCharges = $this->input->post('delCharges');
 		
+		if($userId == 0){
+		$userId = $this->User_model->get_max_user_id();
+		$userPictureName ='Capture.jpg';
+		$userPassword = base64_encode($this->input->post('userPhoneno'));		
+		$data =array
+			(
+				'ent_code'=>$entCode,
+				'user_name'=>$this->input->post('userPhoneno'),
+				'user_password'=>$userPassword,
+				'user_phone_no'=>$this->input->post('userPhoneNo'),
+				'user_flat_id'=>$this->input->post('userFlatId'),		
+				'user_imei'=>0,	
+				'user_designation_index'=>10018,
+				'user_status_index'=>'10013',
+				'user_image'=>$userPictureName,
+				'user_id'=>$userId,	
+				
+			);				
+			$this->User_model->add_record($data);
+
+			$data = array(
+				'continues_count' => (int)$userNum + 1 
+			);
+			
+			$this->User_model->incriment_user_no($data,$entCode);
+
+			
+		}else{
+			$userId = $this->input->post('userId');
+		}
 		
 		$data = array(
 			'ent_code'=>$entCode,

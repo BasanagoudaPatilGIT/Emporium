@@ -16,7 +16,11 @@ class Order extends CI_Controller {
 	
 	public function orderDetails() { //working as expected. 
 		//$entCode = $this->input->post('entCode');
+		//$userId = $this->input->post('userId');
+		//$userTypeId = $this->input->post('userTypeId');
 		$entCode = 10002;
+		$userId = 6;
+		$userTypeId = 10018;
 		$orderStatusDetails = $this->Order_model->get_order_status_details();
 		$orders = $this->Order_model->order_details('ASC', $entCode);				
 		
@@ -69,16 +73,31 @@ class Order extends CI_Controller {
 	}
 	
 	public function orderDetailsBasedOnStatus() { //working as expected. 
-		$OrderStatus = $this->input->post('orderStatus');
-		$entCode = $this->input->post('entCode');
-		//$orderStatus = 10002;
-		//$entCode = 10002;
+		//$OrderStatus = $this->input->post('orderStatus');
+		//$entCode = $this->input->post('entCode');
+		//$userId = $this->input->post('userId');
+		//$userTypeId = $this->input->post('userTypeId');
+		$orderStatus = 10025;
+		$entCode = 10002;
+		$userId = 6;
+		$userTypeId = 10018;
 		$orderStatusDetails = $this->Order_model->get_order_status_details();
-		if($OrderStatus != 10025){
-		$orders = $this->Order_model->order_details_by_status('ASC', $entCode,$orderStatus);	
+		
+		if($userTypeId == 10018){
+				if($orderStatus != 10025){
+					$orders = $this->Order_model->customer_order_details_by_status($order_by = '',$entCode,$orderStatus,$userId,$userTypeId);
+				}else{
+					$orders = $this->Order_model->customer_order_details_by_all_status($order_by = '',$entCode,$userId,$userTypeId);
+				}
 		}else{
-			$orders = $this->Order_model->order_details('ASC', $entCode);
+			if($orderStatus != 10025){
+					$orders = $this->Order_model->order_details_by_status($order_by = '',$entCode,$orderStatus);
+				}else{
+					$orders = $this->Order_model->order_details($order_by = '',$entCode);
+				}
 		}
+		
+		
 		if (count($orders) >0) {
 			foreach($orders as $row)
 				$all_order[] = array(
@@ -197,6 +216,38 @@ class Order extends CI_Controller {
 		//$orderTaxAmt = 10002;
 		$orderNetAmt = $this->input->post('orderNetAmt');
 		//$orderNetAmt = 10002;
+		
+		if($userId == 0){
+		$userId = $this->User_model->get_max_user_id();
+		$userPictureName ='Capture.jpg';
+		$userPassword = base64_encode($this->input->post('userPhoneno'));		
+		$data =array
+			(
+				'ent_code'=>$entCode,
+				'user_name'=>$this->input->post('userPhoneno'),
+				'user_password'=>$userPassword,
+				'user_phone_no'=>$this->input->post('userPhoneNo'),
+				'user_flat_id'=>$this->input->post('userFlatId'),		
+				'user_imei'=>0,	
+				'user_designation_index'=>10018,
+				'user_status_index'=>'10013',
+				'user_image'=>$userPictureName,
+				'user_id'=>$userId,	
+				
+			);				
+			$this->User_model->add_record($data);
+
+			$data = array(
+				'continues_count' => (int)$userNum + 1 
+			);
+			
+			$this->User_model->incriment_user_no($data,$entCode);
+
+			
+		}else{
+			$userId = $this->input->post('userId');
+		}
+		
 		
 		$data = array(
 			'ent_code'=>$entCode,

@@ -73,16 +73,6 @@
 		
 			
 		$userPassword = base64_encode($this->input->post('userPassword'));
-		/* $userGenderIndex=10019;
-		$userAge=28;
-		$userDOB="1990-04-01";
-		$userPhoneNo="9087654321";
-		$userEmailId="vijay@gmail.com";
-		$userAddress="Address";
-		$userAddressProf="Address proof";
-		$userIMEI="645678765677879";
-		$userDesignationIndex="10017"; */
-				
 		
 		if($EmployeeCount['EmployeeCount'] < $Employeelimit['EmployeeLimit'] ){
 		$imageString ='';
@@ -107,8 +97,7 @@
 				'user_phone_no'=>$this->input->post('userPhoneNo'),
 				'user_email_id'=>$this->input->post('userEmailId'),
 				'user_flat_id'=>1,	
-				'user_address'=>$this->input->post('userAddress'),	
-				//'user_address_prof'=>$this->input->post('userAddressProf'),	
+				'user_address'=>$this->input->post('userAddress'),		
 				'user_imei'=>$this->input->post('userIMEI'),	
 				'user_designation_index'=>10017,
 				'user_status_index'=>'10013',
@@ -199,8 +188,7 @@
 				'user_dob'=>$this->input->post('userDOB'),
 				'user_phone_no'=>$this->input->post('userPhoneNo'),
 				'user_email_id'=>$this->input->post('userEmailId'),
-				'user_address'=>$this->input->post('userAddress'),	
-				//'user_address_prof'=>$this->input->post('userAddressProf'),	
+				'user_address'=>$this->input->post('userAddress'),		
 				'user_imei'=>$this->input->post('userIMEI'),	
 				'user_status_index'=>$this->input->post('userStatusIndex'),
 				'user_image'=>$userPictureName
