@@ -55,7 +55,7 @@ class Invoice_model extends CI_Model
 	
 	public function bill_details($order_by = '',$entCode)
     {
-    $this->db->select('b.*,u.user_full_name,u.user_address, u.user_phone_no,fl.flat_no,w.wing,a.apartment_name');
+    $this->db->select('b.*,u.user_full_name,u.user_address, u.user_phone_no,fl.flat_no,w.wing,a.apartment_name,i.index_name as billStatus');
 	$this->db->from('tab_bill_h as b');
 	$this->db->where('b.ent_code', $entCode);
 	$this->db->join('tab_user as u', 'u.id = b.user_id','left');
@@ -72,8 +72,7 @@ class Invoice_model extends CI_Model
 	
 	public function bill_details_by_status($order_by = '',$entCode,$billStatus)
     {
-    $this->db->select('b.*,u.user_full_name,u.user_address, u.user_phone_no,fl.flat_no,w.wing,a.apartment_name');
-	$this->db->from('tab_bill_h as b');
+    $this->db->select('b.*,u.user_full_name,u.user_address, u.user_phone_no,fl.flat_no,w.wing,a.apartment_name,i.index_name as billStatus');
 	$this->db->where('b.ent_code', $entCode);
 	$this->db->where('i.index_id', $billStatus);
 	$this->db->join('tab_user as u', 'u.id = b.user_id','left');
@@ -86,49 +85,9 @@ class Invoice_model extends CI_Model
     }
     $query = $this->db->get();		
     return $query->result_array();
-    }
-	
-	
-	public function customer_bill_details_by_status($order_by = '',$entCode,$billStatus,$userId,$userTypeId)
-    {
-    $this->db->select('b.*,u.user_full_name,u.user_address, u.user_phone_no,fl.flat_no,w.wing,a.apartment_name');
-	$this->db->from('tab_bill_h as b');
-	$this->db->where('b.ent_code', $entCode);
-	$this->db->where('u.id', $userId);
-	$this->db->where('u.user_designation_index', $userTypeId);
-	$this->db->where('i.index_id', $billStatus);
-	$this->db->join('tab_user as u', 'u.id = b.user_id','left');
-	$this->db->join('tab_index as i', 'i.index_id = b.bill_status_index','left');
-	$this->db->join('tab_flat_no as fl', 'fl.id = u.user_flat_id','left');
-	$this->db->join('tab_wing as w', 'w.id = fl.wing_id','left');
-	$this->db->join('tab_apartment as a', 'a.id = w.apartment_id','left');
-    if($order_by != ''){
-    $this->db->order_by('b.id',$order_by);
-    }
-    $query = $this->db->get();		
-    return $query->result_array();
-    }
-	
-	
-	public function customer_bill_details_by_all_status($order_by = '',$entCode,$userId,$userTypeId)
-    {
-    $this->db->select('b.*,u.user_full_name,u.user_address, u.user_phone_no,fl.flat_no,w.wing,a.apartment_name');
-	$this->db->from('tab_bill_h as b');
-	$this->db->where('b.ent_code', $entCode);
-	$this->db->where('u.id', $userId);
-	$this->db->where('u.user_designation_index', $userTypeId);
-	$this->db->join('tab_user as u', 'u.id = b.user_id','left');
-	$this->db->join('tab_index as i', 'i.index_id = b.bill_status_index','left');
-	$this->db->join('tab_flat_no as fl', 'fl.id = u.user_flat_id','left');
-	$this->db->join('tab_wing as w', 'w.id = fl.wing_id','left');
-	$this->db->join('tab_apartment as a', 'a.id = w.apartment_id','left');
-    if($order_by != ''){
-    $this->db->order_by('b.id',$order_by);
-    }
-    $query = $this->db->get();		
-    return $query->result_array();
 	
     }
+	
 	public function get_bill_number($entCode)
     {
 	$this->db->select('p.*');

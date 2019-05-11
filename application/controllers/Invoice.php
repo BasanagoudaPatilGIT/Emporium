@@ -12,40 +12,23 @@ class Invoice extends CI_Controller {
 		
 	}
 	
-	public function details(){
+	public function billDetails() { //working as expected. 
+		//$entCode = $this->input->post('entCode');
 		$entCode = 10002;
 		$billStatusDetails = $this->Invoice_model->get_bill_status_details();
-		echo"<pre>";
-		print_r($billStatusDetails);
-		echo"</pre>";
-	}
-	public function billDetails() { //working as expected. 
-		$entCode = $this->input->post('entCode');
-		$userId = $this->input->post('userId');
-		$userTypeId = $this->input->post('userTypeId');
-		/* $entCode = 10002;
-		$userId = 6;
-		$userTypeId = 10018; */
-		$billStatusDetails = $this->Invoice_model->get_bill_status_details();
-		if($userTypeId == 10018){
-		$bills = $this->Invoice_model->customer_bill_details($order_by = '',$entCode,$userId,$userTypeId);
-		}else{
-		$bills = $this->Invoice_model->bill_details('ASC', $entCode);
-		}
+		$bills = $this->Invoice_model->bill_details('ASC', $entCode);				
+		
 		if (count($bills) >0) {
 			foreach($bills as $row)
 				$all_bills[] = array(
 					'id'=>$row['id'],
 					'entCode'=>$row['ent_code'],
 					'userId'=>$row['user_id'],
-					'billNumber'=>$row['bill_number'],
-					'billTotalAmt'=>$row['bill_total_amount'],
-					'billTaxAmt'=>$row['bill_tax_amount'],
-					'delCharges'=>$row['delivery_charges'],
-					'billNetAmt'=>$row['bill_net_amount'],
-					'billCreatedDetetime'=>$row['bill_created_datetime'],
-					'orderId'=>$row['order_id'],
-					'billStatusIndex'=>$row['bill_status_index'],
+					'TranNumber'=>$row['bill_number'],
+					'TranNetAmt'=>$row['bill_net_amount'],
+					'TranCreatedDetetime'=>$row['bill_created_datetime'],
+					'TranStatus'=>$row['billStatus'],
+					'TranStatusIndex'=>$row['bill_status_index'],
 					'userFullName'=>$row['user_full_name'],
 					'userAddress'=>$row['user_address'],
 					'userPhoneNo'=>$row['user_phone_no'],
@@ -80,29 +63,12 @@ class Invoice extends CI_Controller {
 	}
 	
 	public function billDetailsBasedOnStatus() { //working as expected. 
-		$billStatus = $this->input->post('billStatus');
-		$entCode = $this->input->post('entCode');
-		$userId = $this->input->post('userId');
-		$userTypeId = $this->input->post('userTypeId');
-		/* $entCode = 10002;
-		$billStatus =10024;
-		$userId = 6;
-		$userTypeId = 10018; */
+		//$billStatus = $this->input->post('billStatus');
+		//$entCode = $this->input->post('entCode');
+		$billStatus = 10023;
+		$entCode = 10002;
 		$billStatusDetails = $this->Invoice_model->get_bill_status_details();
-		
-		if($userTypeId == 10018){
-				if($billStatus != 10025){
-					$bills = $this->Invoice_model->customer_bill_details_by_status($order_by = '',$entCode,$billStatus,$userId,$userTypeId);
-				}else{
-					$bills = $this->Invoice_model->customer_bill_details_by_all_status($order_by = '',$entCode,$userId,$userTypeId);
-				}
-		}else{
-			if($billStatus != 10025){
-					$bills = $this->Invoice_model->bill_details_by_status($order_by = '',$entCode,$billStatus);
-				}else{
-					$bills = $this->Invoice_model->bill_details($order_by = '',$entCode);
-				}
-		}		
+		$bills = $this->Invoice_model->bill_details_by_status('ASC', $entCode,$billStatus);				
 		
 		if (count($bills) >0) {
 			foreach($bills as $row)
@@ -110,13 +76,11 @@ class Invoice extends CI_Controller {
 					'id'=>$row['id'],
 					'entCode'=>$row['ent_code'],
 					'userId'=>$row['user_id'],
-					'billNumber'=>$row['bill_number'],
-					'billTotalAmt'=>$row['bill_total_amount'],
-					'billTaxAmt'=>$row['bill_tax_amount'],
-					'delCharges'=>$row['delivery_charges'],
-					'billNetAmt'=>$row['bill_net_amount'],
-					'billCreatedDetetime'=>$row['bill_created_datetime'],
-					'orderId'=>$row['order_id'],
+					'TranNumber'=>$row['bill_number'],
+					'TranNetAmt'=>$row['bill_net_amount'],
+					'TranCreatedDetetime'=>$row['bill_created_datetime'],
+					'TranStatus'=>$row['billStatus'],
+					'TranStatusIndex'=>$row['bill_status_index'],
 					'userFullName'=>$row['user_full_name'],
 					'userAddress'=>$row['user_address'],
 					'userPhoneNo'=>$row['user_phone_no'],
@@ -210,36 +174,6 @@ class Invoice extends CI_Controller {
 		$billNetAmt = $this->input->post('billNetAmt');
 		$delCharges = $this->input->post('delCharges');
 		
-		if($userId == 0){
-		$userId = $this->User_model->get_max_user_id();
-		$userPictureName ='Capture.jpg';
-		$userPassword = base64_encode($this->input->post('userPhoneno'));		
-		$data =array
-			(
-				'ent_code'=>$entCode,
-				'user_name'=>$this->input->post('userPhoneno'),
-				'user_password'=>$userPassword,
-				'user_phone_no'=>$this->input->post('userPhoneNo'),
-				'user_flat_id'=>$this->input->post('userFlatId'),		
-				'user_imei'=>0,	
-				'user_designation_index'=>10018,
-				'user_status_index'=>'10013',
-				'user_image'=>$userPictureName,
-				'user_id'=>$userId,	
-				
-			);				
-			$this->User_model->add_record($data);
-
-			$data = array(
-				'continues_count' => (int)$userNum + 1 
-			);
-			
-			$this->User_model->incriment_user_no($data,$entCode);
-
-			
-		}else{
-			$userId = $this->input->post('userId');
-		}
 		
 		$data = array(
 			'ent_code'=>$entCode,
