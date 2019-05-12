@@ -126,7 +126,7 @@ class Order_model extends CI_Model
 	public function get_order_status_details()
     {
 	$where = "i.index_type= 'order_status_index' or i.index_type='select_index'";
-    $this->db->select('i.index_id,i.index_name');
+    $this->db->select('i.index_id as _id,i.index_name');
 	$this->db->from('tab_index as i');
 	$this->db->where($where);
 	$this->db->order_by('i.index_id','DESC');
