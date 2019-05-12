@@ -75,6 +75,8 @@ class Product extends CI_Controller
 		);
 		
 		print_r(json_encode($all_stock_data));
+		
+		
 	}
 	}
 	

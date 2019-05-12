@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 05, 2019 at 02:19 PM
+-- Generation Time: May 12, 2019 at 12:56 PM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -204,9 +204,9 @@ CREATE TABLE IF NOT EXISTS `tab_index` (
 
 INSERT INTO `tab_index` (`id`, `index_id`, `index_type`, `index_name`, `is_valid`) VALUES
 (1, 10001, 'order_status_index', 'Order', 1),
-(2, 10002, 'order_status_index', 'Approved', 1),
+(2, 10002, 'order_status_index', 'Approved', 2),
 (3, 10003, 'order_status_index', 'Billed', 1),
-(4, 10004, 'order_status_index', 'Billed-Pending', 1),
+(4, 10004, 'order_status_index', 'Billed-Pending', 2),
 (5, 10005, 'order_status_index', 'Cancelled', 1),
 (6, 10006, 'product_status_index', 'Billed', 1),
 (7, 10007, 'product_status_index', 'Free item', 1),
@@ -547,6 +547,7 @@ CREATE TABLE IF NOT EXISTS `tab_uom_mapping` (
 --
 
 INSERT INTO `tab_uom_mapping` (`id`, `index_id`, `category_id`, `sub_category_id`, `ent_code`) VALUES
+(0, 10028, 0, 0, '1'),
 (1, 10008, 11001, 20001, '10002'),
 (2, 10009, 11001, 20001, '10002'),
 (3, 10010, 11001, 20002, '10002'),
@@ -593,7 +594,7 @@ CREATE TABLE IF NOT EXISTS `tab_user` (
 --
 
 INSERT INTO `tab_user` (`id`, `ent_code`, `user_full_name`, `user_name`, `user_password`, `user_gender_index`, `user_age`, `user_dob`, `user_phone_no`, `user_email_id`, `user_address`, `user_address_prof`, `user_imei`, `user_designation_index`, `user_status_index`, `user_image`, `user_login_status`, `created_datetime`, `user_emp_id`, `user_id`, `user_flat_id`) VALUES
-(1, '10001', 'Basanagouda Patil', 'basupatil', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 7259999282, 'basupail71@gmail.com', 'No Address', 'proof', 123456789009876, 10015, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
+(1, '10001', 'Basanagouda Patil', 'basupatil', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 7259999282, 'basupail71@gmail.com', 'No Address', 'proof', 123456789009876, 10015, 10013, 'Capture.jpg', 0, '2019-04-09 10:13:14', '', '', 0),
 (2, '10002', 'Raghu Ram .R', 'raghuram', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 358240051111110, 10016, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (3, '10002', 'BalaKumar', 'balakumar', 'YmFsYWt1bWFy', 10019, '28', '1990-04-06', 9611429417, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009876, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (4, '10002', 'Ganesh', 'ganesh', 'Z2FuZXNo', 10019, '30', '1988-04-06', 8611429418, 'ganesh@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009877, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),

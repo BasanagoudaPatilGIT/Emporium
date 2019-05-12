@@ -15,8 +15,8 @@ class Order extends CI_Controller {
 	
 	
 	public function orderDetails() { //working as expected. 
-		//$entCode = $this->input->post('entCode');
-		$entCode = 10002;
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
 		$orderStatusDetails = $this->Order_model->get_order_status_details();
 		$orders = $this->Order_model->order_details('ASC', $entCode);				
 		
@@ -47,7 +47,7 @@ class Order extends CI_Controller {
 				'getOrderNumber' => 'getOrderNumber', // on click of plus button
 				'getEachOrderDetails' => 'getEachOrderDetails', // clikcing on each order 
 				'orderDetailsBasedOnStatus' => 'orderDetailsBasedOnStatus', // on change of order status
-				//'orderDetails' => $all_order,
+				'orderDetails' => $all_order,
 				'orderStatusDetails' => $orderStatusDetails,
 			);
 			print_r(json_encode($all_order_data));
@@ -67,12 +67,12 @@ class Order extends CI_Controller {
 	}
 	
 	public function orderDetailsBasedOnStatus() { //working as expected. 
-		$OrderStatus = $this->input->post('orderStatus');
+		$orderStatus = $this->input->post('orderStatus');
 		$entCode = $this->input->post('entCode');
 		//$orderStatus = 10002;
 		//$entCode = 10002;
 		$orderStatusDetails = $this->Order_model->get_order_status_details();
-		if($OrderStatus != 10025){
+		if($orderStatus != 10025){
 		$orders = $this->Order_model->order_details_by_status('ASC', $entCode,$orderStatus);	
 		}else{
 			$orders = $this->Order_model->order_details('ASC', $entCode);
