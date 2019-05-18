@@ -205,6 +205,7 @@ class Product_model extends CI_Model
 	d.offline_stock_qty,d.transit_qty,d.created_datetime');
 	$this->db->from('tab_temp_product as p');
 	$this->db->where('p.ent_code', $entCode);
+	$this->db->where('p.upload_status_id', 0);
 	$this->db->join('tab_temp_stock_h as h', 'h.product_id = p.id','left');
 	$this->db->join('tab_temp_stock_d as d', 'd.stock_h_id = h.id','left');
 	$this->db->join('tab_category as cat', 'cat.category_index = p.category_index','left');
@@ -328,11 +329,10 @@ class Product_model extends CI_Model
     }
 	
 	
-	public function get_product_category()
+	public function get_product_category($entCode)
     {
-    $this->db->select('c.*,c.category_index as _id');
-	$this->db->from('tab_category as c');
-	$query = $this->db->get();		
+	$sql = "select c.*,c.category_index as _id from tab_category as c where c.ent_code = 1 or c.ent_code = ? ";
+	$query = $this->db->query($sql,array($entCode));		
     return $query->result_array();
     }
 	
@@ -346,9 +346,11 @@ class Product_model extends CI_Model
 
 	public function get_uom_details()
     {
-    $this->db->select('i.*,um.*,i.index_id as _id');
+	$where = "i.index_type= 'product_uom_index' or i.index_type='select_index'";
+    $this->db->select('i.index_id as _id,i.index_id as indexId, i.index_name as indexName,um.category_id as categoryId,
+	um.sub_category_id as subCategoryId');
 	$this->db->from('tab_index as i');
-	$this->db->where('i.index_type','product_uom_index');
+	$this->db->where($where);
 	$this->db->join('tab_uom_mapping as um', 'um.index_id = i.index_id','left');
 	$query = $this->db->get();		
     return $query->result_array();
@@ -356,9 +358,10 @@ class Product_model extends CI_Model
 
 	public function get_uom_details_based_on_filters($productCategory,$productSubCategory)
     {
+	$where = "i.index_type= 'product_uom_index' or i.index_type='select_index'";
     $this->db->select('i.index_name,i.index_id as _id');
 	$this->db->from('tab_index as i');
-	$this->db->where('i.index_type','product_uom_index');
+	$this->db->where($where);
 	$this->db->join('tab_uom_mapping as um', 'um.index_id = i.index_id','left');
 	$this->db->where('um.category_id',$productCategory);
 	$this->db->where('um.sub_category_id',$productSubCategory);
@@ -373,10 +376,29 @@ class Product_model extends CI_Model
     $this->db->update('tab_stock_d', $data);		
     }	
 	
-	public function delete_records_from_temp_table($entCode)
+	public function delete_records_from_tab_temp_product($entCode)
     {
-	$this->db->where('stock_h_id', $stockhId);
-    $this->db->update('tab_stock_d', $data);		
+	$this->db->where('ent_code', $entCode);
+	return $this->db->delete('tab_temp_product');	
+    }
+	
+	public function delete_records_from_tab_temp_stock_h($entCode)
+    {
+	$this->db->where('ent_code', $entCode);	
+	return $this->db->delete('tab_temp_stock_h');	
+    }
+	
+	public function delete_records_from_tab_temp_stock_d($entCode)
+    {
+	$this->db->where('ent_code', $entCode);
+	return $this->db->delete('tab_temp_stock_d');	
+    }
+	
+	
+	public function update_stock_movement_details($data, $productDID)
+    {
+	$this->db->where('d.id', $productDID);
+    $this->db->update('tab_stock_d as d', $data);		
     }
 	
  }

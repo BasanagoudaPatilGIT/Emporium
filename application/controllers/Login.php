@@ -9,14 +9,16 @@
 	
 	function validate_login_credentials() {
 		$userName = "raghuram";
-		$imei = 0;
+		$userPhoneno = "9611429415";
+		$imei = 358240051111110;
 		$userPassword = base64_encode("raghuram");
 		
 		//$userName = $this->input->post('userName');
-		//$imei = $this->input->post('imei');
+		//$userPhoneno = $this->input->post('userName');
+		//$imei = $this->input->post('userIMEI');
 		//$userPassword = base64_encode($this->input->post('userPassword'));
 		
-		$query = $this->Login_model->validate($userName,$userPassword,$imei);
+		$query = $this->Login_model->validate($userName,$userPhoneno,$userPassword,$imei);
 		
 		if ($query) {
 			$todaysdate = date('Y-m-d');
@@ -31,7 +33,7 @@
 				
 				return $login_failed_data;
 			} else {
-				$data['login'] = $this->Login_model->get_user_detail($userName,$userPassword);
+				$data['login'] = $this->Login_model->get_user_detail($userName,$userPhoneno,$userPassword);
 				$mobilogin = 1;
 				$userid = $data['login']['id'];
 				$data = array(
@@ -39,7 +41,7 @@
 				);
 								
 				$this->Login_model->update_logout($data,$userid);
-				$data['login'] = $this->Login_model->get_user_detail($userName,$userPassword);
+				$data['login'] = $this->Login_model->get_user_detail($userName,$userPhoneno,$userPassword);
 				$user_array[] = array(
 					'userId' => $data['login']['id'],
 					'entCode' => $data['login']['ent_code'],
@@ -47,6 +49,7 @@
 					'mobileNo' => $data['login']['user_phone_no'],
 					'emailId' => $data['login']['user_email_id'],
 					'imageName' => $data['login']['user_image'],
+					'designationIndex' => $data['login']['user_designation_index'],
 					'designation' => $data['login']['index_name'],
 					'userAddress' => $data['login']['user_address'],
 					'userFullName'=>$data['login']['user_full_name'],
@@ -58,58 +61,72 @@
 				);
 				if($data['login']['index_name'] == 'Admin'){
 				$menu_array[] = array(
-					'addEntity' => "Entity",
-					'addOwner' => "Owners",
+					'entityDetails' => "Entity",
 					'AddCategoryOrSubCategory' => "Add CategorySubCategory",
 				);
 				
 				$main_menu_array[] = array(
-					'stockDetails' => "Stock",
-					'invoiceList' => "Bills",
-					'getReport'=>"Expence Report",
-					'getExpiredStockDetails'=>"Exp.Medicine",
+					'getProductDetails' => "Stock",
+					'invoiceDetails' => "Invoice",
+					'getReport'=>"Expense Report",
 					'mobiLogout' => "Logout"
 				);	
+				$dashboard_array[] = array(
+					'availableVersion'=>'v1.0.0',
+					'lowStockCount'=>2,
+					'inStockCount'=>5,
+				);
+				
+				
 				}else if($data['login']['index_name'] == 'Owner'){
 					$menu_array[] = array(
 					'purchaseProductDetails' => "Purchase",
-					'stockDetails' => "Stock",
+					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
-					'invoiceList' => "Bills",
+					'invoiceDetails' => "Invoice",
 				);
 				
 				$main_menu_array[] = array(
 					'purchaseProductDetails' => "Purchase",
-					'stockDetails' => "Stock",
+					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
-					'invoiceList' => "Bills",
+					'invoiceDetails' => "Invoice",
 					'loadUploadProducts' => "Upload Products",
-					'getReport' => "Expence Report",
+					'employeeDetails' => "Employee",
+					'getReport' => "Expense Report",
 					'mobiLogout' => "Logout"
 				);	
-				}else{
+				$dashboard_array[] = array(
+					'availableVersion'=>'v1.0.0',
+					'lowStockCount'=>2,
+					'inStockCount'=>5,
+				);
+				}else if($data['login']['index_name'] == 'Customer') {
 					$menu_array[] = array(
-					'stockDetails' => "Stock",
+					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
-					'invoiceList' => "Bills",
+					'invoiceDetails' => "Invoice",
+					'getReport' => "Expence Report",
 					);
 					$main_menu_array[] = array(
-					'stockDetails' => "Stock",
+					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
-					'invoiceList' => "Bills",
-					'loadUploadProducts' => "Upload Products",
-					'getReport' => "Expence Report",
+					'invoiceDetails' => "Invoice",
+					'getReport' => "Expense Report",
 					'mobiLogout' => "Logout"
 				);	
+					$dashboard_array[] = array(
+						'availableVersion'=>'v1.0.0',
+						'lowStockCount'=>2,
+						'inStockCount'=>5,
+					);
 				}
 					
 				$mobile_login_data[] = array(
 					'userDetails' => $user_array,
 					'menuDetails' => $menu_array,
-					'availableVersion'=>'v1.0.0',
-					'lowStockCount'=>2,
-					'inStockCount'=>5,
-					'mainMenuDetails' => $main_menu_array
+					'mainMenuDetails' => $main_menu_array,
+					'dashboardDetails' => $dashboard_array,
 				);
 				
 				print_r(json_encode($mobile_login_data));
@@ -125,11 +142,106 @@
 		}
 	}
 	
+	function reloadHome() {
+		//$userId = $this->input->post('userId');
+		$userId =1;
+		$data['login'] = $this->Login_model->get_user_detail_by_userId($userId);
+		$user_array[] = array(
+			'userId' => $data['login']['id'],
+			'entCode' => $data['login']['ent_code'],
+			'name' => $data['login']['user_full_name'],
+			'mobileNo' => $data['login']['user_phone_no'],
+			'emailId' => $data['login']['user_email_id'],
+			'imageName' => $data['login']['user_image'],
+			'designationIndex' => $data['login']['user_designation_index'],
+			'designation' => $data['login']['index_name'],
+			'userAddress' => $data['login']['user_address'],
+			'userFullName'=>$data['login']['user_full_name'],
+			'userAddress'=>$data['login']['user_address'],
+			'userPhoneNo'=>$data['login']['user_phone_no'],
+			'flatNo'=>$data['login']['flat_no'],
+			'wing'=>$data['login']['wing'],
+			'apartmentName'=>$data['login']['apartment_name'],		
+		);
+		if($data['login']['index_name'] == 'Admin'){
+		$menu_array[] = array(
+			'entityDetails' => "Entity",
+			'AddCategoryOrSubCategory' => "Add CategorySubCategory",
+		);
+		
+		$main_menu_array[] = array(
+			'getProductDetails' => "Stock",
+			'invoiceDetails' => "Invoice",
+			'getReport'=>"Expense Report",
+			'mobiLogout' => "Logout"
+		);	
+		$dashboard_array[] = array(
+			'availableVersion'=>'v1.0.0',
+			'lowStockCount'=>2,
+			'inStockCount'=>5,
+		);
+		
+		
+		}else if($data['login']['index_name'] == 'Owner'){
+			$menu_array[] = array(
+			'purchaseProductDetails' => "Purchase",
+			'getProductDetails' => "Stock",
+			'orderDetails' => "Orders",
+			'invoiceDetails' => "Invoice",
+		);
+		
+		$main_menu_array[] = array(
+			'purchaseProductDetails' => "Purchase",
+			'getProductDetails' => "Stock",
+			'orderDetails' => "Orders",
+			'invoiceDetails' => "Invoice",
+			'loadUploadProducts' => "Upload Products",
+			'employeeDetails' => "Employee",
+			'getReport' => "Expense Report",
+			'mobiLogout' => "Logout"
+		);	
+		$dashboard_array[] = array(
+			'availableVersion'=>'v1.0.0',
+			'lowStockCount'=>2,
+			'inStockCount'=>5,
+		);
+		}else if($data['login']['index_name'] == 'Customer') {
+			$menu_array[] = array(
+			'getProductDetails' => "Stock",
+			'orderDetails' => "Orders",
+			'invoiceDetails' => "Invoice",
+			'getReport' => "Expence Report",
+			);
+			$main_menu_array[] = array(
+			'getProductDetails' => "Stock",
+			'orderDetails' => "Orders",
+			'invoiceDetails' => "Invoice",
+			'getReport' => "Expense Report",
+			'mobiLogout' => "Logout"
+		);	
+			$dashboard_array[] = array(
+				'availableVersion'=>'v1.0.0',
+				'lowStockCount'=>2,
+				'inStockCount'=>5,
+			);
+		}
+			
+		$mobile_login_data[] = array(
+			'userDetails' => $user_array,
+			'menuDetails' => $menu_array,
+			'dashboardDetails' => $dashboard_array,
+			'mainMenuDetails' => $main_menu_array
+		);
+		
+		print_r(json_encode($mobile_login_data));
+
+		
+	}
+	
         public function mobiLogout()
-	{
-		$this->load->model('Login_model');	
+	{	
 		$Mobilogout = 0;
-		$userid = $_SESSION['ID'];
+		$userid = $this->input->post('userId');
 		$data = array(
 			'user_login_status' => $Mobilogout
 		);

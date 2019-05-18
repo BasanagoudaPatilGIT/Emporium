@@ -49,20 +49,13 @@
 		$empId = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
 		$empNum = $data['auto_code']['continues_count'];
 		$userGender=  $this->Index_model->user_gender();
-		
-		if (count($userGender) >0) {
-			foreach($userGender as $row)
-				$all_userGender[] = array(
-					'index'=>$row['index'],
-					'index_name' =>$row['index_name'],
-				);
-		}			
+				
 			
 		$employee_details[] = array(
 					'allUserGender'=>$all_userGender,
 					'empId' =>$empId,
 					'empNum' =>$empNum,
-					'addEmployee' =>'addEmployee'
+					'addEmployee' =>'addEmployee',
 				);
 		
 		
@@ -80,16 +73,6 @@
 		
 			
 		$userPassword = base64_encode($this->input->post('userPassword'));
-		/* $userGenderIndex=10019;
-		$userAge=28;
-		$userDOB="1990-04-01";
-		$userPhoneNo="9087654321";
-		$userEmailId="vijay@gmail.com";
-		$userAddress="Address";
-		$userAddressProf="Address proof";
-		$userIMEI="645678765677879";
-		$userDesignationIndex="10017"; */
-				
 		
 		if($EmployeeCount['EmployeeCount'] < $Employeelimit['EmployeeLimit'] ){
 		$imageString ='';
@@ -104,7 +87,7 @@
 		}
 		$data =array
 			(
-				'ent_code'=>$this->input->post('entCode'),
+				'ent_code'=>$entCode,
 				'user_full_name'=>$this->input->post('userFullName'),
 				'user_name'=>$this->input->post('userName'),
 				'user_password'=>$userPassword,
@@ -114,8 +97,7 @@
 				'user_phone_no'=>$this->input->post('userPhoneNo'),
 				'user_email_id'=>$this->input->post('userEmailId'),
 				'user_flat_id'=>1,	
-				'user_address'=>$this->input->post('userAddress'),	
-				//'user_address_prof'=>$this->input->post('userAddressProf'),	
+				'user_address'=>$this->input->post('userAddress'),		
 				'user_imei'=>$this->input->post('userIMEI'),	
 				'user_designation_index'=>10017,
 				'user_status_index'=>'10013',
@@ -146,13 +128,11 @@
 	public function viewEmployee()
 	{
 		$entCode = $this->input->post('entCode');
-		$userDesignationIndex = $this->input->post('userDesignationIndex');
 		$empId = $this->input->post('empId');
 		/*$entCode = 10001;
 		$userDesignationIndex = 10015;
 		$empId = 1;*/
 		
-		$userDesignation =  $this->Index_model->user_designation($userDesignationIndex);
 		$userGender=  $this->Index_model->user_gender();
 		
 		$eachEmpDetails = $this->Employee_model->get_employee_details_by_id($empId);
@@ -177,25 +157,7 @@
 				'apartmentName'=>$eachEmpDetails['apartment_name'],
 				);
 		
-		if (count($userDesignation) >0) {
-			foreach($userDesignation as $row)
-				$user_designation[] = array(
-					'index'=>$row['index'],
-					'index_name' =>$row['index_name'],
-				);
-		}
-
-		if (count($userGender) >0) {
-			foreach($userGender as $row)
-				$all_userGender[] = array(
-					'index'=>$row['index'],
-					'index_name' =>$row['index_name'],
-				);
-		}			
-			
 		$required_details[] = array(
-					'eachEmpDetails'=>$each_EmpDetails,
-					'allUserGender'=>$all_userGender,
 					'UserDesignation' =>$user_designation,
 					'UpdateEmployee' =>'Update Employee',
 				);
@@ -213,15 +175,20 @@
 		/*$entCode = 10001;
 		$userDesignationIndex = 10015;
 		$empId = 1;*/
+		$imageString ='';
 		
+		if($imageString == ''){
+		$userPictureName ='Capture.jpg';	
+		}else{
+		$userPictureName = $this->input->post('userPictureName');
+		}
 		$data =array
 			(
 				'user_full_name'=>$this->input->post('userFullName'),
 				'user_dob'=>$this->input->post('userDOB'),
 				'user_phone_no'=>$this->input->post('userPhoneNo'),
 				'user_email_id'=>$this->input->post('userEmailId'),
-				'user_address'=>$this->input->post('userAddress'),	
-				//'user_address_prof'=>$this->input->post('userAddressProf'),	
+				'user_address'=>$this->input->post('userAddress'),		
 				'user_imei'=>$this->input->post('userIMEI'),	
 				'user_status_index'=>$this->input->post('userStatusIndex'),
 				'user_image'=>$userPictureName

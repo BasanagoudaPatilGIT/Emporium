@@ -26,16 +26,13 @@ class Order extends CI_Controller {
 					'id'=>$row['id'],
 					'entCode'=>$row['ent_code'],
 					'userId'=>$row['user_id'],
-					'userPhoneNo'=>$row['user_phone_no'],
-					'orderNumber'=>$row['order_number'],
-					'orderTotalAmt'=>$row['order_total_amount'],
-					'orderTaxAmt'=>$row['order_tax_amount'],
-					'orderNetAmt'=>$row['order_net_amount'],
-					'orderStatus'=>$row['orderStatus'], 
-					'orderStatusIndex'=>$row['order_status_index'],
-					'orderViewStatus'=>$row['orderStatus'],
-					'orderViewStatusIndex'=>$row['order_view_status'],
-					'orderCreatedDatetime'=>$row['order_created_datetime'],
+					'TranNumber'=>$row['order_number'],
+					'TranTotalAmt'=>$row['order_total_amount'],
+					'TranTaxAmt'=>$row['order_tax_amount'],
+					'TranNetAmt'=>$row['order_net_amount'],
+					'TranStatus'=>$row['orderStatus'], 
+					'TranStatusIndex'=>$row['order_status_index'],
+					'TranCreatedDatetime'=>$row['order_created_datetime'],
 					'userFullName'=>$row['user_full_name'],
 					'userAddress'=>$row['user_address'],
 					'userPhoneNo'=>$row['user_phone_no'],
@@ -70,28 +67,31 @@ class Order extends CI_Controller {
 	}
 	
 	public function orderDetailsBasedOnStatus() { //working as expected. 
-		$OrderStatus = $this->input->post('orderStatus');
+		$orderStatus = $this->input->post('orderStatus');
 		$entCode = $this->input->post('entCode');
 		//$orderStatus = 10002;
 		//$entCode = 10002;
 		$orderStatusDetails = $this->Order_model->get_order_status_details();
-		$orders = $this->Order_model->order_details_by_status('ASC', $entCode,$orderStatus);				
-		
+		if($orderStatus != 10025){
+		$orders = $this->Order_model->order_details_by_status('ASC', $entCode,$orderStatus);	
+		}else{
+			$orders = $this->Order_model->order_details('ASC', $entCode);
+		}
 		if (count($orders) >0) {
 			foreach($orders as $row)
 				$all_order[] = array(
 					'id'=>$row['id'],
 					'entCode'=>$row['ent_code'],
 					'userId'=>$row['user_id'],
-					'orderNumber'=>$row['order_number'],
-					'orderTotalAmt'=>$row['order_total_amount'],
-					'orderTaxAmt'=>$row['order_tax_amount'],
-					'orderNetAmt'=>$row['order_net_amount'],
-					'orderStatus'=>$row['orderStatus'], 
-					'orderstatusIndex'=>$row['order_status_index'],
-					'orderViewStatus'=>$row['orderStatus'],
-					'orderViewStatusIndex'=>$row['order_view_status'],
-					'orderCreatedDatetime'=>$row['order_created_datetime'],
+					'TranNumber'=>$row['order_number'],
+					'TranTotalAmt'=>$row['order_total_amount'],
+					'TranTaxAmt'=>$row['order_tax_amount'],
+					'TranNetAmt'=>$row['order_net_amount'],
+					'TranStatus'=>$row['orderStatus'], 
+					'TranStatusIndex'=>$row['order_status_index'],
+					'TranViewStatus'=>$row['orderStatus'],
+					'TranViewStatusIndex'=>$row['order_view_status'],
+					'TranCreatedDatetime'=>$row['order_created_datetime'],
 					'userFullName'=>$row['user_full_name'],
 					'userAddress'=>$row['user_address'],
 					'userPhoneNo'=>$row['user_phone_no'],

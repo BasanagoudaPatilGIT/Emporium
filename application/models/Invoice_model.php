@@ -55,7 +55,7 @@ class Invoice_model extends CI_Model
 	
 	public function bill_details($order_by = '',$entCode)
     {
-    $this->db->select('b.*,u.user_full_name,u.user_address, u.user_phone_no,fl.flat_no,w.wing,a.apartment_name');
+    $this->db->select('b.*,u.user_full_name,u.user_address, u.user_phone_no,fl.flat_no,w.wing,a.apartment_name,i.index_name as billStatus');
 	$this->db->from('tab_bill_h as b');
 	$this->db->where('b.ent_code', $entCode);
 	$this->db->join('tab_user as u', 'u.id = b.user_id','left');
@@ -72,7 +72,7 @@ class Invoice_model extends CI_Model
 	
 	public function bill_details_by_status($order_by = '',$entCode,$billStatus)
     {
-    $this->db->select('b.*,u.user_full_name,u.user_address, u.user_phone_no,fl.flat_no,w.wing,a.apartment_name');
+    $this->db->select('b.*,u.user_full_name,u.user_address, u.user_phone_no,fl.flat_no,w.wing,a.apartment_name,i.index_name as billStatus');
 	$this->db->where('b.ent_code', $entCode);
 	$this->db->where('i.index_id', $billStatus);
 	$this->db->join('tab_user as u', 'u.id = b.user_id','left');
@@ -101,9 +101,11 @@ class Invoice_model extends CI_Model
 		
 	public function get_bill_status_details()
     {
-    $this->db->select('i.index_id,i.index_name');
+	$where = "i.index_type= 'invoice_status_index' or i.index_type='select_index'";
+    $this->db->select('i.index_id as _id,i.index_name');
 	$this->db->from('tab_index as i');
-	$this->db->where('i.index_type','invoice_status_index');
+	$this->db->where($where);
+	$this->db->order_by('i.index_id','DESC');
 	$query = $this->db->get();		
     return $query->result_array();
     }	

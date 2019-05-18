@@ -12,13 +12,6 @@ class Invoice extends CI_Controller {
 		
 	}
 	
-	public function details(){
-		$entCode = 10002;
-		$billStatusDetails = $this->Invoice_model->get_bill_status_details();
-		echo"<pre>";
-		print_r($billStatusDetails);
-		echo"</pre>";
-	}
 	public function billDetails() { //working as expected. 
 		//$entCode = $this->input->post('entCode');
 		$entCode = 10002;
@@ -31,14 +24,11 @@ class Invoice extends CI_Controller {
 					'id'=>$row['id'],
 					'entCode'=>$row['ent_code'],
 					'userId'=>$row['user_id'],
-					'billNumber'=>$row['bill_number'],
-					'billTotalAmt'=>$row['bill_total_amount'],
-					'billTaxAmt'=>$row['bill_tax_amount'],
-					'delCharges'=>$row['delivery_charges'],
-					'billNetAmt'=>$row['bill_net_amount'],
-					'billCreatedDetetime'=>$row['bill_created_datetime'],
-					'orderId'=>$row['order_id'],
-					'billStatusIndex'=>$row['bill_status_index'],
+					'TranNumber'=>$row['bill_number'],
+					'TranNetAmt'=>$row['bill_net_amount'],
+					'TranCreatedDetetime'=>$row['bill_created_datetime'],
+					'TranStatus'=>$row['billStatus'],
+					'TranStatusIndex'=>$row['bill_status_index'],
 					'userFullName'=>$row['user_full_name'],
 					'userAddress'=>$row['user_address'],
 					'userPhoneNo'=>$row['user_phone_no'],
@@ -86,13 +76,11 @@ class Invoice extends CI_Controller {
 					'id'=>$row['id'],
 					'entCode'=>$row['ent_code'],
 					'userId'=>$row['user_id'],
-					'billNumber'=>$row['bill_number'],
-					'billTotalAmt'=>$row['bill_total_amount'],
-					'billTaxAmt'=>$row['bill_tax_amount'],
-					'delCharges'=>$row['delivery_charges'],
-					'billNetAmt'=>$row['bill_net_amount'],
-					'billCreatedDetetime'=>$row['bill_created_datetime'],
-					'orderId'=>$row['order_id'],
+					'TranNumber'=>$row['bill_number'],
+					'TranNetAmt'=>$row['bill_net_amount'],
+					'TranCreatedDetetime'=>$row['bill_created_datetime'],
+					'TranStatus'=>$row['billStatus'],
+					'TranStatusIndex'=>$row['bill_status_index'],
 					'userFullName'=>$row['user_full_name'],
 					'userAddress'=>$row['user_address'],
 					'userPhoneNo'=>$row['user_phone_no'],

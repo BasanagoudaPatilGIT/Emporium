@@ -23,6 +23,17 @@ class User_model extends CI_Model
 		return $this->db->insert('tab_user', $data);
 	}
 	
+	public function get_max_user_id()
+	{
+		
+		$this->db->select_max('id');
+		$query = $this->db->get('tab_user');
+		$row = $query->row();
+		$max_id = $row->id + 1;
+		
+		return $max_id;
+	}
+	
 	public function get_user_number($entCode)
     {
 	$this->db->select('p.*');
@@ -33,6 +44,7 @@ class User_model extends CI_Model
 	
 	return $query->row_array();
     }
+	
 	
 	
 	public function edit_record($id,$data)
@@ -66,7 +78,7 @@ class User_model extends CI_Model
     {
     $this->db->select('u.*,i.index_name');
 	$this->db->from('tab_user as u');
-	$this->db->join('tab_index as i', 'i.index = u.user_designation_index','left');
+	$this->db->join('tab_index as i', 'i.index_id = u.user_designation_index','left');
 	if($entCode != '10001'){
 	$this->db->where('u.ent_code', $entCode);
 	$this->db->where('u.user_designation_index','10018');
