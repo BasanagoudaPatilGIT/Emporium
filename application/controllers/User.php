@@ -13,8 +13,8 @@
 	
 	public function getUserDetails()
 	{
-		//$entCode = $this->input->post('entCode');
-		$entCode = 10002;
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
 		$allUserDetails = $this->User_model->get_all_user_details($entCode);
 		$UserCount = $this->User_model->user_count($entCode);
 			

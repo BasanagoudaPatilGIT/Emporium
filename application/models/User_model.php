@@ -95,6 +95,28 @@ class User_model extends CI_Model
     return $query->result_array();
     }
 	
+	public function get_all_user_details_for_transaction($entCode)
+    {
+    $this->db->select('u.id as userId,u.ent_code as entCode,u.user_full_name as name,u.user_phone_no as mobileNo,fl.id as flatIndex,fl.flat_no as flatNo,w.id as wingIndex,w.wing as wing,a.id as apartmentIndex,a.apartment_name as apartmentName');
+	$this->db->from('tab_user as u');
+	$this->db->join('tab_index as i', 'i.index_id = u.user_designation_index','left');
+	if($entCode != '10001'){
+	$this->db->where('u.ent_code', $entCode);
+	$this->db->where('u.user_designation_index','10018');
+	$this->db->where('i.index_type','user_designation_index');
+	}else{
+	$this->db->where('u.user_designation_index','10018');
+	$this->db->where('i.index_type','user_designation_index');
+	}
+	$this->db->join('tab_flat_no as fl', 'fl.id = u.user_flat_id','left');
+	$this->db->join('tab_wing as w', 'w.id = fl.wing_id','left');
+	$this->db->join('tab_apartment as a', 'a.id = w.apartment_id','left');
+    $this->db->order_by('u.id','DESC');
+    $query = $this->db->get();		
+    return $query->result_array();
+    }
+	
+	
 	public function get_user_details_by_id($userId)
     {
 	$this->db->select('u.*,des.index_name as user_designation,st.index_name as user_status,gen.index_name as user_gender');

@@ -143,8 +143,8 @@
 	}
 	
 	function reloadHome() {
-		//$userId = $this->input->post('userId');
-		$userId =1;
+		$userId = $this->input->post('userId');
+		//$userId =1;
 		$data['login'] = $this->Login_model->get_user_detail_by_userId($userId);
 		$user_array[] = array(
 			'userId' => $data['login']['id'],

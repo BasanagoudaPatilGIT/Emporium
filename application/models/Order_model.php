@@ -141,11 +141,11 @@ class Order_model extends CI_Model
 	$this->db->update('tab_series', $data);	
     }
 	
-	public function get_order_h_details($orderNumber,$entCode)
+	public function get_order_h_details($orderId,$entCode)
     {
 	$this->db->select('h.*,u.user_full_name,u.user_address,u.user_phone_no');
     $this->db->from('tab_order_h as h');
-    $this->db->where('h.order_number', $orderNumber);
+    $this->db->where('h.id', $orderId);
     $this->db->where('h.ent_code', $entCode);
 	$this->db->join('tab_user as u', 'u.id = h.user_id', 'left');
     $query = $this->db->get();
