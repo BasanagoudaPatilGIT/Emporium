@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 25, 2019 at 10:38 AM
+-- Generation Time: May 25, 2019 at 02:46 PM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `tab_bill_d` (
   `bill_h_id` int(10) NOT NULL,
   `product_code` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `product_name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `batch_no` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `product_batch` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `product_uom_index` int(10) NOT NULL,
   `order_qty` int(10) NOT NULL,
   `bill_qty` int(10) NOT NULL,
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `tab_bill_d` (
 -- Dumping data for table `tab_bill_d`
 --
 
-INSERT INTO `tab_bill_d` (`id`, `bill_h_id`, `product_code`, `product_name`, `batch_no`, `product_uom_index`, `order_qty`, `bill_qty`, `mrp`, `tax_percent`, `sale_rate`, `product_status_index`) VALUES
+INSERT INTO `tab_bill_d` (`id`, `bill_h_id`, `product_code`, `product_name`, `product_batch`, `product_uom_index`, `order_qty`, `bill_qty`, `mrp`, `tax_percent`, `sale_rate`, `product_status_index`) VALUES
 (1, 1, '#P10002-101', 'Tomato', '1234-1234', 10009, 2, 2, 2000.0000, 20.0000, 1600.0000, 0),
 (2, 1, '#P10002-101', 'Tomato', '1234-1234', 10009, 2, 2, 2000.0000, 20.0000, 1600.0000, 0);
 
@@ -262,8 +262,12 @@ CREATE TABLE IF NOT EXISTS `tab_order_d` (
 --
 
 INSERT INTO `tab_order_d` (`id`, `order_h_id`, `product_code`, `product_name`, `product_batch`, `product_uom_index`, `order_qty`, `tax_percent`, `tax_amount`, `sale_rate`, `sub_total`, `product_stock_status_index`, `row_invalidated`, `status_updated_datetime`) VALUES
-(1, 1, '#P10002-101', 'Tomato', '1234-1234', 10009, 1, 1.00, 0.0000, 9.50, 0.0000, 10007, 0, '2019-04-25 16:08:04'),
-(2, 1, '#P10002-101', 'Tomato', '1234-1234', 10009, 1, 1.00, 0.0000, 9.50, 0.0000, 10007, 0, '2019-04-25 16:08:04');
+(1, 1, '#P10002-104', 'Brinjal', '#P10002-1042019-06-03150000.0220', 10009, 2, 2.00, 0.8800, 0.02, 45.0000, 10007, 0, '2019-05-25 19:52:23'),
+(2, 1, '#P10002-105', 'broccoli', '#P10002-1052019-06-03200000.0200', 10008, 800, 2.00, 0.3200, 0.02, 16.0000, 10007, 0, '2019-05-25 19:52:23'),
+(3, 1, '#P10002-106', 'Puha', '#P10002-1062019-06-032510.0000', 10010, 2, 3.00, 0.6000, 10.00, 21.0000, 10007, 0, '2019-05-25 19:52:24'),
+(4, 2, '#P10002-104', 'Brinjal', '#P10002-1042019-06-03150000.0220', 10009, 1, 2.00, 0.4400, 0.02, 22.4400, 10007, 0, '2019-05-25 19:57:29'),
+(5, 2, '#P10002-105', 'broccoli', '#P10002-1052019-06-03200000.0200', 10009, 2, 2.00, 0.8000, 0.02, 40.8000, 10007, 0, '2019-05-25 19:57:29'),
+(6, 2, '#P10002-106', 'Puha', '#P10002-1062019-06-032510.0000', 10010, 1, 3.00, 0.3000, 10.00, 10.3000, 10007, 0, '2019-05-25 19:57:29');
 
 -- --------------------------------------------------------
 
@@ -278,7 +282,7 @@ CREATE TABLE IF NOT EXISTS `tab_order_h` (
   `order_number` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
   `order_total_amount` double(65,4) NOT NULL,
   `order_tax_amount` double(65,4) NOT NULL,
-  `order_net_amount` double(65,0) NOT NULL,
+  `order_net_amount` double(65,4) NOT NULL,
   `order_status_index` int(10) NOT NULL,
   `order_view_status` int(10) NOT NULL,
   `order_created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -291,7 +295,8 @@ CREATE TABLE IF NOT EXISTS `tab_order_h` (
 --
 
 INSERT INTO `tab_order_h` (`id`, `ent_code`, `user_id`, `order_number`, `order_total_amount`, `order_tax_amount`, `order_net_amount`, `order_status_index`, `order_view_status`, `order_created_datetime`) VALUES
-(1, '10002', 6, '#O-120001', 100.0000, 20.0000, 120, 10005, 10005, '2019-04-25 16:04:45');
+(1, '10002', 8, '#O100022001', 80.0000, 4.4800, 84.4800, 10001, 10001, '2019-05-25 19:52:23'),
+(2, '10002', 8, '#O100022002', 72.0000, 3.8400, 76.0000, 10001, 10001, '2019-05-25 19:57:29');
 
 -- --------------------------------------------------------
 
@@ -349,7 +354,7 @@ INSERT INTO `tab_series` (`id`, `series_name`, `series_id`, `continues_count`, `
 (2, 'Product Code', '#P', 107, '2019-05-03 11:05:31', 10002),
 (3, 'Employee Code', '#E', 1001, '2019-04-12 00:00:00', 10002),
 (4, 'User Id', '#U', 111005, '2019-05-05 00:00:00', 10002),
-(5, 'Orders', '#O', 120001, '2019-04-12 00:00:00', 10002),
+(5, 'Orders', '#O', 2003, '2019-05-25 14:27:29', 10002),
 (6, 'Invoice', '#In', 130001, '2019-04-12 00:00:00', 10002);
 
 -- --------------------------------------------------------
@@ -376,9 +381,9 @@ CREATE TABLE IF NOT EXISTS `tab_stock_d` (
 --
 
 INSERT INTO `tab_stock_d` (`id`, `stock_h_id`, `stock_qty`, `online_stock_qty`, `offline_stock_qty`, `transit_qty`, `created_datetime`, `product_id`) VALUES
-(1, 1, 15000, 10000, 5000, 0, '2019-05-03 16:35:31', 1),
-(2, 2, 20000, 15000, 5000, 0, '2019-05-03 16:35:31', 2),
-(3, 3, 25, 15, 10, 0, '2019-05-03 16:35:31', 3);
+(1, 1, 12000, 7000, 5000, 3000, '2019-05-03 16:35:31', 1),
+(2, 2, 17200, 12200, 5000, 2800, '2019-05-03 16:35:31', 2),
+(3, 3, 24, 14, 10, 1, '2019-05-03 16:35:31', 3);
 
 -- --------------------------------------------------------
 

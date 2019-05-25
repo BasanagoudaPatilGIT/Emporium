@@ -22,6 +22,24 @@ class Order_model extends CI_Model
 		$data['id'] = $max_id;
 		return $this->db->insert('tab_order_h', $data);
 	}
+	
+	public function add_order_d_details($data)
+	{
+		//SELECT MAX ID
+		$max_id = 1;
+		$this->db->select_max('id');
+		$query = $this->db->get('tab_order_d');
+		$row = $query->row();
+		if (isset($row))
+		{
+			$max_id = $row->id + 1;
+		}
+		
+		$data['id'] = $max_id;
+		return $this->db->insert('tab_order_d', $data);
+	}
+	
+	
 	public function get_max_order_h_id()
 	{
 		$this->db->select_max('id');

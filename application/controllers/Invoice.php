@@ -144,9 +144,9 @@ class Invoice extends CI_Controller {
 		$billNumber = $this->input->post('billNumber');
 		$orderNumber = $this->input->post('orderNumber');
 		$billCount = $this->input->post('billCount');
-		$billTotalAmt = $this->input->post('billTotalAmt');
-		$billTaxAmt = $this->input->post('billTaxAmt');
-		$billNetAmt = $this->input->post('billNetAmt');
+		$transactionTotalAmt = $this->input->post('transactionTotalAmt');
+		$transactionTaxAmt = $this->input->post('transactionTaxAmt');
+		$transactionNetAmt = $this->input->post('transactionNetAmt');
 		$delCharges = $this->input->post('delCharges');
 		
 		
@@ -154,10 +154,10 @@ class Invoice extends CI_Controller {
 			'ent_code'=>$entCode,
 			'user_id'=>$userId,
 			'bill_number'=>$billNumber,
-			'bill_total_amount'=>$billTotalAmt,
-			'bill_tax_amount'=>$billTaxAmt,
+			'bill_total_amount'=>$transactionTotalAmt,
+			'bill_tax_amount'=>$transactionTaxAmt,
 			'delivery_charges'=>$delCharges,
-			'bill_tax_amount'=>$billTaxAmt,
+			'bill_net_amount'=>round($transactionNetAmt),
 			'order_id'=>$orderNumber,
 			'bill_status_index'=>10022,
 		);
@@ -192,7 +192,7 @@ class Invoice extends CI_Controller {
 				'bill_h_id'=>$billhId,
 				'product_code'=>$prodCode,
 				'product_name'=>$prodName,
-				'batchno'=>$prodBatchNo,
+				'product_batch'=>$prodBatchNo,
 				'product_uom_index'=>$prodUomIndex,
 				'order_qty'=>0,
 				'bill_qty'=>$BillQty,
@@ -200,11 +200,11 @@ class Invoice extends CI_Controller {
 				'tax_percent'=>$prodTaxPer,
 				'tax_amount'=>$prodTaxAmt,
 				'sale_rate'=>$prodSaleRate,
-				'sub_total'=> round($subTotal),
+				'sub_total'=> $subTotal,
 				'product_status_index'=> '10006'
 			);
 			
-			$this->Bill_model->add_bill_d_record($data);
+			$this->Bill_model->add_bill_d_details($data);
 			
 			$productDetails = $this->Product_model->stock_details_by_batchno($entCode,$prodBatchNo);
 			
@@ -219,7 +219,7 @@ class Invoice extends CI_Controller {
 			);
 		   
 		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
-		}else if($prodUomName == "Grams" || $prodUomName == "Packet" || $prodUomName == "Pcs"){
+		}else if($prodUomName == "Grams" || $prodUomName == "Packet" || $prodUomName == "Pcs" || $prodUomName == "Bundle"){
 		   $stockQty =  $productDetails['stock_qty'] - $BillQty ;
 		   $offlineStockQty = $productDetails['offline_stock_qty'] - $BillQty ;
 		   
@@ -244,7 +244,7 @@ class Invoice extends CI_Controller {
 		
 	  }
 	
-		$datestring = date('Y-m-d');			
+		$datestring = date('Y-m-d H:i:s');			
 		$data = array(
 			'last_updated'=>mdate($datestring),
 			'continues_count' => (int)$billCount + 1 
@@ -254,7 +254,7 @@ class Invoice extends CI_Controller {
 		
 		
 	$new_bill_generated = array(
-			'message' => 'Bill saved successfully'
+			'message' => 'Bill Generated Successfully'
 		);
 			
 		print_r(json_encode($new_bill_generated));
