@@ -9,6 +9,7 @@ class Order extends CI_Controller {
 		$this->load->model('Order_model');
 		$this->load->model('Product_model');
 		$this->load->model('User_model');
+		$this->load->model('Index_model');
 		
 		
 	}
@@ -122,62 +123,31 @@ class Order extends CI_Controller {
 	
 	
 	public function getOrderNumber() {
-		$entCode = $this->input->post('entCode');
-		//$entCode = 10002;
+		//$entCode = $this->input->post('entCode');
+		$entCode = 10002;
 		$data['auto_code'] = $this->Order_model->get_order_number($entCode);
 		$UOMDetails = $this->Product_model->get_uom_details();
 		$apartmentDetails = $this->Index_model->apartment_details($entCode);
 		$wingDetails = $this->Index_model->wing_details($entCode);
+		$allUserDetails = $this->User_model->get_all_user_details_for_transaction($entCode);
 		$flatDetails = $this->Index_model->flat_details($entCode);
-		$products = $this->Product_model->stock_details('ASC', $entCode);	
 		$orderNumber = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
 		$orderCount = $data['auto_code']['continues_count'];
-		if (count($products) >0) {
-			foreach($products as $row)
-				$prod_details[] = array(
-					'id'=>$row['id'],
-					'entCode'=>$row['ent_code'],
-					'productCode'=>$row['product_code'],
-					'productName'=>$row['product_name'],
-					'productDescription'=>$row['product_description'],
-					'productStatus'=>$row['product_status_index_name'],
-					'productStatusindex'=>$row['product_status_index'],
-					'productCategory'=>$row['category_index_name'],
-					'productCategoryIndex'=>$row['category_index'],
-					'productSubCategory'=>$row['sub_category_index_name'],
-					'productSubCategoryIndex'=>$row['sub_category_index'],
-					'producthId' => $row['producthId'],
-					'productBatch' => $row['product_batch'],
-					'packetsInBox' => $row['packets_in_box'],
-					'productPackDate' =>$row['product_pack_date'],
-					'productExpDate' =>$row['product_exp_date'],
-					'mrp' =>$row['mrp'],
-					'taxPrecent' =>$row['tax_precent'],
-					'purchaseRate' =>$row['purchase_rate'],
-					'saleRate' =>$row['sale_rate'],
-					'purchaseQty' =>$row['purchase_qty'],
-					'productdId' => $row['productdId'],
-					'stockQty' =>$row['stock_qty'],
-					'stockQtyLimit' =>$row['stock_qty_limit'],
-					'onlineStockQty' =>$row['online_stock_qty'],
-					'offlineStockQty' =>$row['offline_stock_qty'],
-					'transitQty' =>$row['transit_qty'],
-					'createdDatetime' =>$row['created_datetime']
-				);
+		
 		$order_data[] = array(
 			'createOrder' => 'createOrder', // clicking on save button
 			'orderNumber' => $orderNumber,
 			'orderCount' => $orderCount,
-			'productDetails' => $prod_details,
 			'uomDetails' => $UOMDetails,
 			'apartmentDetails' => $apartmentDetails,
 			'wingDetails' => $wingDetails,
 			'flatDetails' => $flatDetails,
+			'allUserDetails' => $allUserDetails,
 		);
 		
 		print_r(json_encode($order_data));
 		
-	}
+	
 	}
 	
 	public function createOrder() { // need to test with mobile code...
@@ -310,10 +280,10 @@ class Order extends CI_Controller {
 	public function getEachOrderDetails() {
 		$entCode = $this->input->post('entCode');
 		//$entCode = 10002;
-		$orderNumber = $this->input->post('orderNumber');
+		$orderId = $this->input->post('orderId');
 		//$userId = 2;
 		//$invoiceh_id = 1;
-		$data['order_header'] = $this->Order_model->get_order_h_details($orderNumber,$entCode);
+		$data['order_header'] = $this->Order_model->get_order_h_details($orderId,$entCode);
 	
 		$orderdetails = $this->Order_model->get_order_d_details($data['order_header']['id'],$entCode);
 		

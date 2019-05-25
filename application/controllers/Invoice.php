@@ -8,13 +8,15 @@ class Invoice extends CI_Controller {
 		parent::__construct();
 		$this->load->model('Invoice_model');
 		$this->load->model('Product_model');
+		$this->load->model('User_model');
+		$this->load->model('Index_model');
 		
 		
 	}
 	
 	public function billDetails() { //working as expected. 
-		//$entCode = $this->input->post('entCode');
-		$entCode = 10002;
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
 		$billStatusDetails = $this->Invoice_model->get_bill_status_details();
 		$bills = $this->Invoice_model->bill_details('ASC', $entCode);				
 		
@@ -63,10 +65,10 @@ class Invoice extends CI_Controller {
 	}
 	
 	public function billDetailsBasedOnStatus() { //working as expected. 
-		//$billStatus = $this->input->post('billStatus');
-		//$entCode = $this->input->post('entCode');
-		$billStatus = 10023;
-		$entCode = 10002;
+		$billStatus = $this->input->post('billStatus');
+		$entCode = $this->input->post('entCode');
+		//$billStatus = 10023;
+		//$entCode = 10002;
 		$billStatusDetails = $this->Invoice_model->get_bill_status_details();
 		$bills = $this->Invoice_model->bill_details_by_status('ASC', $entCode,$billStatus);				
 		
@@ -115,52 +117,25 @@ class Invoice extends CI_Controller {
 		//$entCode = 10002;
 		$data['auto_code'] = $this->Invoice_model->get_bill_number($entCode);
 		$UOMDetails = $this->Product_model->get_uom_details();
-		$products = $this->Product_model->stock_details('ASC', $entCode);	
+		$apartmentDetails = $this->Index_model->apartment_details($entCode);
+		$wingDetails = $this->Index_model->wing_details($entCode);
+		$allUserDetails = $this->User_model->get_all_user_details_for_transaction($entCode);
+		$flatDetails = $this->Index_model->flat_details($entCode);			
 		$billNumber = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
 		$billCount = $data['auto_code']['continues_count'];
-		if (count($products) >0) {
-			foreach($products as $row)
-				$prod_details[] = array(
-					'id'=>$row['id'],
-					'entCode'=>$row['ent_code'],
-					'productCode'=>$row['product_code'],
-					'productName'=>$row['product_name'],
-					'productDescription'=>$row['product_description'],
-					'productStatus'=>$row['product_status_index_name'],
-					'productStatusindex'=>$row['product_status_index'],
-					'productCategory'=>$row['category_index_name'],
-					'productCategoryIndex'=>$row['category_index'],
-					'productSubCategory'=>$row['sub_category_index_name'],
-					'productSubCategoryIndex'=>$row['sub_category_index'],
-					'producthId' => $row['producthId'],
-					'productBatch' => $row['product_batch'],
-					'packetsInBox' => $row['packets_in_box'],
-					'productPackDate' =>$row['product_pack_date'],
-					'productExpDate' =>$row['product_exp_date'],
-					'mrp' =>$row['mrp'],
-					'taxPrecent' =>$row['tax_precent'],
-					'purchaseRate' =>$row['purchase_rate'],
-					'saleRate' =>$row['sale_rate'],
-					'purchaseQty' =>$row['purchase_qty'],
-					'productdId' => $row['productdId'],
-					'stockQty' =>$row['stock_qty'],
-					'stockQtyLimit' =>$row['stock_qty_limit'],
-					'onlineStockQty' =>$row['online_stock_qty'],
-					'offlineStockQty' =>$row['offline_stock_qty'],
-					'transitQty' =>$row['transit_qty'],
-					'createdDatetime' =>$row['created_datetime']
-				);
 		$bill_data[] = array(
 			'createBill' => 'createBill', // clicking on save button
 			'billNumber' => $billNumber,
 			'billCount' => $billCount,
-			'productDetails' => $prod_details,
-			'uomDetails' => $UOMDetails,
+			'apartmentDetails' => $apartmentDetails,
+			'wingDetails' => $wingDetails,
+			'flatDetails' => $flatDetails,
+			'allUserDetails' => $allUserDetails,
 		);
 		
 		print_r(json_encode($bill_data));
 		
-	}
+	
 	}
 	
 	public function createBill() { // need to test with mobile code...

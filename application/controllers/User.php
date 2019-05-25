@@ -13,8 +13,8 @@
 	
 	public function getUserDetails()
 	{
-		//$entCode = $this->input->post('entCode');
-		$entCode = 10002;
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
 		$allUserDetails = $this->User_model->get_all_user_details($entCode);
 		$UserCount = $this->User_model->user_count($entCode);
 			
@@ -108,7 +108,7 @@
 				'user_phone_no'=>$this->input->post('userPhoneNo'),
 				'user_email_id'=>$this->input->post('userEmailId'),
 				'user_flat_id'=>$this->input->post('userFlatId'),		
-				'user_imei'=>$this->input->post('userIMEI'),	
+				'user_imei'=>0,	
 				'user_designation_index'=>10018,
 				'user_status_index'=>'10013',
 				'user_image'=>$userPictureName,
@@ -196,7 +196,7 @@
 				'user_email_id'=>$this->input->post('userEmailId'),
 				'user_address'=>$this->input->post('userAddress'),	
 				//'user_address_prof'=>$this->input->post('userAddressProf'),	
-				'user_imei'=>$this->input->post('userIMEI'),	
+				'user_imei'=>0,	
 				'user_status_index'=>$this->input->post('userStatusIndex'),
 				'user_image'=>$userPictureName
 				

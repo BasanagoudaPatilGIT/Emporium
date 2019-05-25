@@ -23,11 +23,12 @@ class Login_model extends CI_Model
 		}
 	}
 	
-	public function validate_expiry($userIMEI,$todaysdate)
+	public function validate_expiry($userIMEI,$todaysdate,$userPhoneno)
 	{
 		$this->db->from('tab_user as u');
 		$this->db->where('u.user_imei',$userIMEI);
 		$this->db->where('e.service_expiry_date >=', $todaysdate);
+		$this->db->where('u.user_phone_no', $userPhoneno);
 		$this->db->join('tab_entity as e', 'e.ent_code = u.ent_code','left');
 		$query= $this->db->get();
 		//print_r( $query->row_array() );

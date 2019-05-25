@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 12, 2019 at 12:56 PM
+-- Generation Time: May 25, 2019 at 10:38 AM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -154,8 +154,8 @@ CREATE TABLE IF NOT EXISTS `tab_entity` (
 --
 
 INSERT INTO `tab_entity` (`id`, `ent_code`, `ent_name`, `emp_limit`, `created_datetime`, `service_expiry_date`) VALUES
-(1, '0', '-Select-', 0, '2019-04-08 23:04:40', '2020-12-31'),
-(2, '10002', 'SS Stores', 2, '2019-04-08 23:04:40', '2020-12-31');
+(0, '0', '-Select-', 0, '2019-04-08 23:04:40', '2020-12-31'),
+(1, '10002', 'SS Stores', 2, '2019-04-08 23:04:40', '2020-12-31');
 
 -- --------------------------------------------------------
 
@@ -594,14 +594,14 @@ CREATE TABLE IF NOT EXISTS `tab_user` (
 --
 
 INSERT INTO `tab_user` (`id`, `ent_code`, `user_full_name`, `user_name`, `user_password`, `user_gender_index`, `user_age`, `user_dob`, `user_phone_no`, `user_email_id`, `user_address`, `user_address_prof`, `user_imei`, `user_designation_index`, `user_status_index`, `user_image`, `user_login_status`, `created_datetime`, `user_emp_id`, `user_id`, `user_flat_id`) VALUES
-(1, '10001', 'Basanagouda Patil', 'basupatil', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 7259999282, 'basupail71@gmail.com', 'No Address', 'proof', 123456789009876, 10015, 10013, 'Capture.jpg', 0, '2019-04-09 10:13:14', '', '', 0),
+(1, '10001', 'Basanagouda Patil', 'basupatil', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 7259999282, 'basupail71@gmail.com', 'No Address', 'proof', 0, 10015, 10013, 'Capture.jpg', 0, '2019-04-09 10:13:14', '', '', 0),
 (2, '10002', 'Raghu Ram .R', 'raghuram', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 358240051111110, 10016, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (3, '10002', 'BalaKumar', 'balakumar', 'YmFsYWt1bWFy', 10019, '28', '1990-04-06', 9611429417, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009876, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (4, '10002', 'Ganesh', 'ganesh', 'Z2FuZXNo', 10019, '30', '1988-04-06', 8611429418, 'ganesh@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009877, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (5, '10002', 'Vijay', 'vijay', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654321, 'vijay@gmail.com', 'Address', 'Address proof', 645678765677879, 10017, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '', '', 0),
-(6, '10002', 'Ramesh R', 'Ramesh', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654329, 'ramesh@gmail.com', 'Address', 'Address proof', 645678765677879, 10018, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '0', '111001', 2),
-(7, '10002', 'Akash M', 'Akash', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654322, 'akash@gmail.com', 'Address', 'Address proof', 645678765677871, 10018, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '0', '111002', 1),
-(8, '10002', 'John Snow', '9685743210', 'Sm9oblNub3c=', 10019, '', '1958-05-05', 9685743210, 'john.snow@gmail.com', '', '', 358240051111111, 10018, 10013, 'Capture.jpg', 1, '2019-05-05 16:31:00', '', '#U10002111003', 2);
+(6, '10002', 'Ramesh R', 'Ramesh', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654329, 'ramesh@gmail.com', 'Address', 'Address proof', 0, 10018, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '0', '111001', 2),
+(7, '10002', 'Akash M', 'Akash', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654322, 'akash@gmail.com', 'Address', 'Address proof', 0, 10018, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '0', '111002', 1),
+(8, '10002', 'John Snow', '9685743210', 'Sm9oblNub3c=', 10019, '', '1958-05-05', 9685743210, 'john.snow@gmail.com', '', '', 0, 10018, 10013, 'Capture.jpg', 1, '2019-05-05 16:31:00', '', '#U10002111003', 2);
 
 -- --------------------------------------------------------
 
