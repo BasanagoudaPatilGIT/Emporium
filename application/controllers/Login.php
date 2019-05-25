@@ -8,21 +8,22 @@
 	}
 	
 	function validate_login_credentials() {
-		$userName = "raghuram";
-		$userPhoneno = "9611429415";
-		$imei = 358240051111110;
-		$userPassword = base64_encode("raghuram");
-		
-		//$userName = $this->input->post('userName');
-		//$userPhoneno = $this->input->post('userName');
-		//$imei = $this->input->post('userIMEI');
-		//$userPassword = base64_encode($this->input->post('userPassword'));
+		$userName = $this->input->post('userName');
+		$userPhoneno = $this->input->post('userName');
+		$userPassword = base64_encode($this->input->post('userPassword'));
+
+		$data['login'] = $this->Login_model->get_user_detail($userName,$userPhoneno,$userPassword);
+		if($data['login']['user_designation_index'] == 10018 || $data['login']['user_designation_index'] == 10015){
+			$imei = 0;
+		}else{
+			$imei = $this->input->post('userIMEI');
+		}
 		
 		$query = $this->Login_model->validate($userName,$userPhoneno,$userPassword,$imei);
 		
 		if ($query) {
 			$todaysdate = date('Y-m-d');
-			$exp = $this->Login_model->validate_expiry($imei,$todaysdate);
+			$exp = $this->Login_model->validate_expiry($imei,$todaysdate,$data['login']['user_phone_no']);
 			
 			if(!$exp){
 				$login_failed_data[] = array(
