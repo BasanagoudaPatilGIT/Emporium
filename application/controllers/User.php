@@ -67,7 +67,7 @@
 	public function addUser()
 	{
 		$entCode = $this->input->post('entCode');
-		$entCode = 10002;
+		//$entCode = 10002;
 		$data['auto_code'] = $this->User_model->get_user_number($entCode);
 		$userId = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
 		$userNum = $data['auto_code']['continues_count'];

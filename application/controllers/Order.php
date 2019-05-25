@@ -123,8 +123,8 @@ class Order extends CI_Controller {
 	
 	
 	public function getOrderNumber() {
-		//$entCode = $this->input->post('entCode');
-		$entCode = 10002;
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
 		$data['auto_code'] = $this->Order_model->get_order_number($entCode);
 		$UOMDetails = $this->Product_model->get_uom_details();
 		$apartmentDetails = $this->Index_model->apartment_details($entCode);
@@ -154,32 +154,66 @@ class Order extends CI_Controller {
 		$entCode = $this->input->post('entCode');
 		//$entCode = 10002;
 		$userId = $this->input->post('userId');
-		//$userId = 10002;
+		//$userId = 7;
 		$orderNumber = $this->input->post('orderNumber');
-		//$orderNumber = 10002;
+		//$orderNumber = '#O10002120001';
 		$orderCount = $this->input->post('orderCount');
 		//$orderNumber = 10002;
-		$orderTotalAmt = $this->input->post('orderTotalAmt');
-		//$orderTotalAmt = 10002;
-		$orderTaxAmt = $this->input->post('orderTaxAmt');
-		//$orderTaxAmt = 10002;
-		$orderNetAmt = $this->input->post('orderNetAmt');
-		//$orderNetAmt = 10002;
+		$transactionTotalAmt = $this->input->post('transactionTotalAmt');
+		//$transactionTotalAmt = '10.02';
+		$transactionTaxAmt = $this->input->post('transactionTaxAmt');
+		//$transactionTaxAmt = '0.301';
+		$transactionNetAmt = $this->input->post('transactionNetAmt');
+		//$transactionNetAmt = '10.321';
+		$userPhoneNo = $this->input->post('userPhoneNo');
+		$userPassword = base64_encode($userPhoneNo);
+		if($userId == 0){
+			
+			$data['auto_code'] = $this->User_model->get_user_number($entCode);
+			$userId = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
+			$userNum = $data['auto_code']['continues_count'];
+			$userPictureName ='Capture.jpg';
+			
+			$data =array
+			(
+				'ent_code'=>$entCode,
+				'user_name'=>$userPhoneNo,
+				'user_password'=>$userPassword,
+				'user_gender_index'=>10019,
+				'user_phone_no'=>$this->input->post('userPhoneNo'),
+				'user_flat_id'=>1,		
+				'user_imei'=>0,	
+				'user_designation_index'=>10018,
+				'user_status_index'=>'10013',
+				'user_image'=>$userPictureName,
+				'user_id'=>$userId,	
+				
+			);				
+			$this->User_model->add_record($data);
+
+			$data = array(
+				'continues_count' => (int)$userNum + 1 
+			);
+			
+			$this->User_model->incriment_user_no($data,$entCode);
+			
+		}
+		
 		
 		$data = array(
 			'ent_code'=>$entCode,
 			'user_id'=>$userId,
 			'order_number'=>$orderNumber,
-			'order_total_amount'=>$orderTotalAmt,
-			'order_tax_amount'=>$orderTaxAmt,
-			'order_net_amount'=>$orderNetAmt,
+			'order_total_amount'=>$transactionTotalAmt,
+			'order_tax_amount'=>$transactionTaxAmt,
+			'order_net_amount'=>round($transactionNetAmt),
 			'order_status_index'=>10001,
 			'order_view_status'=>10001,
 		);
 		
 		$this->Order_model->add_order_h_details($data);
 		
-		$data = $this->input->post('orderProductList');
+		$data = $this->input->post('transactionProductList');
 		$data = json_decode($data);
 		$linecount = count($data);
 
@@ -188,9 +222,8 @@ class Order extends CI_Controller {
 		
 		for ($i=0; $i < $linecount; $i++) 
 		{
-			$data1 = $this->input->post('orderProductList');
+			$data1 = $this->input->post('transactionProductList');
 			$data1 = json_decode($data1);
-				
 			$prodCode = $data1[$i]->{'productCode'};
 			$prodName = $data1[$i]->{'productName'};
 			$prodBatchNo = $data1[$i]->{'productBatchNo'};	
@@ -206,21 +239,21 @@ class Order extends CI_Controller {
 				'order_h_id'=>$orderhId,
 				'product_code'=>$prodCode,
 				'product_name'=>$prodName,
-				'batchno'=>$prodBatchNo,
+				'product_batch'=>$prodBatchNo,
 				'product_uom_index'=>$prodUomIndex,
 				'order_qty'=>$OrderQty,
 				'tax_percent'=>$prodTaxPer,
 				'tax_amount'=>$prodTaxAmt,
 				'sale_rate'=>$prodSaleRate,
-				'sub_total'=> round($subTotal),
+				'sub_total'=> $subTotal,
 				'product_stock_status_index'=> 10007,
 			);
 			
-			$this->Order_model->add_order_d_record($data);
+			$this->Order_model->add_order_d_details($data);
 			
-			$productDetails = $this->Product_model->stock_details_by_batchno($entCode,$prodBatchNo);
+		$productDetails = $this->Product_model->stock_details_by_batchno($entCode,$prodBatchNo);
 			
-		if($prodUomName == "Kg" ){
+		 if($prodUomName == "Kg" ){
 		   $transitQty =  $productDetails['transit_qty'] + ($OrderQty * 1000) ;
 		   $stockQty =  $productDetails['stock_qty'] - ($OrderQty * 1000) ;
 		   $onlineStockQty = $productDetails['online_stock_qty'] - ($OrderQty * 1000) ;
@@ -232,7 +265,8 @@ class Order extends CI_Controller {
 			);
 		   
 		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
-		}else if($prodUomName == "Grams" || $prodUomName == "Packet" || $prodUomName == "Pcs"){
+		}
+		else if($prodUomName == "Grams" || $prodUomName == "Packet" || $prodUomName == "Pcs" || $prodUomName == "Bundle"){
 		   $transitQty =  $productDetails['transit_qty'] + $OrderQty ;
 		   $stockQty =  $productDetails['stock_qty'] - $OrderQty ;
 		   $onlineStockQty = $productDetails['online_stock_qty'] - $OrderQty ;
@@ -256,11 +290,11 @@ class Order extends CI_Controller {
 			);
 		   
 		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
-		}
+		}  
 		
 	  }
 	
-		$datestring = date('Y-m-d');			
+		$datestring = date('Y-m-d H:i:s');			
 		$data = array(
 			'last_updated'=>mdate($datestring),
 			'continues_count' => (int)$orderCount + 1 
