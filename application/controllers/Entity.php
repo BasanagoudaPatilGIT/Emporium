@@ -1,4 +1,4 @@
-<?php class Entity extends CI_Controller {
+<?php class Entity  extends CI_Controller {
 
 	public function __construct()
 	{
@@ -11,7 +11,7 @@
 		$this->load->library('encryption');
 	}
 	
-	public function entityDetials()
+	public function entityDetails()
 	{
 		$allEntDetails = $this->Entity_model->get_all_entity_details();
 			
