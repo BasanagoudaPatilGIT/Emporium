@@ -26,11 +26,11 @@ class Invoice extends CI_Controller {
 					'id'=>$row['id'],
 					'entCode'=>$row['ent_code'],
 					'userId'=>$row['user_id'],
-					'TranNumber'=>$row['bill_number'],
-					'TranNetAmt'=>$row['bill_net_amount'],
-					'TranCreatedDetetime'=>$row['bill_created_datetime'],
-					'TranStatus'=>$row['billStatus'],
-					'TranStatusIndex'=>$row['bill_status_index'],
+					'transactionNumber'=>$row['bill_number'],
+					'transactionNetAmt'=>$row['bill_net_amount'],
+					'transactionCreatedDetetime'=>$row['bill_created_datetime'],
+					'transactionStatus'=>$row['billStatus'],
+					'transactionStatusIndex'=>$row['bill_status_index'],
 					'userFullName'=>$row['user_full_name'],
 					'userAddress'=>$row['user_address'],
 					'userPhoneNo'=>$row['user_phone_no'],
@@ -78,11 +78,11 @@ class Invoice extends CI_Controller {
 					'id'=>$row['id'],
 					'entCode'=>$row['ent_code'],
 					'userId'=>$row['user_id'],
-					'TranNumber'=>$row['bill_number'],
-					'TranNetAmt'=>$row['bill_net_amount'],
-					'TranCreatedDetetime'=>$row['bill_created_datetime'],
-					'TranStatus'=>$row['billStatus'],
-					'TranStatusIndex'=>$row['bill_status_index'],
+					'transactionNumber'=>$row['bill_number'],
+					'transactionNetAmt'=>$row['bill_net_amount'],
+					'transactionCreatedDetetime'=>$row['bill_created_datetime'],
+					'transactionStatus'=>$row['billStatus'],
+					'transactionStatusIndex'=>$row['bill_status_index'],
 					'userFullName'=>$row['user_full_name'],
 					'userAddress'=>$row['user_address'],
 					'userPhoneNo'=>$row['user_phone_no'],
@@ -149,6 +149,37 @@ class Invoice extends CI_Controller {
 		$transactionNetAmt = $this->input->post('transactionNetAmt');
 		$delCharges = $this->input->post('delCharges');
 		
+		if($userId == 0){
+			
+			$data['auto_code'] = $this->User_model->get_user_number($entCode);
+			$userId = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
+			$userNum = $data['auto_code']['continues_count'];
+			$userPictureName ='Capture.jpg';
+			
+			$data =array
+			(
+				'ent_code'=>$entCode,
+				'user_name'=>$userPhoneNo,
+				'user_password'=>$userPassword,
+				'user_gender_index'=>10019,
+				'user_phone_no'=>$this->input->post('userPhoneNo'),
+				'user_flat_id'=>1,		
+				'user_imei'=>0,	
+				'user_designation_index'=>10018,
+				'user_status_index'=>'10013',
+				'user_image'=>$userPictureName,
+				'user_id'=>$userId,	
+				
+			);				
+			$this->User_model->add_record($data);
+
+			$data = array(
+				'continues_count' => (int)$userNum + 1 
+			);
+			
+			$this->User_model->incriment_user_no($data,$entCode);
+			
+		}
 		
 		$data = array(
 			'ent_code'=>$entCode,
@@ -164,7 +195,7 @@ class Invoice extends CI_Controller {
 		
 		$this->Invoice_model->add_invoice_h_details($data);
 		
-		$data = $this->input->post('invoiceProductList');
+		$data = $this->input->post('transactionProductList');
 		$data = json_decode($data);
 		$linecount = count($data);
 
@@ -173,7 +204,7 @@ class Invoice extends CI_Controller {
 		
 		for ($i=0; $i < $linecount; $i++) 
 		{
-			$data1 = $this->input->post('billProductList');
+			$data1 = $this->input->post('transactionProductList');
 			$data1 = json_decode($data1);
 				
 			$prodCode = $data1[$i]->{'productCode'};
@@ -273,11 +304,11 @@ class Invoice extends CI_Controller {
             'entCode'=>$data['bill_header']['ent_code'],
             'userId'=>$data['bill_header']['user_id'],
             'billNumber'=>$data['bill_header']['bill_number'],
-            'orderTotalAmount'=>$data['bill_header']['bill_total_amount'],
-            'orderTaxAmount'=>$data['bill_header']['bill_tax_amount'],
+            'transactionTotalAmount'=>$data['bill_header']['bill_total_amount'],
+            'transactionTaxAmount'=>$data['bill_header']['bill_tax_amount'],
             'delCharges'=>$data['bill_header']['delivery_charges'],
-            'billNetAmt'=>$data['bill_header']['bill_net_amount'],
-			'billCreatedDatetime'=>$data['bill_header']['bill_created_datetime'],
+            'transactionNetAmt'=>$data['bill_header']['bill_net_amount'],
+			'transactionCreatedDatetime'=>$data['bill_header']['bill_created_datetime'],
 			'userFullName'=>$data['bill_header']['user_full_name'],
 			'userAddress'=>$data['bill_header']['user_address'],
 			'userPhoneNo'=>$data['bill_header']['user_phone_no'],
@@ -324,7 +355,7 @@ class Invoice extends CI_Controller {
 		
 	public function cancelBill() {
 	//$entCode = 10002;
-	//$orderNumber = "#O-120001" ;
+	$orderNumber = $this->input->post('orderNumber');
 	$entCode = $this->input->post('entCode');
 	$billNumber = $this->input->post('billNumber');
 		
@@ -334,16 +365,12 @@ class Invoice extends CI_Controller {
 	
 	$this->Invoice_model->update_bill_h_status($entCode,$billNumber,$data);
 	
-	$data = $this->input->post('billProductList');
+	$data = $this->input->post('transactionProductList');
 		$data = json_decode($data);
 		$linecount = count($data);
 		
-
-		$orderhId = $this->Order_model->get_max_order_h_id();
-		
-		
 		for ($i=0; $i < $linecount; $i++) {
-			$data1 = $this->input->post('billProductList');
+			$data1 = $this->input->post('transactionProductList');
 			$data1 = json_decode($data1);
 				
 			$prodBatchNo = $data1[$i]->{'productBatchNo'};	
@@ -354,6 +381,7 @@ class Invoice extends CI_Controller {
 		
 		$productDetails = $this->Product_model->stock_details_by_batchno($entCode,$prodBatchNo);
 		
+		if($orderNumber == 0){
 		if($prodUomName == "Kg" ){
 		   $stockQty =  $productDetails['stock_qty'] + ($billQty * 1000) ;
 		   $offlineStockQty = $productDetails['offline_stock_qty'] + ($billQty * 1000) ;
@@ -365,7 +393,7 @@ class Invoice extends CI_Controller {
 			);
 		   
 		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
-		}else if($prodUomName == "Grams" || $prodUomName == "Packet" || $prodUomName == "Pcs"){
+		}else if($prodUomName == "Grams" || $prodUomName == "Packet" || $prodUomName == "Pcs" | $prodUomName == "Bunndle"){
 		   $stockQty =  $productDetails['stock_qty'] + $billQty ;
 		   $offlineStockQty = $productDetails['offline_stock_qty'] + $billQty ;
 		   
@@ -387,6 +415,44 @@ class Invoice extends CI_Controller {
 		   
 		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
 		}
+		
+		}else{
+		
+		if($prodUomName == "Kg" ){
+		   $stockQty =  $productDetails['stock_qty'] + ($billQty * 1000) ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] + ($billQty * 1000) ;
+		   
+		   $data = array(
+				'transit_qty'=>$transitQty,
+				'stock_qty'=>$stockQty,
+				'online_stock_qty'=>$onlineStockQty,
+			);
+		   
+		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
+		}else if($prodUomName == "Grams" || $prodUomName == "Packet" || $prodUomName == "Pcs" | $prodUomName == "Bunndle"){
+		   $stockQty =  $productDetails['stock_qty'] + $billQty ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] + $billQty ;
+		   
+		   $data = array(
+				'transit_qty'=>$transitQty,
+				'stock_qty'=>$stockQty,
+				'online_stock_qty'=>$onlineStockQty,
+			);
+		   
+		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
+		}else if($prodUomName == "Boxes" ){
+		   $stockQty =  $productDetails['stock_qty'] + ($billQty * $productDetails['packets_in_box']) ;
+		   $onlineStockQty = $productDetails['online_stock_qty'] + ($billQty * $productDetails['packets_in_box']);
+		   
+		   $data = array(
+				'stock_qty'=>$stockQty,
+				'online_stock_qty'=>$onlineStockQty,
+			);
+		   
+		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
+		}
+		
+		}		
 	}
 	
 	$bill_cancallation = array(
@@ -413,14 +479,14 @@ class Invoice extends CI_Controller {
             'entCode'=>$data['order_header']['ent_code'],
             'userId'=>$data['order_header']['user_id'],
             'orderNumber'=>$data['order_header']['order_number'],
-            'orderTotalAmount'=>$data['order_header']['order_total_amount'],
-            'orderTaxAmount'=>$data['order_header']['order_tax_amount'],
-            'orderNetAmount'=>$data['order_header']['order_net_amount'],
-            'orderStatusIndex'=>$data['order_header']['order_status_index'],
-            'orderStatusIndexName'=>$data['order_header']['order_status_index_name'],
-            'orderViewStatus'=>$data['order_header']['order_view_status'],
-			'orderViewStatusName'=>$data['order_header']['order_view_status_name'],
-			'orderCreatedDatetime'=>$data['order_header']['order_created_datetime'],
+            'transactionTotalAmount'=>$data['order_header']['order_total_amount'],
+            'transactionTaxAmount'=>$data['order_header']['order_tax_amount'],
+            'transactionNetAmount'=>$data['order_header']['order_net_amount'],
+            'transactionStatusIndex'=>$data['order_header']['order_status_index'],
+            'transactionStatusIndexName'=>$data['order_header']['order_status_index_name'],
+            'transactionViewStatus'=>$data['order_header']['order_view_status'],
+			'transactionViewStatusName'=>$data['order_header']['order_view_status_name'],
+			'transactionCreatedDatetime'=>$data['order_header']['order_created_datetime'],
 			'userFullName'=>$data['order_header']['user_full_name'],
 			'userAddress'=>$data['order_header']['user_address'],
 			'userPhoneNo'=>$data['order_header']['user_phone_no'],

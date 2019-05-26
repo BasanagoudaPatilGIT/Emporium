@@ -17,7 +17,7 @@
 			
 		$ent_details[] = array(
 					'allEntDetails' =>$allEntDetails,
-					'addNewEntity' => 'New Entity',
+					'getEntityCode' => 'New Entity',
 					'UpdateEntity' =>'Update Entity',
 				);
 		
@@ -27,29 +27,30 @@
 		
 	}
 	
-	public function addNewEntity()
+	public function getEntityCode()
 	{
 		$entVar = $this->Entity_model->get_entity_series_number();
-		$entCode = $entVar['series_id'].'-'.$entVar['continues_count'];
+		$entCode = $entVar['continues_count'];
 		$userGender=  $this->Index_model->user_gender();			
 			
 		$required_details[] = array(
 					'entCode'=>$entCode,
-					'addEntity' =>'addEntity',
+					'addNewEntity' =>'addEntity',
 					'userGender'=>$userGender
 				);
 		
 		
 		print_r(json_encode($required_details));
 	}
-	public function addEntity()
+	
+	public function addNewEntity()
 	{
 		$entCode = $this->input->post('entCode');
 		$data =array
 			(
 				'ent_code'=>$entCode,
 				'ent_name'=>$this->input->post('entName'),
-				'enp_limit'=>$this->input->post('entLimit'),
+				'emp_limit'=>$this->input->post('empLimit'),
 				'service_expiry_date'=>$this->input->post('serviceExpiryDate')
 				
 				
