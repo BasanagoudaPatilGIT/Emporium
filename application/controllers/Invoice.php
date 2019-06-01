@@ -15,8 +15,8 @@ class Invoice extends CI_Controller {
 	}
 	
 	public function billDetails() { //working as expected. 
-		//$entCode = $this->input->post('entCode');
-		$entCode = 10002;
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
 		$billStatusDetails = $this->Invoice_model->get_bill_status_details();
 		$bills = $this->Invoice_model->bill_details('ASC', $entCode);				
 		
@@ -142,17 +142,13 @@ class Invoice extends CI_Controller {
 		$entCode = $this->input->post('entCode');
 		$userId = $this->input->post('userId');
 		$billNumber = $this->input->post('billNumber');
-		$orderNumber = $this->input->post('orderNumber');
 		$billCount = $this->input->post('billCount');
 		$transactionTotalAmt = $this->input->post('transactionTotalAmt');
 		$transactionTaxAmt = $this->input->post('transactionTaxAmt');
 		$transactionNetAmt = $this->input->post('transactionNetAmt');
 		$delCharges = $this->input->post('delCharges');
 		
-	
-	
-		
-		if($userId == 0){
+	if($userId == 0){
 			
 			$data['auto_code'] = $this->User_model->get_user_number($entCode);
 			$userId = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];

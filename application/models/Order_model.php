@@ -172,7 +172,7 @@ class Order_model extends CI_Model
 	
 	public function get_order_d_details($orderhid,$entCode)
     {
-	$this->db->select('d.*,i.index_name as product_uom_index_name');
+	$this->db->select('d.*,id.index_name as product_uom_index_name');
     $this->db->from('tab_order_d as d');
     $this->db->where('d.order_h_id', $orderhid);
     $this->db->where('d.row_invalidated', 0);
@@ -181,13 +181,4 @@ class Order_model extends CI_Model
     return $query->result_array();
     }
 	
-	
-	
-	
-	
-	
-	
-	
-	
-		
- }
+}

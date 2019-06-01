@@ -312,9 +312,9 @@ class Order extends CI_Controller {
 	public function getEachOrderDetails() {
 		$entCode = $this->input->post('entCode');
 		//$entCode = 10002;
+                $userId = $this->input->post('userId');
 		$orderId = $this->input->post('orderId');
-		//$userId = 2;
-		//$invoiceh_id = 1;
+		
 		$data['order_header'] = $this->Order_model->get_order_h_details($orderId,$entCode);
 	
 		$orderdetails = $this->Order_model->get_order_d_details($data['order_header']['id'],$entCode);
@@ -324,17 +324,16 @@ class Order extends CI_Controller {
             'entCode'=>$data['order_header']['ent_code'],
             'userId'=>$data['order_header']['user_id'],
             'orderNumber'=>$data['order_header']['order_number'],
-            'orderTotalAmount'=>$data['order_header']['order_total_amount'],
-            'orderTaxAmount'=>$data['order_header']['order_tax_amount'],
-            'orderNetAmount'=>$data['order_header']['order_net_amount'],
-            'orderStatusIndex'=>$data['order_header']['order_status_index'],
-            'orderStatusIndexName'=>$data['order_header']['order_status_index_name'],
-            'orderViewStatus'=>$data['order_header']['order_view_status'],
-			'orderViewStatusName'=>$data['order_header']['order_view_status_name'],
-			'orderCreatedDatetime'=>$data['order_header']['order_created_datetime'],
+            'transactionTotalAmount'=>$data['order_header']['order_total_amount'],
+            'transactionTaxAmount'=>$data['order_header']['order_tax_amount'],
+            'transactionNetAmount'=>$data['order_header']['order_net_amount'],
+            'transactionStatusIndex'=>$data['order_header']['order_status_index'],
+            'transactionStatusIndexName'=>$data['order_header']['order_status_index_name'],
+			'transactionCreatedDatetime'=>$data['order_header']['order_created_datetime'],
 			'userFullName'=>$data['order_header']['user_full_name'],
 			'userAddress'=>$data['order_header']['user_address'],
 			'userPhoneNo'=>$data['order_header']['user_phone_no'],
+                        
 		);
 		
 		foreach($orderdetails as $row)
@@ -362,7 +361,7 @@ class Order extends CI_Controller {
 		
 		
 		$each_order_details[] = array(
-			'orderheaderdetails' => $order_header_details,
+			'transactionHeaderDetails' => $order_header_details,
 			'orderDetails'=>$order_details,
 			'cancelOrder' => 'Cancel',
 			'approveOrder' => 'Approve',
