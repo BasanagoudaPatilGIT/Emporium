@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 25, 2019 at 02:46 PM
+-- Generation Time: Jun 01, 2019 at 11:22 AM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -60,10 +60,11 @@ CREATE TABLE IF NOT EXISTS `tab_bill_d` (
   `product_uom_index` int(10) NOT NULL,
   `order_qty` int(10) NOT NULL,
   `bill_qty` int(10) NOT NULL,
-  `mrp` double(65,4) NOT NULL,
+  `tax_amount` double(65,4) NOT NULL,
   `tax_percent` double(65,4) NOT NULL,
   `sale_rate` double(65,4) NOT NULL,
   `product_status_index` int(10) NOT NULL,
+  `sub_total` double(65,4) NOT NULL,
   UNIQUE KEY `id` (`id`),
   KEY `bhid` (`bill_h_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -72,9 +73,8 @@ CREATE TABLE IF NOT EXISTS `tab_bill_d` (
 -- Dumping data for table `tab_bill_d`
 --
 
-INSERT INTO `tab_bill_d` (`id`, `bill_h_id`, `product_code`, `product_name`, `product_batch`, `product_uom_index`, `order_qty`, `bill_qty`, `mrp`, `tax_percent`, `sale_rate`, `product_status_index`) VALUES
-(1, 1, '#P10002-101', 'Tomato', '1234-1234', 10009, 2, 2, 2000.0000, 20.0000, 1600.0000, 0),
-(2, 1, '#P10002-101', 'Tomato', '1234-1234', 10009, 2, 2, 2000.0000, 20.0000, 1600.0000, 0);
+INSERT INTO `tab_bill_d` (`id`, `bill_h_id`, `product_code`, `product_name`, `product_batch`, `product_uom_index`, `order_qty`, `bill_qty`, `tax_amount`, `tax_percent`, `sale_rate`, `product_status_index`, `sub_total`) VALUES
+(1, 1, '#P10002-105', 'broccoli', '#P10002-1052019-06-03200000.0200', 10009, 0, 1, 0.4000, 2.0000, 0.0200, 10006, 20.4000);
 
 -- --------------------------------------------------------
 
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS `tab_bill_h` (
 --
 
 INSERT INTO `tab_bill_h` (`id`, `ent_code`, `user_id`, `bill_number`, `bill_total_amount`, `bill_tax_amount`, `delivery_charges`, `bill_net_amount`, `bill_created_datetime`, `order_id`, `bill_status_index`, `payment_status`, `payment_mode`) VALUES
-(1, '10002', 6, '#In-10002130001', 1600.0000, 20.0000, 0.0000, 1620.0000, '2019-04-30 10:59:35', 0, 10022, 0, 0);
+(1, '10002', 7, '#In10002130001', 20.0000, 0.4000, 0.0000, 20.0000, '2019-06-01 16:24:53', 0, 10022, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS `tab_flat_no` (
 --
 
 INSERT INTO `tab_flat_no` (`id`, `flat_no`, `wing_id`, `ent_code`) VALUES
-(0, '-Select-', 1, '1'),
+(0, '-Select-', 0, '1'),
 (1, 'Other', 1, '1'),
 (2, '101', 2, '10002'),
 (3, '102', 2, '10002');
@@ -247,7 +247,7 @@ CREATE TABLE IF NOT EXISTS `tab_order_d` (
   `product_uom_index` int(10) NOT NULL,
   `order_qty` int(10) NOT NULL,
   `tax_percent` double(65,2) NOT NULL,
-  `tax_amount` double(65,4) NOT NULL,
+  `tax_amount` double(65,2) NOT NULL,
   `sale_rate` double(65,2) NOT NULL,
   `sub_total` double(65,4) NOT NULL,
   `product_stock_status_index` int(10) NOT NULL,
@@ -262,12 +262,12 @@ CREATE TABLE IF NOT EXISTS `tab_order_d` (
 --
 
 INSERT INTO `tab_order_d` (`id`, `order_h_id`, `product_code`, `product_name`, `product_batch`, `product_uom_index`, `order_qty`, `tax_percent`, `tax_amount`, `sale_rate`, `sub_total`, `product_stock_status_index`, `row_invalidated`, `status_updated_datetime`) VALUES
-(1, 1, '#P10002-104', 'Brinjal', '#P10002-1042019-06-03150000.0220', 10009, 2, 2.00, 0.8800, 0.02, 45.0000, 10007, 0, '2019-05-25 19:52:23'),
-(2, 1, '#P10002-105', 'broccoli', '#P10002-1052019-06-03200000.0200', 10008, 800, 2.00, 0.3200, 0.02, 16.0000, 10007, 0, '2019-05-25 19:52:23'),
-(3, 1, '#P10002-106', 'Puha', '#P10002-1062019-06-032510.0000', 10010, 2, 3.00, 0.6000, 10.00, 21.0000, 10007, 0, '2019-05-25 19:52:24'),
-(4, 2, '#P10002-104', 'Brinjal', '#P10002-1042019-06-03150000.0220', 10009, 1, 2.00, 0.4400, 0.02, 22.4400, 10007, 0, '2019-05-25 19:57:29'),
-(5, 2, '#P10002-105', 'broccoli', '#P10002-1052019-06-03200000.0200', 10009, 2, 2.00, 0.8000, 0.02, 40.8000, 10007, 0, '2019-05-25 19:57:29'),
-(6, 2, '#P10002-106', 'Puha', '#P10002-1062019-06-032510.0000', 10010, 1, 3.00, 0.3000, 10.00, 10.3000, 10007, 0, '2019-05-25 19:57:29');
+(1, 1, '#P10002-104', 'Brinjal', '#P10002-1042019-06-03150000.0220', 10009, 2, 2.00, 0.88, 0.02, 45.0000, 10007, 0, '2019-05-25 19:52:23'),
+(2, 1, '#P10002-105', 'broccoli', '#P10002-1052019-06-03200000.0200', 10008, 800, 2.00, 0.32, 0.02, 16.0000, 10007, 0, '2019-05-25 19:52:23'),
+(3, 1, '#P10002-106', 'Puha', '#P10002-1062019-06-032510.0000', 10010, 2, 3.00, 0.60, 10.00, 21.0000, 10007, 0, '2019-05-25 19:52:24'),
+(4, 2, '#P10002-104', 'Brinjal', '#P10002-1042019-06-03150000.0220', 10009, 1, 2.00, 0.44, 0.02, 22.4400, 10007, 0, '2019-05-25 19:57:29'),
+(5, 2, '#P10002-105', 'broccoli', '#P10002-1052019-06-03200000.0200', 10009, 2, 2.00, 0.80, 0.02, 40.8000, 10007, 0, '2019-05-25 19:57:29'),
+(6, 2, '#P10002-106', 'Puha', '#P10002-1062019-06-032510.0000', 10010, 1, 3.00, 0.30, 10.00, 10.3000, 10007, 0, '2019-05-25 19:57:29');
 
 -- --------------------------------------------------------
 
@@ -355,7 +355,7 @@ INSERT INTO `tab_series` (`id`, `series_name`, `series_id`, `continues_count`, `
 (3, 'Employee Code', '#E', 1001, '2019-04-12 00:00:00', 10002),
 (4, 'User Id', '#U', 111005, '2019-05-05 00:00:00', 10002),
 (5, 'Orders', '#O', 2003, '2019-05-25 14:27:29', 10002),
-(6, 'Invoice', '#In', 130001, '2019-04-12 00:00:00', 10002);
+(6, 'Invoice', '#In', 130002, '2019-06-01 10:54:53', 10002);
 
 -- --------------------------------------------------------
 
@@ -382,7 +382,7 @@ CREATE TABLE IF NOT EXISTS `tab_stock_d` (
 
 INSERT INTO `tab_stock_d` (`id`, `stock_h_id`, `stock_qty`, `online_stock_qty`, `offline_stock_qty`, `transit_qty`, `created_datetime`, `product_id`) VALUES
 (1, 1, 12000, 7000, 5000, 3000, '2019-05-03 16:35:31', 1),
-(2, 2, 17200, 12200, 5000, 2800, '2019-05-03 16:35:31', 2),
+(2, 2, 16200, 12200, 4000, 0, '2019-05-03 16:35:31', 2),
 (3, 3, 24, 14, 10, 1, '2019-05-03 16:35:31', 3);
 
 -- --------------------------------------------------------
@@ -438,7 +438,7 @@ CREATE TABLE IF NOT EXISTS `tab_sub_category` (
 --
 
 INSERT INTO `tab_sub_category` (`id`, `sub_category_index`, `sub_category_name`, `is_valid`, `category_index_id`) VALUES
-(0, 0, '-Select-', 1, 1),
+(0, 0, '-Select-', 1, 0),
 (1, 20001, 'sub category 1', 1, 11001),
 (2, 20002, 'sub category 2', 1, 11001),
 (3, 20003, 'sub category 3', 1, 11002),
@@ -600,7 +600,7 @@ CREATE TABLE IF NOT EXISTS `tab_user` (
 
 INSERT INTO `tab_user` (`id`, `ent_code`, `user_full_name`, `user_name`, `user_password`, `user_gender_index`, `user_age`, `user_dob`, `user_phone_no`, `user_email_id`, `user_address`, `user_address_prof`, `user_imei`, `user_designation_index`, `user_status_index`, `user_image`, `user_login_status`, `created_datetime`, `user_emp_id`, `user_id`, `user_flat_id`) VALUES
 (1, '10001', 'Basanagouda Patil', 'basupatil', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 7259999282, 'basupail71@gmail.com', 'No Address', 'proof', 0, 10015, 10013, 'Capture.jpg', 0, '2019-04-09 10:13:14', '', '', 0),
-(2, '10002', 'Raghu Ram .R', 'raghuram', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 358240051111110, 10016, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
+(2, '10002', 'Raghu Ram .R', 'raghuram', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 866700045565387, 10016, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (3, '10002', 'BalaKumar', 'balakumar', 'YmFsYWt1bWFy', 10019, '28', '1990-04-06', 9611429417, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009876, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (4, '10002', 'Ganesh', 'ganesh', 'Z2FuZXNo', 10019, '30', '1988-04-06', 8611429418, 'ganesh@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009877, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (5, '10002', 'Vijay', 'vijay', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654321, 'vijay@gmail.com', 'Address', 'Address proof', 645678765677879, 10017, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '', '', 0),
@@ -628,7 +628,7 @@ CREATE TABLE IF NOT EXISTS `tab_wing` (
 --
 
 INSERT INTO `tab_wing` (`id`, `wing`, `apartment_id`, `ent_code`) VALUES
-(0, '-Select-', 1, '1'),
+(0, '-Select-', 0, '1'),
 (1, 'Other', 1, '1'),
 (2, 'A', 2, '10002'),
 (3, 'B', 2, '10002');

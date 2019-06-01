@@ -84,14 +84,14 @@
 					'purchaseProductDetails' => "Purchase",
 					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
-					'invoiceDetails' => "Invoice",
+					'billDetails' => "Invoice",
 				);
 				
 				$main_menu_array[] = array(
 					'purchaseProductDetails' => "Purchase",
 					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
-					'invoiceDetails' => "Invoice",
+					'billDetails' => "Invoice",
 					'loadUploadProducts' => "Upload Products",
 					'employeeDetails' => "Employee",
 					'getReport' => "Expense Report",
@@ -106,13 +106,13 @@
 					$menu_array[] = array(
 					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
-					'invoiceDetails' => "Invoice",
+					'billDetails' => "Invoice",
 					'getReport' => "Expence Report",
 					);
 					$main_menu_array[] = array(
 					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
-					'invoiceDetails' => "Invoice",
+					'billDetails' => "Invoice",
 					'getReport' => "Expense Report",
 					'mobiLogout' => "Logout"
 				);	

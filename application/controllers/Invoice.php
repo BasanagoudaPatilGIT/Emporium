@@ -15,8 +15,8 @@ class Invoice extends CI_Controller {
 	}
 	
 	public function billDetails() { //working as expected. 
-		$entCode = $this->input->post('entCode');
-		//$entCode = 10002;
+		//$entCode = $this->input->post('entCode');
+		$entCode = 10002;
 		$billStatusDetails = $this->Invoice_model->get_bill_status_details();
 		$bills = $this->Invoice_model->bill_details('ASC', $entCode);				
 		
@@ -28,7 +28,7 @@ class Invoice extends CI_Controller {
 					'userId'=>$row['user_id'],
 					'transactionNumber'=>$row['bill_number'],
 					'transactionNetAmt'=>$row['bill_net_amount'],
-					'transactionCreatedDetetime'=>$row['bill_created_datetime'],
+					'transactionCreatedDatetime'=>$row['bill_created_datetime'],
 					'transactionStatus'=>$row['billStatus'],
 					'transactionStatusIndex'=>$row['bill_status_index'],
 					'userFullName'=>$row['user_full_name'],
@@ -149,6 +149,9 @@ class Invoice extends CI_Controller {
 		$transactionNetAmt = $this->input->post('transactionNetAmt');
 		$delCharges = $this->input->post('delCharges');
 		
+	
+	
+		
 		if($userId == 0){
 			
 			$data['auto_code'] = $this->User_model->get_user_number($entCode);
@@ -189,15 +192,16 @@ class Invoice extends CI_Controller {
 			'bill_tax_amount'=>$transactionTaxAmt,
 			'delivery_charges'=>$delCharges,
 			'bill_net_amount'=>round($transactionNetAmt),
-			'order_id'=>$orderNumber,
+			'order_id'=>0,
 			'bill_status_index'=>10022,
 		);
 		
-		$this->Invoice_model->add_invoice_h_details($data);
+		$this->Invoice_model->add_bill_h_details($data);
 		
 		$data = $this->input->post('transactionProductList');
 		$data = json_decode($data);
 		$linecount = count($data);
+		//$linecount = 1;
 
 		$billhId = $this->Invoice_model->get_max_bill_h_id();
 		
@@ -213,11 +217,11 @@ class Invoice extends CI_Controller {
 			$prodUomIndex = $data1[$i]->{'productUOMIndex'};
 			$prodUomName = $data1[$i]->{'productUOMName'};
 			$BillQty = $data1[$i]->{'billQty'};
-			$mrp = $data1[$i]->{'mrp'};
 			$prodTaxPer = $data1[$i]->{'productTaxPer'};	
 			$prodSaleRate = $data1[$i]->{'productSaleRate'};
 			$prodTaxAmt = $data1[$i]->{'productTaxAmt'};	
 			$subTotal = $data1[$i]->{'subTotal'};
+			
 			
 			$data = array(
 				'bill_h_id'=>$billhId,
@@ -227,7 +231,6 @@ class Invoice extends CI_Controller {
 				'product_uom_index'=>$prodUomIndex,
 				'order_qty'=>0,
 				'bill_qty'=>$BillQty,
-				'mrp'=>$mrp,
 				'tax_percent'=>$prodTaxPer,
 				'tax_amount'=>$prodTaxAmt,
 				'sale_rate'=>$prodSaleRate,
@@ -235,7 +238,7 @@ class Invoice extends CI_Controller {
 				'product_status_index'=> '10006'
 			);
 			
-			$this->Bill_model->add_bill_d_details($data);
+			$this->Invoice_model->add_bill_d_details($data);
 			
 			$productDetails = $this->Product_model->stock_details_by_batchno($entCode,$prodBatchNo);
 			
@@ -244,7 +247,6 @@ class Invoice extends CI_Controller {
 		   $offlineStockQty = $productDetails['offline_stock_qty'] - ($BillQty * 1000) ;
 		   
 		   $data = array(
-				'transit_qty'=>$transitQty,
 				'stock_qty'=>$stockQty,
 				'offline_stock_qty'=>$offlineStockQty,
 			);
@@ -255,7 +257,6 @@ class Invoice extends CI_Controller {
 		   $offlineStockQty = $productDetails['offline_stock_qty'] - $BillQty ;
 		   
 		   $data = array(
-				'transit_qty'=>$transitQty,
 				'stock_qty'=>$stockQty,
 				'offline_stock_qty'=>$offlineStockQty,
 			);
