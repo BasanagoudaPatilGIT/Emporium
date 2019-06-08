@@ -161,11 +161,15 @@ class Order_model extends CI_Model
 	
 	public function get_order_h_details($orderId,$entCode)
     {
-	$this->db->select('h.*,u.user_full_name,u.user_address,u.user_phone_no');
+	$this->db->select('h.*,u.user_full_name,u.user_address,u.user_phone_no,i.index_name as order_status_index_name,fl.flat_no,w.wing,a.apartment_name');
     $this->db->from('tab_order_h as h');
     $this->db->where('h.id', $orderId);
     $this->db->where('h.ent_code', $entCode);
 	$this->db->join('tab_user as u', 'u.id = h.user_id', 'left');
+	$this->db->join('tab_index as i', 'i.index_id = h.order_status_index', 'left');
+	$this->db->join('tab_flat_no as fl', 'fl.id = u.user_flat_id','left');
+	$this->db->join('tab_wing as w', 'w.id = fl.wing_id','left');
+	$this->db->join('tab_apartment as a', 'a.id = w.apartment_id','left');
     $query = $this->db->get();
     return $query->row_array();
     }

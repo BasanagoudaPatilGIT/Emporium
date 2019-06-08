@@ -310,31 +310,14 @@ class Order extends CI_Controller {
 	
 	
 	public function getEachOrderDetails() {
-		$entCode = $this->input->post('entCode');
-		//$entCode = 10002;
-                $userId = $this->input->post('userId');
-		$orderId = $this->input->post('orderId');
+		//$entCode = $this->input->post('entCode');
+		$entCode = 10002;
+		//$orderId = $this->input->post('orderId');
+		$orderId = 1;
 		
 		$data['order_header'] = $this->Order_model->get_order_h_details($orderId,$entCode);
 	
 		$orderdetails = $this->Order_model->get_order_d_details($data['order_header']['id'],$entCode);
-		
-		$order_header_details[] = array(				
-			'id'=>$data['order_header']['id'],
-            'entCode'=>$data['order_header']['ent_code'],
-            'userId'=>$data['order_header']['user_id'],
-            'orderNumber'=>$data['order_header']['order_number'],
-            'transactionTotalAmount'=>$data['order_header']['order_total_amount'],
-            'transactionTaxAmount'=>$data['order_header']['order_tax_amount'],
-            'transactionNetAmount'=>$data['order_header']['order_net_amount'],
-            'transactionStatusIndex'=>$data['order_header']['order_status_index'],
-            'transactionStatusIndexName'=>$data['order_header']['order_status_index_name'],
-			'transactionCreatedDatetime'=>$data['order_header']['order_created_datetime'],
-			'userFullName'=>$data['order_header']['user_full_name'],
-			'userAddress'=>$data['order_header']['user_address'],
-			'userPhoneNo'=>$data['order_header']['user_phone_no'],
-                        
-		);
 		
 		foreach($orderdetails as $row)
 		{
@@ -344,25 +327,41 @@ class Order extends CI_Controller {
 				'productCode'=>$row['product_code'],
 				'productName'=>$row['product_name'],
 				'productBatch'=>$row['product_batch'],
-				'productUomIndex'=>$row['product_uom_index'],
-				'productUomIndexName'=>$row['product_uom_index_name'],
-				'orderQty'=>$row['order_qty'],
+				'productUOMIndex'=>$row['product_uom_index'],
+				'productUOM'=>$row['product_uom_index_name'],
+				'selectedQty'=>$row['order_qty'],
 				'taxPercent'=>$row['tax_percent'],
-				'taxAmount'=>$row['tax_amount'],
+				'taxAmt'=>$row['tax_amount'],
 				'saleRate'=>$row['sale_rate'],
 				'subTotal'=>$row['sub_total'],
-				'productStockStatusIndex'=>$row['product_stock_status_index'],
-				'productStockStatusIndexName'=>$row['product_stock_status_index_name'],
 				'rowInvalidated'=>$row['row_invalidated'],
 				'statusUpdatedDatetime'=>$row['status_updated_datetime'],
+				'isSelected'=>1,
 			);
 		}
 		
-		
+		$order_header_details[] = array(				
+			'id'=>$data['order_header']['id'],
+            'entCode'=>$data['order_header']['ent_code'],
+            'userId'=>$data['order_header']['user_id'],
+            'orderNumber'=>$data['order_header']['order_number'],
+            'transactionTotalAmt'=>$data['order_header']['order_total_amount'],
+            'transactionTaxAmt'=>$data['order_header']['order_tax_amount'],
+            'transactionNetAmt'=>$data['order_header']['order_net_amount'],
+            'transactionStatusIndex'=>$data['order_header']['order_status_index'],
+            'transactionStatus'=>$data['order_header']['order_status_index_name'],
+			'transactionCreatedDatetime'=>$data['order_header']['order_created_datetime'],
+			'userFullName'=>$data['order_header']['user_full_name'],
+			'userAddress'=>$data['order_header']['user_address'],
+			'userPhoneNo'=>$data['order_header']['user_phone_no'],
+			'flatNo'=>$data['order_header']['flat_no'],
+			'wing'=>$data['order_header']['wing'],
+			'apartmentName'=>$data['order_header']['apartment_name'],
+			'transactionProducts'=>$order_details,
+		);
 		
 		$each_order_details[] = array(
 			'transactionHeaderDetails' => $order_header_details,
-			'orderDetails'=>$order_details,
 			'cancelOrder' => 'Cancel',
 			'approveOrder' => 'Approve',
 			'orderToBill' => 'Bill'

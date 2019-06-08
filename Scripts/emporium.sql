@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jun 01, 2019 at 11:22 AM
+-- Generation Time: Jun 08, 2019 at 02:43 PM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -326,7 +326,9 @@ CREATE TABLE IF NOT EXISTS `tab_product` (
 INSERT INTO `tab_product` (`id`, `ent_code`, `product_code`, `product_name`, `product_description`, `product_status_index`, `category_index`, `sub_category_index`, `created_datetime`, `stock_qty_limit`) VALUES
 (1, '10002', '#P10002-104', 'Brinjal', 'Brinjal is a very beautiful vegetable.\nit dark purple in colour.In northern sides people eat baingan ka bharta which is very tasty.brinjal is mostly grown in India and sri Lanka.brinjal is very good for health.\nbrinjal is very tasty.', 10013, 11001, 20001, '2019-05-03 16:35:31', 10000),
 (2, '10002', '#P10002-105', 'broccoli', 'Broccoli is popular and widely eaten. It has a distinctive ‘mustardy’ taste and well known health benefits. The stalks, buds and most of the leaves of broccoli are edible.', 10013, 11001, 20001, '2019-05-03 16:35:31', 10000),
-(3, '10002', '#P10002-106', 'Puha', 'Traditionally it was one of the staple green vegetables of the Maori and is still eaten today. Puha can be found growing wild. The smooth leaved puha is the most popular, however, the slightly bitter and prickly leaved puha is also eaten.', 10013, 11001, 20002, '2019-05-03 16:35:31', 15);
+(3, '10002', '#P10002-106', 'Puha', 'Traditionally it was one of the staple green vegetables of the Maori and is still eaten today. Puha can be found growing wild. The smooth leaved puha is the most popular, however, the slightly bitter and prickly leaved puha is also eaten.', 10013, 11001, 20002, '2019-05-03 16:35:31', 15),
+(5, '10002', '#P10002-109', 'Testing', '', 10013, 11001, 20001, '2019-06-08 19:39:50', 10000),
+(6, '10002', '#P10002-110', 'TestG', '', 10013, 11002, 20003, '2019-06-08 20:09:23', 5000);
 
 -- --------------------------------------------------------
 
@@ -351,7 +353,7 @@ CREATE TABLE IF NOT EXISTS `tab_series` (
 
 INSERT INTO `tab_series` (`id`, `series_name`, `series_id`, `continues_count`, `last_updated`, `ent_code`) VALUES
 (1, 'Entity', 'Ent', 10003, '2019-04-12 00:00:00', 0),
-(2, 'Product Code', '#P', 107, '2019-05-03 11:05:31', 10002),
+(2, 'Product Code', '#P', 111, '2019-06-08 00:00:00', 10002),
 (3, 'Employee Code', '#E', 1001, '2019-04-12 00:00:00', 10002),
 (4, 'User Id', '#U', 111005, '2019-05-05 00:00:00', 10002),
 (5, 'Orders', '#O', 2003, '2019-05-25 14:27:29', 10002),
@@ -381,9 +383,12 @@ CREATE TABLE IF NOT EXISTS `tab_stock_d` (
 --
 
 INSERT INTO `tab_stock_d` (`id`, `stock_h_id`, `stock_qty`, `online_stock_qty`, `offline_stock_qty`, `transit_qty`, `created_datetime`, `product_id`) VALUES
-(1, 1, 12000, 7000, 5000, 3000, '2019-05-03 16:35:31', 1),
+(1, 1, 24000, 18000, 6000, 3000, '2019-05-03 16:35:31', 1),
 (2, 2, 16200, 12200, 4000, 0, '2019-05-03 16:35:31', 2),
-(3, 3, 24, 14, 10, 1, '2019-05-03 16:35:31', 3);
+(3, 3, 24, 14, 10, 1, '2019-05-03 16:35:31', 3),
+(4, 4, 20000, 5000, 15000, 0, '2019-06-08 16:41:09', 4),
+(5, 5, 11000, 5000, 6000, 0, '2019-06-08 19:39:50', 5),
+(6, 5, 10000, 5000, 5000, 0, '2019-06-08 20:09:23', 6);
 
 -- --------------------------------------------------------
 
@@ -399,7 +404,7 @@ CREATE TABLE IF NOT EXISTS `tab_stock_h` (
   `product_pack_date` date NOT NULL,
   `product_exp_date` date NOT NULL,
   `mrp` double(65,4) NOT NULL,
-  `tax_precent` double(65,2) NOT NULL,
+  `tax_percent` double(65,2) NOT NULL,
   `purchase_rate` double(65,4) NOT NULL,
   `sale_rate` double(65,4) NOT NULL,
   `purchase_qty` int(10) NOT NULL,
@@ -412,10 +417,12 @@ CREATE TABLE IF NOT EXISTS `tab_stock_h` (
 -- Dumping data for table `tab_stock_h`
 --
 
-INSERT INTO `tab_stock_h` (`id`, `product_id`, `product_batch`, `packets_in_box`, `product_pack_date`, `product_exp_date`, `mrp`, `tax_precent`, `purchase_rate`, `sale_rate`, `purchase_qty`, `created_datetime`) VALUES
-(1, 1, '#P10002-1042019-06-03150000.0220', 0, '2019-05-03', '2019-06-03', 0.0220, 2.00, 0.0200, 0.0220, 15000, '2019-05-03 16:35:31'),
+INSERT INTO `tab_stock_h` (`id`, `product_id`, `product_batch`, `packets_in_box`, `product_pack_date`, `product_exp_date`, `mrp`, `tax_percent`, `purchase_rate`, `sale_rate`, `purchase_qty`, `created_datetime`) VALUES
+(1, 1, '#P10002-1042019-06-030.020.022', 0, '2019-05-03', '2019-06-03', 0.0220, 2.00, 0.0200, 0.0220, 27000, '2019-05-03 16:35:31'),
 (2, 2, '#P10002-1052019-06-03200000.0200', 0, '2019-05-03', '2019-06-03', 0.0200, 2.00, 0.0180, 0.0200, 20000, '2019-05-03 16:35:31'),
-(3, 3, '#P10002-1062019-06-032510.0000', 0, '2019-05-03', '2019-06-03', 10.0000, 3.00, 8.0000, 10.0000, 25, '2019-05-03 16:35:31');
+(3, 3, '#P10002-1062019-06-032510.0000', 0, '2019-05-03', '2019-06-03', 10.0000, 3.00, 8.0000, 10.0000, 25, '2019-05-03 16:35:31'),
+(4, 5, '#P10002-1092019-09-060.0110.011', 0, '2019-08-22', '2019-09-06', 0.0110, 2.00, 0.0110, 0.0110, 11000, '2019-06-08 19:39:50'),
+(5, 6, '#P10002-1102020-01-210.0110.011', 0, '2019-10-21', '2020-01-21', 0.0110, 2.00, 0.0110, 0.0110, 10000, '2019-06-08 20:09:23');
 
 -- --------------------------------------------------------
 
@@ -600,7 +607,7 @@ CREATE TABLE IF NOT EXISTS `tab_user` (
 
 INSERT INTO `tab_user` (`id`, `ent_code`, `user_full_name`, `user_name`, `user_password`, `user_gender_index`, `user_age`, `user_dob`, `user_phone_no`, `user_email_id`, `user_address`, `user_address_prof`, `user_imei`, `user_designation_index`, `user_status_index`, `user_image`, `user_login_status`, `created_datetime`, `user_emp_id`, `user_id`, `user_flat_id`) VALUES
 (1, '10001', 'Basanagouda Patil', 'basupatil', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 7259999282, 'basupail71@gmail.com', 'No Address', 'proof', 0, 10015, 10013, 'Capture.jpg', 0, '2019-04-09 10:13:14', '', '', 0),
-(2, '10002', 'Raghu Ram .R', 'raghuram', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 866700045565387, 10016, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
+(2, '10002', 'Raghu Ram .R', 'raghuram', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 0, 10016, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (3, '10002', 'BalaKumar', 'balakumar', 'YmFsYWt1bWFy', 10019, '28', '1990-04-06', 9611429417, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009876, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (4, '10002', 'Ganesh', 'ganesh', 'Z2FuZXNo', 10019, '30', '1988-04-06', 8611429418, 'ganesh@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009877, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (5, '10002', 'Vijay', 'vijay', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654321, 'vijay@gmail.com', 'Address', 'Address proof', 645678765677879, 10017, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '', '', 0),

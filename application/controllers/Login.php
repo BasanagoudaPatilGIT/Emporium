@@ -10,10 +10,10 @@
 	function validate_login_credentials() {
 		$userName = $this->input->post('userName');
 		$userPhoneno = $this->input->post('userName');
-		$userPassword = base64_encode($this->input->post('userPassword'));
-
+		$userPassword = base64_encode($this->input->post('userPassword')); 
+		
 		$data['login'] = $this->Login_model->get_user_detail($userName,$userPhoneno,$userPassword);
-		if($data['login']['user_designation_index'] == 10018 || $data['login']['user_designation_index'] == 10015){
+		if($data['login']['user_designation_index'] == 10018 || $data['login']['user_designation_index'] == 10016 || $data['login']['user_designation_index'] == 10015){
 			$imei = 0;
 		}else{
 			$imei = $this->input->post('userIMEI');

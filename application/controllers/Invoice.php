@@ -293,16 +293,38 @@ class Invoice extends CI_Controller {
 		$entCode = $this->input->post('entCode');
 		//$entCode = 10002;
 		$billNumber = $this->input->post('billNumber');
-		//$billNumber = "#In-10002130001";
+		//$billNumber = "#In10002130001";
+		
 		$data['bill_header'] = $this->Invoice_model->get_bill_h_details($billNumber,$entCode);
 	
+		
+		$billdetails = $this->Invoice_model->get_bill_d_details($data['bill_header']['id'],$entCode);
+		
+		foreach($billdetails as $row)
+		{
+			$bill_details[] = array(
+					'id'=>$row['id'],
+					'productCode'=>$row['product_code'],
+					'productName'=>$row['product_name'],
+					'productBatch'=>$row['product_batch'],
+					'orderQty'=>$row['order_qty'],
+					'selectedQty'=>$row['bill_qty'],
+					'taxPercent'=>$row['tax_percent'],
+					'saleRate'=>$row['sale_rate'],
+					'productUOMIndex'=>$row['product_uom_index'],
+					'productUOM'=>$row['product_uom_index_name'],
+					'isSelected'=>1,
+			);
+			
+		}
+		
 		$bill_header_details[] = array(		
 			'id'=>$data['bill_header']['id'],
             'entCode'=>$data['bill_header']['ent_code'],
             'userId'=>$data['bill_header']['user_id'],
             'billNumber'=>$data['bill_header']['bill_number'],
-            'transactionTotalAmount'=>$data['bill_header']['bill_total_amount'],
-            'transactionTaxAmount'=>$data['bill_header']['bill_tax_amount'],
+            'transactionTotalAmt'=>$data['bill_header']['bill_total_amount'],
+            'transactionTaxAmt'=>$data['bill_header']['bill_tax_amount'],
             'delCharges'=>$data['bill_header']['delivery_charges'],
             'transactionNetAmt'=>$data['bill_header']['bill_net_amount'],
 			'transactionCreatedDatetime'=>$data['bill_header']['bill_created_datetime'],
@@ -312,32 +334,13 @@ class Invoice extends CI_Controller {
 			'flatNo'=>$data['bill_header']['flat_no'],
 			'wing'=>$data['bill_header']['wing'],
 			'apartmentName'=>$data['bill_header']['apartment_name'],
+			'transactionProducts' => $bill_details,
 		);
-		$billdetails = $this->Invoice_model->get_bill_d_details($data['bill_header']['id'],$entCode);
-		
-		foreach($billdetails as $row)
-		{
-			$each_bill_details[] = array(
-					'id'=>$row['id'],
-					'productCode'=>$row['product_code'],
-					'productName'=>$row['product_name'],
-					'batchNo'=>$row['batch_no'],
-					'orderQty'=>$row['order_qty'],
-					'billQty'=>$row['bill_qty'],
-					'mrp'=>$row['mrp'],
-					'taxPercent'=>$row['tax_percent'],
-					'saleRate'=>$row['sale_rate'],
-					'productUomIndex'=>$row['product_uom_index'],
-					'productUOM'=>$row['product_uom_index_name'],
-			);
-			
-		}
 		
 		
 		
-		$bill_details[] = array(
+		$each_bill_details[] = array(
 			'billheaderdetails' => $bill_header_details,
-			'billProducts' => $each_bill_details,
 			'cancelBill' => 'Cancel'
 		);
 		
@@ -346,7 +349,7 @@ class Invoice extends CI_Controller {
 		echo"</pre>"; */
 		
 		
-	print_r(json_encode($bill_details));	
+	print_r(json_encode($each_bill_details));	
 	}
 	
 		

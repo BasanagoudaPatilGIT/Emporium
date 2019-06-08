@@ -47,7 +47,7 @@ class Product extends CI_Controller
 					'productPackDate' =>$row['product_pack_date'],
 					'productExpDate' =>$row['product_exp_date'],
 					'mrp' =>$row['mrp'],
-					'taxPercent' =>$row['tax_precent'],
+					'taxPercent' =>$row['tax_percent'],
 					'purchaseRate' =>$row['purchase_rate'],
 					'saleRate' =>$row['sale_rate'],
 					'purchaseQty' =>$row['purchase_qty'],
@@ -58,7 +58,7 @@ class Product extends CI_Controller
 					'offlineStockQty' =>$row['offline_stock_qty'],
 					'previousStockQty' =>$row['stock_qty'],
 					'previousOnlineStockQty' =>$row['online_stock_qty'],
-					'previousOfflineStockQty' =>$row['offline_stock_qty'],
+					'previousofflineQty' =>$row['offline_stock_qty'],
 					'transitQty' =>$row['transit_qty'],
 					'createdDatetime' =>$row['created_datetime']
 				);
@@ -129,7 +129,7 @@ class Product extends CI_Controller
 					'productPackDate' =>$row['product_pack_date'],
 					'productExpDate' =>$row['product_exp_date'],
 					'mrp' =>$row['mrp'],
-					'taxPercent' =>$row['tax_precent'],
+					'taxPercent' =>$row['tax_percent'],
 					'purchaseRate' =>$row['purchase_rate'],
 					'saleRate' =>$row['sale_rate'],
 					'purchaseQty' =>$row['purchase_qty'],
@@ -137,10 +137,10 @@ class Product extends CI_Controller
 					'stockQty' =>$row['stock_qty'],
 					'stockQtyLimit' =>$row['stock_qty_limit'],
 					'onlineStockQty' =>$row['online_stock_qty'],
-					'offlineStockQty' =>$row['offline_stock_qty'],
+					'offlineQty' =>$row['offline_stock_qty'],
 					'previousStockQty' =>$row['stock_qty'],
 					'previousOnlineStockQty' =>$row['online_stock_qty'],
-					'previousOfflineStockQty' =>$row['offline_stock_qty'],
+					'previousofflineQty' =>$row['offline_stock_qty'],
 					'transitQty' =>$row['transit_qty'],
 					'createdDatetime' =>$row['created_datetime']
 				);
@@ -186,7 +186,7 @@ class Product extends CI_Controller
 					'productPackDate' =>$row['product_pack_date'],
 					'productExpDate' =>$row['product_exp_date'],
 					'mrp' =>$row['mrp'],
-					'taxPercent' =>$row['tax_precent'],
+					'taxPercent' =>$row['tax_percent'],
 					'purchaseRate' =>$row['purchase_rate'],
 					'saleRate' =>$row['sale_rate'],
 					'purchaseQty' =>$row['purchase_qty'],
@@ -194,10 +194,10 @@ class Product extends CI_Controller
 					'stockQty' =>$row['stock_qty'],
 					'stockQtyLimit' =>$row['stock_qty_limit'],
 					'onlineStockQty' =>$row['online_stock_qty'],
-					'offlineStockQty' =>$row['offline_stock_qty'],
+					'offlineQty' =>$row['offline_stock_qty'],
 					'previousStockQty' =>$row['stock_qty'],
 					'previousOnlineStockQty' =>$row['online_stock_qty'],
-					'previousOfflineStockQty' =>$row['offline_stock_qty'],
+					'previousofflineQty' =>$row['offline_stock_qty'],
 					'transitQty' =>$row['transit_qty'],
 					'createdDatetime' =>$row['created_datetime']
 				);
@@ -223,16 +223,26 @@ class Product extends CI_Controller
 	{
 		$entCode = $this->input->post('entCode');
 		$productCode = $this->input->post('productCode');
+		$productName =$this->input->post('productName');
 		$productId = $this->input->post('productId');
 		$producthId = $this->input->post('producthId');
 		$productCategory = $this->input->post('productCategory');
 		$productSubCategory = $this->input->post('productSubCategory');
-		$uomType = $this->input->post('uomType');
+		$uomType = $this->input->post('productUOM');
 		$tabUomDetails = $this->Product_model->get_uom_details_based_on_filters($productCategory,$productSubCategory);
-		$packDate = $this->input->post('packDate');
-		$prodExpDate = $this->input->post('prodExpDate');
-		$stockQtyLimit = $this->input->post('stockQtyLimit');
-		$packInBox = $this->input->post('packInBox');
+		$packDate = $this->input->post('productPackDate');
+		$prodExpDate = $this->input->post('productExpDate');
+		$stockQtyLimit = (int)$this->input->post('stockQtyLimit');
+		$packInBox = (int)$this->input->post('packetsInBox');
+		$purchaseQty = (int)$this->input->post('purchaseQty');
+		$stockQty = (int)$this->input->post('purchaseQty');
+		$onlineQty = (int)$this->input->post('onlineQty');
+		$offlineQty = (int)$this->input->post('offlineQty'); 
+		$mrp = (double)$this->input->post('mrp');
+		$purchaseRate = (double)$this->input->post('purchaseRate');
+		$saleRate = (double)$this->input->post('saleRate');
+		$taxPercent = (double)$this->input->post('taxPercent');
+		$prodCount = (int)$this->input->post('productCount');
 		$uomcount = count($tabUomDetails);
 		
 		$count = 0;
@@ -254,133 +264,54 @@ class Product extends CI_Controller
 		$prodCode = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].'-'.$data['auto_code']['continues_count'];
 			
 		
+		//print_r($prodCode);
 		
 		
 		if($count == 1)//Kg and //Gram //Bundle
 		{
 		if($prodCode == $productCode)
 		{
-			$oldBatchNo = $this->input->post('oldBatchNo');
-			$products = $this->Product_model->product_details_by_id('ASC',$productCode, $entCode,$oldBatchNo);	
 			//Quantity calculation
-			if($uomType== 10009){
-			$updatedpurchaseQty = ( $purchaseQty * 1000) +  $products['purchase_qty'];
-			$updatedstockQty = ( $stockQty * 1000) + $products['stock_qty'];
-			$updatedonlineQty = ( $onlineQty  * 1000) + $products['online_stock_qty'];
-			$updatedofflineQty = ( $offlineQty  * 1000) + $products['offline_stock_qty'];
-			$updatedstockQtyLimit  = ( $stockQtyLimit  * 1000);
-			$mrp = (double)$this->input->post('mrp') / 1000;
-			$purchaseRate = (double)$this->input->post('purchaseRate') / 1000;
-			$saleRate = (double)$this->input->post('saleRate') / 1000;
-			
-			}else if($uomType== 10008){
-			
-			$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
-			$updatedstockQty = $stockQty  + $products['stock_qty'];
-			$updatedonlineQty = $onlineQty + $products['online_stock_qty'];
-			$updatedofflineQty = $offlineQty + $products['offline_stock_qty'];
-			$updatedstockQtyLimit = $stockQtyLimit;
-			$mrp = (double)$this->input->post('mrp');
-			$purchaseRate = (double)$this->input->post('purchaseRate');
-			$saleRate = (double)$this->input->post('saleRate');
-			
-			}else if($uomType == 10010){
-			
-			$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
-			$updatedstockQty = $stockQty  + $products['stock_qty'];
-			$updatedonlineQty = $onlineQty + $products['online_stock_qty'];
-			$updatedofflineQty = $offlineQty + $products['offline_stock_qty'];
-			$updatedstockQtyLimit = $stockQtyLimit;
-			$mrp = (double)$this->input->post('mrp');
-			$purchaseRate = (double)$this->input->post('purchaseRate');
-			$saleRate = (double)$this->input->post('saleRate');
-			
-			}
-			
-			$batchno = $prodcode.''.$prodExpDate.''.$purchaseRate.''.$saleRate;
-			$data =array
-			(
-			'product_status_index'=>$this->input->post('productStatus'),
-			'stock_qty_limit'=>$updatedstockQtyLimit,
-			);
-			 $this->Product_model->update_product_details($productId,$data);
-			 
-			 
-			 $data =array
-			(	
-			'product_id'=>$productId,
-			'productBatch' => $batchno,
-			'product_pack_date' =>$packDate,
-			'product_exp_date' =>$prodExpDate,
-			'mrp' =>$mrp,
-			'tax_precent' =>$this->input->post('taxPrecent'),
-			'purchase_rate' =>$purchaseRate,
-			'sale_rate' =>$saleRate,
-			'purchase_qty' =>$updatedpurchaseQty,
-			);
-		
-			$this->Product_model->update_stock_h_details($producthId,$productId,$data);
-			
-			$data =array
-				(		
-					'stock_h_id'=>$stockhId,
-					'product_id'=>$productId,
-					'stock_qty' =>$updatedstockQty ,
-					'online_stock_qty' =>$updatedonlineQty ,
-					'offline_stock_qty' =>$updatedofflineQty
-				);	
-				
-				$this->Product_model->update_stock_d_details($data);
-				
-				$product_message[] = array('message' => 'Product updated successfully');
-
-				print_r(json_encode($product_message));
-			
-		}else
-		{
-		
-		//Quantity calculation
 		if($uomType== 10009){
 		$updatedpurchaseQty = $purchaseQty *1000;
 		$updatedstockQty = $stockQty *1000;
-		$updatedonlineQty = $onlineStockQty *1000;
-		$updatedofflineQty = $offlineStockQty *1000;
-		$updatedstockQtyLimit  = ( $stockQtyLimit  * 1000);
-		$mrp = (double)$this->input->post('mrp') / 1000;
-		$purchaseRate = (double)$this->input->post('purchaseRate') / 1000;
-		$saleRate = (double)$this->input->post('saleRate') / 1000;
+		$updatedonlineQty = $onlineQty *1000;
+		$updatedofflineQty = $offlineQty *1000;
+		$updatedstockQtyLimit  =  $stockQtyLimit  * 1000;
+		$mrp = (double)$mrp / 1000;
+		$purchaseRate = (double)$purchaseRate / 1000;
+		$saleRate = (double)$saleRate / 1000;
 		
 		}else if($uomType== 10008){
 		
 		$updatedpurchaseQty = $purchaseQty;
 		$updatedstockQty = $stockQty;
-		$updatedonlineQty = $onlineStockQty;
-		$updatedofflineQty = $offlineStockQty;
+		$updatedonlineQty = $onlineQty;
+		$updatedofflineQty = $offlineQty;
 		$updatedstockQtyLimit = $stockQtyLimit;
-		$mrp = (double)$this->input->post('mrp');
-		$purchaseRate = (double)$this->input->post('purchaseRate');
-		$saleRate = (double)$this->input->post('saleRate');
+		$mrp = (double)$mrp;
+		$purchaseRate = (double)$purchaseRate;
+		$saleRate = (double)$saleRate;
 		
 		}else if($uomType == 10010){
 		
 		$updatedpurchaseQty = $purchaseQty;
 		$updatedstockQty = $stockQty;
-		$updatedonlineQty = $onlineStockQty;
-		$updatedofflineQty = $offlineStockQty;
+		$updatedonlineQty = $onlineQty;
+		$updatedofflineQty = $offlineQty;
 		$updatedstockQtyLimit = $stockQtyLimit;
-		$mrp = (double)$this->input->post('mrp');
-		$purchaseRate = (double)$this->input->post('purchaseRate');
-		$saleRate = (double)$this->input->post('saleRate');
+		$mrp = (double)$mrp;
+		$purchaseRate = (double)$purchaseRate;
+		$saleRate = (double)$saleRate;
 		}
 		
-		$batchno = $prodcode.''.$prodExpDate.''.$purchaseRate.''.$saleRate;
+		$batchno = $productCode.''.$prodExpDate.''.$purchaseRate.''.$saleRate;
 		$data =array
 			(
 				
 				'ent_code'=>$entCode,
 				'product_code'=>$productCode,
-				'product_name'=>$this->input->post('productName'),
-				'product_description'=>$this->input->post('productDescription'),
+				'product_name'=>$productName,
 				'product_status_index'=>10013,
 				'category_index'=>$productCategory,
 				'sub_category_index'=>$productSubCategory,
@@ -392,21 +323,21 @@ class Product extends CI_Controller
 		$data =array
 			(	
 				'product_id'=>$productId,
-				'productBatch' => $batchno,
+				'product_batch' => $batchno,
 				'product_pack_date' =>$packDate,
 				'product_exp_date' =>$prodExpDate,
 				'mrp' =>$mrp,
-				'tax_precent' =>$this->input->post('taxPrecent'),
+				'tax_percent' =>$taxPercent,
 				'purchase_rate' =>$purchaseRate,
 				'sale_rate' =>$saleRate,
 				'purchase_qty' =>$updatedpurchaseQty,
 			);
 			
 		$this->Product_model->add_stock_h_details($data);
-		$stockhId = $this->Product_model->get_max_stock_h_id();
+		$producthId = $this->Product_model->get_max_stock_h_id();
 		$data =array
 			(		
-				'stock_h_id'=>$stockhId,
+				'stock_h_id'=>$producthId,
 				'product_id'=>$productId,
 				'stock_qty' =>$updatedstockQty ,
 				'online_stock_qty' =>$updatedonlineQty,
@@ -420,64 +351,59 @@ class Product extends CI_Controller
 			$data =array
 			(
 				'last_updated'=>mdate($datestring),
-				'continues_count'=> (int)$prodcount + 1
+				'continues_count'=> (int)$prodCount + 1
 			);
 		
 			
 			$this->Product_model->incriment_productcode_no($data,$entCode);
 			
-			$product_message[] = array('message' => 'Product added successfully');
+			$product_message[] = array('message' => 'Product Added Successfully');
 
 			print_r(json_encode($product_message));
 			
-		}
-		  
-		}else if($count == 2)//Box and //Packet and //Pcs
+		}else
 		{
-			if($prodCode == $productCode){
-				
 			$oldBatchNo = $this->input->post('oldBatchNo');
-			$products = $this->Product_model->product_details_by_id('ASC',$productCode, $entCode,$oldBatchNo);		
-			if($uomType== 10024)
-				{
-						$updatedpurchaseQty = ( $purchaseQty * $packInBox) +  $products['purchase_qty'];
-						$updatedstockQty = ( $stockQty * $packInBox) + $products['stock_qty'];
-						$updatedonlineQty = ( $onlineQty  * $packInBox) + $products['online_stock_qty'];
-						$updatedofflineQty = ( $offlineQty  * $packInBox) + $products['offline_stock_qty'];
-						$updatedstockQtyLimit  = ( $stockQtyLimit  * $packInBox);
-						$mrp = (double)$this->input->post('mrp') / $packInBox;
-						$purchaseRate = (double)$this->input->post('purchaseRate') / $packInBox;
-						$saleRate = (double)$this->input->post('saleRate') / $packInBox;
-						
-				}else if($uomType== 10011){
-						
-						$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
-						$updatedstockQty = $stockQty  + $products['stock_qty'];
-						$updatedonlineQty = $onlineQty + $products['online_stock_qty'];
-						$updatedofflineQty = $offlineQty + $products['offline_stock_qty'];
-						$updatedstockQtyLimit = $stockQtyLimit;
-						$mrp = (double)$this->input->post('mrp');
-						$purchaseRate = (double)$this->input->post('purchaseRate');
-						$saleRate = (double)$this->input->post('saleRate');
-						
-				}else if($uomType == 10012){
-						
-						$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
-						$updatedstockQty = $stockQty  + $products['stock_qty'];
-						$updatedonlineQty = $onlineQty + $products['online_stock_qty'];
-						$updatedofflineQty = $offlineQty + $products['offline_stock_qty'];
-						$updatedstockQtyLimit = $stockQtyLimit;
-						$mrp = (double)$this->input->post('mrp');
-						$purchaseRate = (double)$this->input->post('purchaseRate');
-						$saleRate = (double)$this->input->post('saleRate');
-						
-				}
-			$batchno = $prodcode.''.$prodExpDate.''.$purchaseRate.''.$saleRate;	
-		if($oldBatchNo == $batchno)
-		{
+			$products = $this->Product_model->product_details_by_id('ASC',$productCode, $entCode,$oldBatchNo);	
+			//Quantity calculation
+			if($uomType== 10009){
+			$updatedpurchaseQty = ( $purchaseQty * 1000) +  $products['purchase_qty'];
+			$updatedstockQty = ( $stockQty * 1000) + $products['stock_qty'];
+			$updatedonlineQty = ( $onlineQty  * 1000);
+			$updatedofflineQty = ( $offlineQty  * 1000);
+			$updatedstockQtyLimit  = ( $stockQtyLimit  * 1000);
+			$mrp = (double)$mrp / 1000;
+			$purchaseRate = (double)$purchaseRate / 1000;
+			$saleRate = (double)$saleRate / 1000;
+			
+			}else if($uomType== 10008){
+			
+			$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
+			$updatedstockQty = $stockQty  + $products['stock_qty'];
+			$updatedonlineQty = $onlineQty;
+			$updatedofflineQty = $offlineQty;
+			$updatedstockQtyLimit = $stockQtyLimit;
+			$mrp = (double)$mrp;
+			$purchaseRate = (double)$purchaseRate;
+			$saleRate = (double)$saleRate;
+			
+			}else if($uomType == 10010){
+			
+			$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
+			$updatedstockQty = $stockQty  + $products['stock_qty'];
+			$updatedonlineQty = $onlineQty ;
+			$updatedofflineQty = $offlineQty ;
+			$updatedstockQtyLimit = $stockQtyLimit;
+			$mrp = (double)$mrp;
+			$purchaseRate = (double)$purchaseRate;
+			$saleRate = (double)$saleRate;
+			
+			}
+			
+			$batchno = $productCode.''.$prodExpDate.''.$purchaseRate.''.$saleRate;
 			$data =array
 			(
-			'product_status_index'=>$this->input->post('productStatus'),
+			'product_status_index'=>10013,
 			'stock_qty_limit'=>$updatedstockQtyLimit,
 			);
 			 $this->Product_model->update_product_details($productId,$data);
@@ -486,11 +412,100 @@ class Product extends CI_Controller
 			 $data =array
 			(	
 			'product_id'=>$productId,
-			'productBatch' => $batchno,
+			'product_batch' => $batchno,
 			'product_pack_date' =>$packDate,
 			'product_exp_date' =>$prodExpDate,
 			'mrp' =>$mrp,
-			'tax_precent' =>$this->input->post('taxPrecent'),
+			'tax_percent' =>$taxPercent,
+			'purchase_rate' =>$purchaseRate,
+			'sale_rate' =>$saleRate,
+			'purchase_qty' =>$updatedpurchaseQty,
+			);
+		
+			$this->Product_model->update_stock_h_details($producthId,$productId,$data);
+			
+			$data =array
+				(		
+					'stock_h_id'=>$producthId,
+					'product_id'=>$productId,
+					'stock_qty' =>$updatedstockQty ,
+					'online_stock_qty' =>$updatedonlineQty ,
+					'offline_stock_qty' =>$updatedofflineQty
+				);	
+				
+				$this->Product_model->update_stock_d_details($producthId,$productId,$data);
+				
+				$product_message[] = array('message' => 'Product Updated Successfully');
+
+				print_r(json_encode($product_message));
+			
+		}
+		  
+		}else if($count == 2)//Box and //Packet and //Pcs
+		{
+			
+			
+			if($prodCode == $productCode){
+			
+			$oldBatchNo = $this->input->post('oldBatchNo');
+			/* $products = $this->Product_model->product_details_by_id('ASC',$productCode, $entCode,$oldBatchNo);		
+			if($uomType== 10024)
+				{
+						$updatedpurchaseQty = ( $purchaseQty * $packInBox) +  $products['purchase_qty'];
+						$updatedstockQty = ( $stockQty * $packInBox) + $products['stock_qty'];
+						$updatedonlineQty = ( $onlineQty  * $packInBox) + $products['online_stock_qty'];
+						$updatedofflineQty = ( $offlineQty  * $packInBox) + $products['offline_stock_qty'];
+						$updatedstockQtyLimit  = ( $stockQtyLimit  * $packInBox);
+						$mrp = (double)$mrp / $packInBox;
+						$purchaseRate = (double)$purchaseRate / $packInBox;
+						$saleRate = (double)$saleRate / $packInBox;
+						
+				}else if($uomType== 10011){
+						
+						$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
+						$updatedstockQty = $stockQty  + $products['stock_qty'];
+						$updatedonlineQty = $onlineQty + $products['online_stock_qty'];
+						$updatedofflineQty = $offlineQty + $products['offline_stock_qty'];
+						$updatedstockQtyLimit = $stockQtyLimit;
+						$mrp = (double)$mrp;
+						$purchaseRate = (double)$purchaseRate;
+						$saleRate = (double)$saleRate;
+						
+				}else if($uomType == 10012){
+						
+						$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
+						$updatedstockQty = $stockQty  + $products['stock_qty'];
+						$updatedonlineQty = $onlineQty + $products['online_stock_qty'];
+						$updatedofflineQty = $offlineQty + $products['offline_stock_qty'];
+						$updatedstockQtyLimit = $stockQtyLimit;
+						$mrp = (double)$mrp;
+						$purchaseRate = (double)$purchaseRate;
+						$saleRate = (double)$saleRate;
+						
+				} */
+			$batchno = $productCode.''.$prodExpDate.''.$purchaseRate.''.$saleRate;	
+		if($oldBatchNo == $batchno)
+		{
+			echo "<pre>";
+			print_r(3);
+			echo "</pre>";
+			
+			/* $data =array
+			(
+			'product_status_index'=>10013,
+			'stock_qty_limit'=>$updatedstockQtyLimit,
+			);
+			 $this->Product_model->update_product_details($productId,$data);
+			 
+			 
+			 $data =array
+			(	
+			'product_id'=>$productId,
+			'product_batch' => $batchno,
+			'product_pack_date' =>$packDate,
+			'product_exp_date' =>$prodExpDate,
+			'mrp' =>$mrp,
+			'tax_percent' =>$taxPercent,
 			'purchase_rate' =>$purchaseRate,
 			'sale_rate' =>$saleRate,
 			'purchase_qty' =>$updatedpurchaseQty,
@@ -500,55 +515,60 @@ class Product extends CI_Controller
 			
 			$data =array
 				(		
-					'stock_h_id'=>$stockhId,
+					'stock_h_id'=>$producthId,
 					'product_id'=>$productId,
 					'stock_qty' =>$updatedstockQty ,
 					'online_stock_qty' =>$updatedonlineQty ,
 					'offline_stock_qty' =>$updatedofflineQty
 				);	
 
-			$this->Product_model->update_stock_d_details($data);
+			$this->Product_model->update_stock_d_details($producthId,$productId,$data);
 			
 			$product_message[] = array('message' => 'Product updated successfully');
 
-			print_r(json_encode($product_message));
+			print_r(json_encode($product_message)); */
 		}else{
-				if($uomType== 10024){
+				
+				echo "<pre>";
+			print_r(4);
+			echo "</pre>";
+				
+				/* if($uomType== 10024){
 				$updatedpurchaseQty = $purchaseQty * $packInBox;
 				$updatedstockQty = $stockQty * $packInBox;
-				$updatedonlineQty = $onlineStockQty * $packInBox;
-				$updatedofflineQty = $offlineStockQty * $packInBox;
+				$updatedonlineQty = $onlineQty * $packInBox;
+				$updatedofflineQty = $offlineQty * $packInBox;
 				$updatedstockQtyLimit  = ( $stockQtyLimit  * $packInBox);
-				$mrp = (double)$this->input->post('mrp') / $packInBox;
-				$purchaseRate = (double)$this->input->post('purchaseRate') / $packInBox;
-				$saleRate = (double)$this->input->post('saleRate') / $packInBox;
+				$mrp = (double)$mrp / $packInBox;
+				$purchaseRate = (double)$purchaseRate / $packInBox;
+				$saleRate = (double)$saleRate / $packInBox;
 				
 				}else if($uomType== 10011){
 				
 				$updatedpurchaseQty = $purchaseQty;
 				$updatedstockQty = $stockQty;
-				$updatedonlineQty = $onlineStockQty;
-				$updatedofflineQty = $offlineStockQty;
+				$updatedonlineQty = $onlineQty;
+				$updatedofflineQty = $offlineQty;
 				$updatedstockQtyLimit = $stockQtyLimit;
-				$mrp = (double)$this->input->post('mrp');
-				$purchaseRate = (double)$this->input->post('purchaseRate');
-				$saleRate = (double)$this->input->post('saleRate');
+				$mrp = (double)$mrp;
+				$purchaseRate = (double)$purchaseRate;
+				$saleRate = (double)$saleRate;
 				
 				}else if($uomType == 10012){
 				
 				$updatedpurchaseQty = $purchaseQty;
 				$updatedstockQty = $stockQty;
-				$updatedonlineQty = $onlineStockQty;
-				$updatedofflineQty = $offlineStockQty;
+				$updatedonlineQty = $onlineQty;
+				$updatedofflineQty = $offlineQty;
 				$updatedstockQtyLimit = $stockQtyLimit;
-				$mrp = (double)$this->input->post('mrp');
-				$purchaseRate = (double)$this->input->post('purchaseRate');
-				$saleRate = (double)$this->input->post('saleRate');
+				$mrp = (double)$mrp;
+				$purchaseRate = (double)$purchaseRate;
+				$saleRate = (double)$saleRate;
 				
 				}
 				$data =array
 				(
-				'product_status_index'=>$this->input->post('productStatus'),
+				'product_status_index'=>10013,
 				'stock_qty_limit'=>$updatedstockQtyLimit,
 				);
 				$this->Product_model->update_product_details($productId,$data);
@@ -557,22 +577,22 @@ class Product extends CI_Controller
 				$data =array
 				(	
 				'product_id'=>$productId,
-				'productBatch' => $batchno,
+				'product_batch' => $batchno,
 				'product_pack_date' =>$packDate,
 				'product_exp_date' =>$prodExpDate,
 				'mrp' =>$mrp,
-				'tax_precent' =>$this->input->post('taxPrecent'),
+				'tax_percent' =>$taxPercent,
 				'purchase_rate' =>$purchaseRate,
 				'sale_rate' =>$saleRate,
 				'purchase_qty' =>$updatedpurchaseQty,
 				);
 				$this->Product_model->add_stock_h_details($data);
 				
-				$stockhId = $this->Product_model->get_max_stock_h_id();
+				$producthId = $this->Product_model->get_max_stock_h_id();
 				
 				$data =array
 					(		
-						'stock_h_id'=>$stockhId,
+						'stock_h_id'=>$producthId,
 						'product_id'=>$productId,
 						'stock_qty' =>$updatedstockQty ,
 						'online_stock_qty' =>$updatedonlineQty,
@@ -584,44 +604,46 @@ class Product extends CI_Controller
 					
 					$product_message[] = array('message' => 'Product updated successfully');
 
-					print_r(json_encode($product_message));
+					print_r(json_encode($product_message)); */
 			}			
 				
 			}else
 			{
-			
+			echo "<pre>";
+			print_r(5);
+			echo "</pre>";
 			//Quantity calculation
-				if($uomType== 10024){
+				/* if($uomType== 10024){
 				$updatedpurchaseQty = $purchaseQty * $packInBox;
 				$updatedstockQty = $stockQty * $packInBox;
-				$updatedonlineQty = $onlineStockQty * $packInBox;
-				$updatedofflineQty = $offlineStockQty * $packInBox;
+				$updatedonlineQty = $onlineQty * $packInBox;
+				$updatedofflineQty = $offlineQty * $packInBox;
 				$updatedstockQtyLimit  = ( $stockQtyLimit  * $packInBox);
-				$mrp = (double)$this->input->post('mrp') / $packInBox;
-				$purchaseRate = (double)$this->input->post('purchaseRate') / $packInBox;
-				$saleRate = (double)$this->input->post('saleRate') / $packInBox;
+				$mrp = (double)$mrp / $packInBox;
+				$purchaseRate = (double)$purchaseRate / $packInBox;
+				$saleRate = (double)$saleRate / $packInBox;
 				
 				}else if($uomType== 10011){
 				
 				$updatedpurchaseQty = $purchaseQty;
 				$updatedstockQty = $stockQty;
-				$updatedonlineQty = $onlineStockQty;
-				$updatedofflineQty = $offlineStockQty;
+				$updatedonlineQty = $onlineQty;
+				$updatedofflineQty = $offlineQty;
 				$updatedstockQtyLimit = $stockQtyLimit;
-				$mrp = (double)$this->input->post('mrp');
-				$purchaseRate = (double)$this->input->post('purchaseRate');
-				$saleRate = (double)$this->input->post('saleRate');
+				$mrp = (double)$mrp;
+				$purchaseRate = (double)$purchaseRate;
+				$saleRate = (double)$saleRate;
 				
 				}else if($uomType == 10012){
 				
 				$updatedpurchaseQty = $purchaseQty;
 				$updatedstockQty = $stockQty;
-				$updatedonlineQty = $onlineStockQty;
-				$updatedofflineQty = $offlineStockQty;
+				$updatedonlineQty = $onlineQty;
+				$updatedofflineQty = $offlineQty;
 				$updatedstockQtyLimit = $stockQtyLimit;
-				$mrp = (double)$this->input->post('mrp');
-				$purchaseRate = (double)$this->input->post('purchaseRate');
-				$saleRate = (double)$this->input->post('saleRate');
+				$mrp = (double)$mrp;
+				$purchaseRate = (double)$purchaseRate;
+				$saleRate = (double)$saleRate;
 				}
 				
 				$batchno = $prodcode.''.$prodExpDate.''.$purchaseRate.''.$saleRate;	
@@ -629,8 +651,7 @@ class Product extends CI_Controller
 				(
 				'ent_code'=>$entCode,
 				'product_code'=>$productCode,
-				'product_name'=>$this->input->post('productName'),
-				'product_description'=>$this->input->post('productDescription'),
+				'product_name'=>$productName,
 				'product_status_index'=>10013,
 				'category_index'=>$productCategory,
 				'sub_category_index'=>$productSubCategory,
@@ -642,21 +663,21 @@ class Product extends CI_Controller
 				$data =array
 				(	
 				'product_id'=>$productId,
-				'productBatch' => $batchno,
+				'product_batch' => $batchno,
 				'product_pack_date' =>$packDate,
 				'product_exp_date' =>$prodExpDate,
 				'mrp' =>$mrp,
-				'tax_precent' =>$this->input->post('taxPrecent'),
+				'tax_percent' =>$taxPercent,
 				'purchase_rate' =>$purchaseRate,
 				'sale_rate' =>$saleRate,
 				'purchase_qty' =>$updatedpurchaseQty,
 				);
 					
 				$this->Product_model->add_stock_h_details($data);
-				$stockhId = $this->Product_model->get_max_stock_h_id();
+				$producthId = $this->Product_model->get_max_stock_h_id();
 				$data =array
 				(		
-				'stock_h_id'=>$stockhId,
+				'stock_h_id'=>$producthId,
 				'product_id'=>$productId,
 				'stock_qty' =>$updatedstockQty ,
 				'online_stock_qty' =>$updatedonlineQty,
@@ -668,14 +689,14 @@ class Product extends CI_Controller
 				$data =array
 				(
 					'last_updated'=>mdate($datestring),
-					'continues_count'=> (int)$prodcount + 1
+					'continues_count'=> (int)$prodCount + 1
 				);
 			
 				$this->Product_model->incriment_productcode_no($data,$entCode);
 				
 				$product_message[] = array('message' => 'Product added successfully');
 
-				print_r(json_encode($product_message));
+				print_r(json_encode($product_message)); */
 					
 				
 			}
@@ -710,7 +731,7 @@ class Product extends CI_Controller
 					'productPackDate' =>$row['product_pack_date'],
 					'productExpDate' =>$row['product_exp_date'],
 					'mrp' =>$row['mrp'],
-					'taxPercent' =>$row['tax_precent'],
+					'taxPercent' =>$row['tax_percent'],
 					'purchaseRate' =>$row['purchase_rate'],
 					'saleRate' =>$row['sale_rate'],
 					'purchaseQty' =>$row['purchase_qty'],
@@ -718,10 +739,10 @@ class Product extends CI_Controller
 					'stockQty' =>$row['stock_qty'],
 					'stockQtyLimit' =>$row['stock_qty_limit'],
 					'onlineStockQty' =>$row['online_stock_qty'],
-					'offlineStockQty' =>$row['offline_stock_qty'],
+					'offlineQty' =>$row['offline_stock_qty'],
 					'previousStockQty' =>$row['stock_qty'],
 					'previousOnlineStockQty' =>$row['online_stock_qty'],
-					'previousOfflineStockQty' =>$row['offline_stock_qty'],
+					'previousofflineQty' =>$row['offline_stock_qty'],
 					'transitQty' =>$row['transit_qty'],
 					'createdDatetime' =>$row['created_datetime']
 				);
@@ -778,7 +799,7 @@ class Product extends CI_Controller
 					$updatedpurchaseQty = $purchaseQty * $packInBox;
 					$updatedstockQty = $stockQty * $packInBox;
 					$updatedonlineQty = $onlineStockQty * $packInBox;
-					$updatedofflineQty = $offlineStockQty * $packInBox;
+					$updatedofflineQty = $offlineQty * $packInBox;
 					$updatedstockQtyLimit  = ( $stockQtyLimit  * $packInBox);
 					$mrp = (double)$mrp / $packInBox;
 					$purchaseRate = (double)$purchaseRate / $packInBox;

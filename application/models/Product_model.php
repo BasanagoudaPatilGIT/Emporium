@@ -152,8 +152,7 @@ class Product_model extends CI_Model
     {
     $this->db->where('id', $id);
 	$this->db->where('product_id', $productId);
-	$this->db->where('stock_h_id', $productId);
-    $this->db->update('tab_stock_h', $data);		
+    $this->db->update('tab_stock_d', $data);		
     }
 	
 	public function incriment_productcode_no($data,$entCode)
@@ -179,7 +178,7 @@ class Product_model extends CI_Model
     {
     $this->db->select('p.*,st.index_name as product_status_index_name,cat.category_index as category_index, cat.category_name as category_index_name,
 	sc.sub_category_index as sub_category_index, sc.sub_category_name as sub_category_index_name,h.id as producthId,h.product_batch,h.packets_in_box,
-	h.product_pack_date,h.product_exp_date,h.mrp,h.tax_precent,h.purchase_rate,h.sale_rate,h.purchase_qty,d.id as productdId, d.stock_qty,d.online_stock_qty, 
+	h.product_pack_date,h.product_exp_date,h.mrp,h.tax_percent,h.purchase_rate,h.sale_rate,h.purchase_qty,d.id as productdId, d.stock_qty,d.online_stock_qty, 
 	d.offline_stock_qty,d.transit_qty,d.created_datetime');
 	$this->db->from('tab_product as p');
 	$this->db->where('p.ent_code', $entCode);
@@ -201,7 +200,7 @@ class Product_model extends CI_Model
     {
     $this->db->select('p.*,st.index_name as product_status_index_name,cat.category_index as category_index, cat.category_name as category_index_name,
 	sc.sub_category_index as sub_category_index, sc.sub_category_name as sub_category_index_name,h.id as producthId,h.product_batch,h.packets_in_box,
-	h.product_pack_date,h.product_exp_date,h.mrp,h.tax_precent,h.purchase_rate,h.sale_rate,h.purchase_qty,d.id as productdId, d.stock_qty,d.online_stock_qty, 
+	h.product_pack_date,h.product_exp_date,h.mrp,h.tax_percent,h.purchase_rate,h.sale_rate,h.purchase_qty,d.id as productdId, d.stock_qty,d.online_stock_qty, 
 	d.offline_stock_qty,d.transit_qty,d.created_datetime');
 	$this->db->from('tab_temp_product as p');
 	$this->db->where('p.ent_code', $entCode);
@@ -222,7 +221,7 @@ class Product_model extends CI_Model
     {
 	$this->db->select('p.*,st.index_name as product_status_index_name,cat.category_index as category_index, cat.category_name as category_index_name,
 	sc.sub_category_index as sub_category_index, sc.sub_category_name as sub_category_index_name,h.id as producthId,h.product_batch,h.packets_in_box,
-	h.product_pack_date,h.product_exp_date,h.mrp,h.tax_precent,h.purchase_rate,h.sale_rate,h.purchase_qty,d.id as productdId, d.stock_qty,d.online_stock_qty, 
+	h.product_pack_date,h.product_exp_date,h.mrp,h.tax_percent,h.purchase_rate,h.sale_rate,h.purchase_qty,d.id as productdId, d.stock_qty,d.online_stock_qty, 
 	d.offline_stock_qty,d.transit_qty,d.created_datetime');	
 	$this->db->from('tab_product as p');
 	$this->db->where('p.ent_code', $entCode);
@@ -243,7 +242,7 @@ class Product_model extends CI_Model
     {
 	$this->db->select('p.*,st.index_name as product_status_index_name,cat.category_index as category_index, cat.category_name as category_index_name,
 	sc.sub_category_index as sub_category_index, sc.sub_category_name as sub_category_index_name,h.id as producthId,h.product_batch,h.packets_in_box,
-	h.product_pack_date,h.product_exp_date,h.mrp,h.tax_precent,h.purchase_rate,h.sale_rate,h.purchase_qty,d.id as productdId, d.stock_qty,d.online_stock_qty, 
+	h.product_pack_date,h.product_exp_date,h.mrp,h.tax_percent,h.purchase_rate,h.sale_rate,h.purchase_qty,d.id as productdId, d.stock_qty,d.online_stock_qty, 
 	d.offline_stock_qty,d.transit_qty,d.created_datetime');	
 	$this->db->from('tab_product as p');
 	$this->db->where('p.ent_code', $entCode);
@@ -262,7 +261,7 @@ class Product_model extends CI_Model
     {
     $this->db->select('p.*,st.index_name as product_status_index_name,cat.category_index as category_index, cat.category_name as category_index_name,
 	sc.sub_category_index as sub_category_index, sc.sub_category_name as sub_category_index_name,h.id as producthId,h.product_batch,h.packets_in_box,
-	h.product_pack_date,h.product_exp_date,h.mrp,h.tax_precent,h.purchase_rate,h.sale_rate,h.purchase_qty,d.id as productdId, d.stock_qty,d.online_stock_qty, 
+	h.product_pack_date,h.product_exp_date,h.mrp,h.tax_percent,h.purchase_rate,h.sale_rate,h.purchase_qty,d.id as productdId, d.stock_qty,d.online_stock_qty, 
 	d.offline_stock_qty,d.transit_qty,d.created_datetime');
 	$this->db->from('tab_product as p');
 	$this->db->where('p.ent_code', $entCode);
@@ -282,7 +281,7 @@ class Product_model extends CI_Model
     {
     $this->db->select('p.*,st.index_name as product_status_index_name,cat.category_index as category_index, cat.category_name as category_index_name,
 	sc.sub_category_index as sub_category_index, sc.sub_category_name as sub_category_index_name,h.id as producthId,h.product_batch,h.packets_in_box,
-	h.product_pack_date,h.product_exp_date,h.mrp,h.tax_precent,h.purchase_rate,h.sale_rate,h.purchase_qty,d.id as productdId, d.stock_qty,d.online_stock_qty, 
+	h.product_pack_date,h.product_exp_date,h.mrp,h.tax_percent,h.purchase_rate,h.sale_rate,h.purchase_qty,d.id as productdId, d.stock_qty,d.online_stock_qty, 
 	d.offline_stock_qty,d.transit_qty,d.created_datetime');
 	$this->db->from('tab_product as p');
 	$this->db->where('p.ent_code', $entCode);
@@ -304,7 +303,7 @@ class Product_model extends CI_Model
 	public function low_stock_details($entCode)
     {
      $sql = "SELECT * FROM tab_product p JOIN (SELECT id AS producthId,product_id,product_batch,packets_in_box, product_pack_date, 
-	 product_exp_date, mrp,tax_precent, purchase_rate,sale_rate,purchase_qty,MAX(created_datetime) 
+	 product_exp_date, mrp,tax_percent, purchase_rate,sale_rate,purchase_qty,MAX(created_datetime) 
 	 latestCreation FROM (SELECT * FROM tab_stock_h ORDER BY id DESC) AS h GROUP BY product_id) t1 
 	 ON(p.id = t1.product_id) LEFT JOIN (SELECT product_id,productdId, SUM(stock_qty) AS total_stock_qty ,SUM(online_stock_qty) AS total_online_stock_qty,
 	 SUM(offline_stock_qty) AS total_offline_stock_qty,SUM(transit_qty) AS total_transit_qty FROM (SELECT d.id as productdId,d.stock_h_id, 
