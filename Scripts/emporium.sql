@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jun 08, 2019 at 02:43 PM
+-- Generation Time: Jun 15, 2019 at 01:20 PM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -69,13 +69,6 @@ CREATE TABLE IF NOT EXISTS `tab_bill_d` (
   KEY `bhid` (`bill_h_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
---
--- Dumping data for table `tab_bill_d`
---
-
-INSERT INTO `tab_bill_d` (`id`, `bill_h_id`, `product_code`, `product_name`, `product_batch`, `product_uom_index`, `order_qty`, `bill_qty`, `tax_amount`, `tax_percent`, `sale_rate`, `product_status_index`, `sub_total`) VALUES
-(1, 1, '#P10002-105', 'broccoli', '#P10002-1052019-06-03200000.0200', 10009, 0, 1, 0.4000, 2.0000, 0.0200, 10006, 20.4000);
-
 -- --------------------------------------------------------
 
 --
@@ -99,13 +92,6 @@ CREATE TABLE IF NOT EXISTS `tab_bill_h` (
   PRIMARY KEY (`id`),
   KEY `tbhid` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Dumping data for table `tab_bill_h`
---
-
-INSERT INTO `tab_bill_h` (`id`, `ent_code`, `user_id`, `bill_number`, `bill_total_amount`, `bill_tax_amount`, `delivery_charges`, `bill_net_amount`, `bill_created_datetime`, `order_id`, `bill_status_index`, `payment_status`, `payment_mode`) VALUES
-(1, '10002', 7, '#In10002130001', 20.0000, 0.4000, 0.0000, 20.0000, '2019-06-01 16:24:53', 0, 10022, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -230,7 +216,8 @@ INSERT INTO `tab_index` (`id`, `index_id`, `index_type`, `index_name`, `is_valid
 (25, 10025, 'order_status_index', 'All', 1),
 (26, 10026, 'stock_movement_index', 'Offline To Online', 1),
 (27, 10027, 'stock_movement_index', 'Online To Offline', 1),
-(28, 10028, 'select_index', '-Select-', 1);
+(28, 10028, 'select_index', '-Select-', 1),
+(29, 10029, 'invoice_status_index', 'Paid', 1);
 
 -- --------------------------------------------------------
 
@@ -262,12 +249,9 @@ CREATE TABLE IF NOT EXISTS `tab_order_d` (
 --
 
 INSERT INTO `tab_order_d` (`id`, `order_h_id`, `product_code`, `product_name`, `product_batch`, `product_uom_index`, `order_qty`, `tax_percent`, `tax_amount`, `sale_rate`, `sub_total`, `product_stock_status_index`, `row_invalidated`, `status_updated_datetime`) VALUES
-(1, 1, '#P10002-104', 'Brinjal', '#P10002-1042019-06-03150000.0220', 10009, 2, 2.00, 0.88, 0.02, 45.0000, 10007, 0, '2019-05-25 19:52:23'),
-(2, 1, '#P10002-105', 'broccoli', '#P10002-1052019-06-03200000.0200', 10008, 800, 2.00, 0.32, 0.02, 16.0000, 10007, 0, '2019-05-25 19:52:23'),
-(3, 1, '#P10002-106', 'Puha', '#P10002-1062019-06-032510.0000', 10010, 2, 3.00, 0.60, 10.00, 21.0000, 10007, 0, '2019-05-25 19:52:24'),
-(4, 2, '#P10002-104', 'Brinjal', '#P10002-1042019-06-03150000.0220', 10009, 1, 2.00, 0.44, 0.02, 22.4400, 10007, 0, '2019-05-25 19:57:29'),
-(5, 2, '#P10002-105', 'broccoli', '#P10002-1052019-06-03200000.0200', 10009, 2, 2.00, 0.80, 0.02, 40.8000, 10007, 0, '2019-05-25 19:57:29'),
-(6, 2, '#P10002-106', 'Puha', '#P10002-1062019-06-032510.0000', 10010, 1, 3.00, 0.30, 10.00, 10.3000, 10007, 0, '2019-05-25 19:57:29');
+(1, 1, '#P10002-104', 'Brinjal', '#P10002-1042019-06-030.020.022', 10009, 1, 2.00, 0.44, 0.02, 22.4400, 10007, 0, '2019-06-15 17:49:36'),
+(2, 1, '#P10002-105', 'broccoli', '#P10002-1052019-06-03200000.0200', 10008, 500, 2.00, 0.20, 0.02, 10.2000, 10007, 0, '2019-06-15 17:49:36'),
+(3, 1, '#P10002-106', 'Puha', '#P10002-1062019-06-032510.0000', 10010, 1, 3.00, 0.30, 10.00, 10.3000, 10007, 0, '2019-06-15 17:49:36');
 
 -- --------------------------------------------------------
 
@@ -295,8 +279,7 @@ CREATE TABLE IF NOT EXISTS `tab_order_h` (
 --
 
 INSERT INTO `tab_order_h` (`id`, `ent_code`, `user_id`, `order_number`, `order_total_amount`, `order_tax_amount`, `order_net_amount`, `order_status_index`, `order_view_status`, `order_created_datetime`) VALUES
-(1, '10002', 8, '#O100022001', 80.0000, 4.4800, 84.4800, 10001, 10001, '2019-05-25 19:52:23'),
-(2, '10002', 8, '#O100022002', 72.0000, 3.8400, 76.0000, 10001, 10001, '2019-05-25 19:57:29');
+(1, '10002', 8, '#O100022001', 42.0000, 2.3400, 44.0000, 10001, 10001, '2019-06-15 17:49:36');
 
 -- --------------------------------------------------------
 
@@ -327,8 +310,8 @@ INSERT INTO `tab_product` (`id`, `ent_code`, `product_code`, `product_name`, `pr
 (1, '10002', '#P10002-104', 'Brinjal', 'Brinjal is a very beautiful vegetable.\nit dark purple in colour.In northern sides people eat baingan ka bharta which is very tasty.brinjal is mostly grown in India and sri Lanka.brinjal is very good for health.\nbrinjal is very tasty.', 10013, 11001, 20001, '2019-05-03 16:35:31', 10000),
 (2, '10002', '#P10002-105', 'broccoli', 'Broccoli is popular and widely eaten. It has a distinctive ‘mustardy’ taste and well known health benefits. The stalks, buds and most of the leaves of broccoli are edible.', 10013, 11001, 20001, '2019-05-03 16:35:31', 10000),
 (3, '10002', '#P10002-106', 'Puha', 'Traditionally it was one of the staple green vegetables of the Maori and is still eaten today. Puha can be found growing wild. The smooth leaved puha is the most popular, however, the slightly bitter and prickly leaved puha is also eaten.', 10013, 11001, 20002, '2019-05-03 16:35:31', 15),
-(5, '10002', '#P10002-109', 'Testing', '', 10013, 11001, 20001, '2019-06-08 19:39:50', 10000),
-(6, '10002', '#P10002-110', 'TestG', '', 10013, 11002, 20003, '2019-06-08 20:09:23', 5000);
+(4, '10002', '#P10002-109', 'Testing', '', 10013, 11001, 20001, '2019-06-08 19:39:50', 10000),
+(5, '10002', '#P10002-110', 'TestG', '', 10013, 11002, 20003, '2019-06-08 20:09:23', 5000);
 
 -- --------------------------------------------------------
 
@@ -356,8 +339,8 @@ INSERT INTO `tab_series` (`id`, `series_name`, `series_id`, `continues_count`, `
 (2, 'Product Code', '#P', 111, '2019-06-08 00:00:00', 10002),
 (3, 'Employee Code', '#E', 1001, '2019-04-12 00:00:00', 10002),
 (4, 'User Id', '#U', 111005, '2019-05-05 00:00:00', 10002),
-(5, 'Orders', '#O', 2003, '2019-05-25 14:27:29', 10002),
-(6, 'Invoice', '#In', 130002, '2019-06-01 10:54:53', 10002);
+(5, 'Orders', '#O', 2002, '2019-06-15 12:19:36', 10002),
+(6, 'Invoice', '#In', 130001, '2019-06-15 11:24:44', 10002);
 
 -- --------------------------------------------------------
 
@@ -383,12 +366,12 @@ CREATE TABLE IF NOT EXISTS `tab_stock_d` (
 --
 
 INSERT INTO `tab_stock_d` (`id`, `stock_h_id`, `stock_qty`, `online_stock_qty`, `offline_stock_qty`, `transit_qty`, `created_datetime`, `product_id`) VALUES
-(1, 1, 24000, 18000, 6000, 3000, '2019-05-03 16:35:31', 1),
-(2, 2, 16200, 12200, 4000, 0, '2019-05-03 16:35:31', 2),
-(3, 3, 24, 14, 10, 1, '2019-05-03 16:35:31', 3),
+(1, 1, 27000, 21000, 6000, 1000, '2019-05-03 16:35:31', 1),
+(2, 2, 18500, 16500, 2000, 500, '2019-05-03 16:35:31', 2),
+(3, 3, 26, 17, 9, 1, '2019-05-03 16:35:31', 3),
 (4, 4, 20000, 5000, 15000, 0, '2019-06-08 16:41:09', 4),
 (5, 5, 11000, 5000, 6000, 0, '2019-06-08 19:39:50', 5),
-(6, 5, 10000, 5000, 5000, 0, '2019-06-08 20:09:23', 6);
+(6, 5, 10000, 5000, 5000, 0, '2019-06-08 20:09:23', 5);
 
 -- --------------------------------------------------------
 
@@ -421,8 +404,8 @@ INSERT INTO `tab_stock_h` (`id`, `product_id`, `product_batch`, `packets_in_box`
 (1, 1, '#P10002-1042019-06-030.020.022', 0, '2019-05-03', '2019-06-03', 0.0220, 2.00, 0.0200, 0.0220, 27000, '2019-05-03 16:35:31'),
 (2, 2, '#P10002-1052019-06-03200000.0200', 0, '2019-05-03', '2019-06-03', 0.0200, 2.00, 0.0180, 0.0200, 20000, '2019-05-03 16:35:31'),
 (3, 3, '#P10002-1062019-06-032510.0000', 0, '2019-05-03', '2019-06-03', 10.0000, 3.00, 8.0000, 10.0000, 25, '2019-05-03 16:35:31'),
-(4, 5, '#P10002-1092019-09-060.0110.011', 0, '2019-08-22', '2019-09-06', 0.0110, 2.00, 0.0110, 0.0110, 11000, '2019-06-08 19:39:50'),
-(5, 6, '#P10002-1102020-01-210.0110.011', 0, '2019-10-21', '2020-01-21', 0.0110, 2.00, 0.0110, 0.0110, 10000, '2019-06-08 20:09:23');
+(4, 4, '#P10002-1092019-09-060.0110.011', 0, '2019-08-22', '2019-09-06', 0.0110, 2.00, 0.0110, 0.0110, 11000, '2019-06-08 19:39:50'),
+(5, 5, '#P10002-1102020-01-210.0110.011', 0, '2019-10-21', '2020-01-21', 0.0110, 2.00, 0.0110, 0.0110, 10000, '2019-06-08 20:09:23');
 
 -- --------------------------------------------------------
 

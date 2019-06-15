@@ -20,7 +20,7 @@ class Order extends CI_Controller {
 		//$entCode = 10002;
 		$orderStatusDetails = $this->Order_model->get_order_status_details();
 		$orders = $this->Order_model->order_details('ASC', $entCode);				
-		
+		$allUserDetails = $this->User_model->get_all_user_details_for_transaction($entCode);
 		if (count($orders) >0) {
 			foreach($orders as $row)
 				$all_order[] = array(
@@ -50,6 +50,7 @@ class Order extends CI_Controller {
 				'orderDetailsBasedOnStatus' => 'orderDetailsBasedOnStatus', // on change of order status
 				'orderDetails' => $all_order,
 				'orderStatusDetails' => $orderStatusDetails,
+				'allUserDetails' => $allUserDetails,
 			);
 			print_r(json_encode($all_order_data));
 			
@@ -61,6 +62,7 @@ class Order extends CI_Controller {
 				'' => '',
 				'getOrderNumber' => 'getOrderNumber',
 				'orderStatusDetails' => $orderStatusDetails,
+				'allUserDetails' => $allUserDetails,
 			);
 				
 			print_r(json_encode($no_order_data));
@@ -105,6 +107,7 @@ class Order extends CI_Controller {
 				'getEachOrderDetails' => 'getEachOrderDetails', // clikcing on each order 
 				'orderDetails' => $all_order,
 				'orderStatusDetails' => $orderStatusDetails,
+				'allUserDetails' => $allUserDetails,
 			);
 			
 			print_r(json_encode($all_order_data));
@@ -113,6 +116,7 @@ class Order extends CI_Controller {
 				'' => '',
 				'getOrderNumber' => 'getOrderNumber',
 				'orderStatusDetails' => $orderStatusDetails,
+				'allUserDetails' => $allUserDetails,
 			);
 				
 			print_r(json_encode($no_order_data));
@@ -384,26 +388,27 @@ class Order extends CI_Controller {
 	
 	$this->Order_model->update_order_h_status($entCode,$orderNumber,$data);
 	
-	$data = $this->input->post('orderProductList');
+	$data = $this->input->post('transactionProductList');
 		$data = json_decode($data);
 		$linecount = count($data);
 		
-
-		$orderhId = $this->Order_model->get_max_order_h_id();
-		
 		
 		for ($i=0; $i < $linecount; $i++) {
-			$data1 = $this->input->post('orderProductList');
+			$data1 = $this->input->post('transactionProductList');
 			$data1 = json_decode($data1);
-				
+			$prodCode = $data1[$i]->{'productCode'};
 			$prodBatchNo = $data1[$i]->{'productBatchNo'};	
 			$prodUomIndex = $data1[$i]->{'productUOMIndex'};
 			$prodUomName = $data1[$i]->{'productUOMName'};
-			$orderQty = $data1[$i]->{'orderQty'};		
+			$orderQty = $data1[$i]->{'orderQty'};			
 							
+		$productSubCat = $this->Product_model->get_subCategory($entCode,$prodCode);
 		
-		$productDetails = $this->Product_model->stock_details_by_batchno($entCode,$prodBatchNo);
-		
+		if($productSubCat['sub_category_index'] !=20004){
+			$productDetails = $this->Product_model->stock_details_by_prodCode($entCode,$prodCode);
+		}else{
+			$productDetails = $this->Product_model->stock_details_by_batchno($entCode,$prodBatchNo);
+		}
 		if($prodUomName == "Kg" ){
 		   $transitQty =  $productDetails['transit_qty'] - ($orderQty * 1000) ;
 		   $stockQty =  $productDetails['stock_qty'] + ($orderQty * 1000) ;
@@ -416,7 +421,7 @@ class Order extends CI_Controller {
 			);
 		   
 		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
-		}else if($prodUomName == "Grams" || $prodUomName == "Packet" || $prodUomName == "Pcs"){
+		}else if($prodUomName == "Grams" || $prodUomName == "Packet" || $prodUomName == "Pcs"|| $prodUomName == "Bundle"){
 		   $transitQty =  $productDetails['transit_qty'] - $orderQty ;
 		   $stockQty =  $productDetails['stock_qty'] + $orderQty ;
 		   $onlineStockQty = $productDetails['online_stock_qty'] + $orderQty ;
@@ -444,7 +449,7 @@ class Order extends CI_Controller {
 	}
 	
 	$order_cancallation = array(
-			'message' => 'Order Cancelled successfully'
+			'message' => 'Order Cancelled Successfully'
 		);
 			
 		print_r(json_encode($order_cancallation));

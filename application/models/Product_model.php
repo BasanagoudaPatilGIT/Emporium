@@ -100,6 +100,16 @@ class Product_model extends CI_Model
 		return $row->id;
 	}
 	
+	public function get_subCategory($entCode,$productCode)
+	{
+		$this->db->select('sub_category_index');
+		$this->db->where('product_code', $productCode);
+		$this->db->where('ent_code', $entCode);
+		$query = $this->db->get('tab_product');
+		$row = $query->row();
+		return $query->row_array();
+	}
+	
 	public function get_max_temp_stock_h_id()
 	{
 		$this->db->select_max('id');
@@ -247,6 +257,25 @@ class Product_model extends CI_Model
 	$this->db->from('tab_product as p');
 	$this->db->where('p.ent_code', $entCode);
 	$this->db->where('h.product_batch', $batchno);
+	$this->db->join('tab_stock_h as h', 'h.product_id = p.id','');
+	$this->db->join('tab_stock_d as d', 'd.stock_h_id = h.id','left');
+	$this->db->join('tab_category as cat', 'cat.category_index = p.category_index','left');
+	$this->db->join('tab_sub_category as sc', 'sc.sub_category_index = p.sub_category_index','left');
+	$this->db->join('tab_index as st', 'st.index_id = p.product_status_index','left');
+    
+    $query = $this->db->get();		
+    return $query->row_array();
+    }
+	
+	public function stock_details_by_prodCode($entCode,$prodCode)
+    {
+	$this->db->select('p.*,st.index_name as product_status_index_name,cat.category_index as category_index, cat.category_name as category_index_name,
+	sc.sub_category_index as sub_category_index, sc.sub_category_name as sub_category_index_name,h.id as producthId,h.product_batch,h.packets_in_box,
+	h.product_pack_date,h.product_exp_date,h.mrp,h.tax_percent,h.purchase_rate,h.sale_rate,h.purchase_qty,d.id as productdId, d.stock_qty,d.online_stock_qty, 
+	d.offline_stock_qty,d.transit_qty,d.created_datetime');	
+	$this->db->from('tab_product as p');
+	$this->db->where('p.ent_code', $entCode);
+	$this->db->where('p.product_code', $prodCode);
 	$this->db->join('tab_stock_h as h', 'h.product_id = p.id','');
 	$this->db->join('tab_stock_d as d', 'd.stock_h_id = h.id','left');
 	$this->db->join('tab_category as cat', 'cat.category_index = p.category_index','left');
