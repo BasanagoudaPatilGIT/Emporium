@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jun 15, 2019 at 01:20 PM
+-- Generation Time: Jun 22, 2019 at 01:08 PM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -189,6 +189,7 @@ CREATE TABLE IF NOT EXISTS `tab_index` (
 --
 
 INSERT INTO `tab_index` (`id`, `index_id`, `index_type`, `index_name`, `is_valid`) VALUES
+(0, 0, 'select_index', '-Select-', 1),
 (1, 10001, 'order_status_index', 'Order', 1),
 (2, 10002, 'order_status_index', 'Approved', 2),
 (3, 10003, 'order_status_index', 'Billed', 1),
@@ -216,8 +217,7 @@ INSERT INTO `tab_index` (`id`, `index_id`, `index_type`, `index_name`, `is_valid
 (25, 10025, 'order_status_index', 'All', 1),
 (26, 10026, 'stock_movement_index', 'Offline To Online', 1),
 (27, 10027, 'stock_movement_index', 'Online To Offline', 1),
-(28, 10028, 'select_index', '-Select-', 1),
-(29, 10029, 'invoice_status_index', 'Paid', 1);
+(28, 10028, 'invoice_status_index', 'Paid', 1);
 
 -- --------------------------------------------------------
 
@@ -340,7 +340,8 @@ INSERT INTO `tab_series` (`id`, `series_name`, `series_id`, `continues_count`, `
 (3, 'Employee Code', '#E', 1001, '2019-04-12 00:00:00', 10002),
 (4, 'User Id', '#U', 111005, '2019-05-05 00:00:00', 10002),
 (5, 'Orders', '#O', 2002, '2019-06-15 12:19:36', 10002),
-(6, 'Invoice', '#In', 130001, '2019-06-15 11:24:44', 10002);
+(6, 'Invoice', '#In', 130001, '2019-06-15 11:24:44', 10002),
+(7, 'Stock Movement', '#SM', 1, '2019-06-15 11:24:44', 10002);
 
 -- --------------------------------------------------------
 
@@ -406,6 +407,26 @@ INSERT INTO `tab_stock_h` (`id`, `product_id`, `product_batch`, `packets_in_box`
 (3, 3, '#P10002-1062019-06-032510.0000', 0, '2019-05-03', '2019-06-03', 10.0000, 3.00, 8.0000, 10.0000, 25, '2019-05-03 16:35:31'),
 (4, 4, '#P10002-1092019-09-060.0110.011', 0, '2019-08-22', '2019-09-06', 0.0110, 2.00, 0.0110, 0.0110, 11000, '2019-06-08 19:39:50'),
 (5, 5, '#P10002-1102020-01-210.0110.011', 0, '2019-10-21', '2020-01-21', 0.0110, 2.00, 0.0110, 0.0110, 10000, '2019-06-08 20:09:23');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tab_stock_movement`
+--
+
+CREATE TABLE IF NOT EXISTS `tab_stock_movement` (
+  `id` int(10) NOT NULL,
+  `ent_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `product_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `product_name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `product_batch` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `online_qty_before_movement` int(10) NOT NULL,
+  `offline_qty_before_movement` int(10) NOT NULL,
+  `movement_type` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `movement_qty` int(10) NOT NULL,
+  `modified_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `uom_type` int(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 

@@ -89,9 +89,10 @@
 				
 				$main_menu_array[] = array(
 					'purchaseProductDetails' => "Purchase",
-					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
 					'billDetails' => "Invoice",
+					'getProductDetails' => "Stock",
+					'getProductDetailsForMovement' => "Stock Movement",
 					'loadUploadProducts' => "Upload Products",
 					'employeeDetails' => "Employee",
 					'getReport' => "Expense Report",

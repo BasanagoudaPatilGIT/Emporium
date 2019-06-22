@@ -38,6 +38,25 @@ class Product_model extends CI_Model
 		$data['id'] = $max_id;
 		return $this->db->insert('tab_temp_product', $data);
 	}
+	
+	public function add_to_stock_movement_table($data)
+	{
+		//SELECT MAX ID
+		$max_id = 1;
+		$this->db->select_max('id');
+		$query = $this->db->get('tab_stock_movement');
+		$row = $query->row();
+		if (isset($row))
+		{
+			$max_id = $row->id + 1;
+		}
+		
+		$data['id'] = $max_id;
+		return $this->db->insert('tab_stock_movement', $data);
+	}
+	
+	
+	
 	public function get_max_product_id()
 	{
 		$this->db->select_max('id');
@@ -168,6 +187,13 @@ class Product_model extends CI_Model
 	public function incriment_productcode_no($data,$entCode)
     {
 	$this->db->where('series_name', 'Product Code');
+	$this->db->where('ent_code', $entCode);
+	$this->db->update('tab_series', $data);	
+	}
+	
+	public function incriment_stock_movement_no($data,$entCode)
+    {
+	$this->db->where('series_name', 'Stock Movement');
 	$this->db->where('ent_code', $entCode);
 	$this->db->update('tab_series', $data);	
 	}
@@ -356,6 +382,17 @@ class Product_model extends CI_Model
 	return $query->row_array();
     }
 	
+	public function get_stockMovementTransCode($entCode)
+    {
+	$this->db->select('p.*');
+	$this->db->from('tab_series as p');
+	$this->db->where('p.ent_code', $entCode);
+	$this->db->where('p.series_name', 'Stock Movement');
+	$query = $this->db->get();
+	
+	return $query->row_array();
+    }
+	
 	
 	public function get_product_category($entCode)
     {
@@ -374,7 +411,7 @@ class Product_model extends CI_Model
 
 	public function get_uom_details()
     {
-	$where = "i.index_type= 'product_uom_index' or i.index_type='select_index'";
+	$where = "i.index_type= 'product_uom_index'";
     $this->db->select('i.index_id as _id,i.index_id as indexId, i.index_name as indexName,um.category_id as categoryId,
 	um.sub_category_id as subCategoryId');
 	$this->db->from('tab_index as i');
@@ -386,7 +423,7 @@ class Product_model extends CI_Model
 
 	public function get_uom_details_based_on_filters($productCategory,$productSubCategory)
     {
-	$where = "i.index_type= 'product_uom_index' or i.index_type='select_index'";
+	$where = "i.index_type= 'product_uom_index'";
     $this->db->select('i.index_name,i.index_id as _id');
 	$this->db->from('tab_index as i');
 	$this->db->where($where);

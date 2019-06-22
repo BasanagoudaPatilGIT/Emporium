@@ -24,6 +24,7 @@ class Product extends CI_Controller
 		$subCategoryList = $this->Product_model->get_product_sub_category();
 		$UOMDetails = $this->Product_model->get_uom_details();
 		$prodCode = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].'-'.$data['auto_code']['continues_count'];
+		
 						
 		$products = $this->Product_model->product_details('ASC', $entCode);				
 		
@@ -58,7 +59,7 @@ class Product extends CI_Controller
 					'offlineStockQty' =>$row['offline_stock_qty'],
 					'previousStockQty' =>$row['stock_qty'],
 					'previousOnlineStockQty' =>$row['online_stock_qty'],
-					'previousofflineQty' =>$row['offline_stock_qty'],
+					'previousOfflineQty' =>$row['offline_stock_qty'],
 					'transitQty' =>$row['transit_qty'],
 					'createdDatetime' =>$row['created_datetime']
 				);
@@ -72,6 +73,71 @@ class Product extends CI_Controller
 			'prodSubCategory' => $subCategoryList,
 			'uomDetails' => $UOMDetails,
 			'productCount' =>$data['auto_code']['continues_count']
+		);
+		
+		print_r(json_encode($all_stock_data));
+		
+		
+	}
+	}
+	
+	
+	public function getProductDetailsForMovement() { //working as expected. 
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
+		
+		$data['auto_code'] = $this->Product_model->get_stockMovementTransCode($entCode);
+		$categoryList = $this->Product_model->get_product_category($entCode);
+		$subCategoryList = $this->Product_model->get_product_sub_category();
+		$UOMDetails = $this->Product_model->get_uom_details();
+		$StockMovementTransId = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].''.$data['auto_code']['continues_count'];
+						
+		$products = $this->Product_model->product_details('ASC', $entCode);				
+		
+		if (count($products) >0) {
+			foreach($products as $row)
+				$prod_details[] = array(
+					'id'=>$row['id'],
+					'entCode'=>$row['ent_code'],
+					'productCode'=>$row['product_code'],
+					'productName'=>$row['product_name'],
+					'productDescription'=>$row['product_description'],
+					'productStatus'=>$row['product_status_index_name'],
+					'productStatusIndex'=>$row['product_status_index'],
+					'productCategory'=>$row['category_index_name'],
+					'productCategoryIndex'=>$row['category_index'],
+					'productSubCategory'=>$row['sub_category_index_name'],
+					'productSubCategoryIndex'=>$row['sub_category_index'],
+					'productHID' => $row['producthId'],
+					'productBatch' => $row['product_batch'],
+					'packetsInBox' => $row['packets_in_box'],
+					'productPackDate' =>$row['product_pack_date'],
+					'productExpDate' =>$row['product_exp_date'],
+					'mrp' =>$row['mrp'],
+					'taxPercent' =>$row['tax_percent'],
+					'purchaseRate' =>$row['purchase_rate'],
+					'saleRate' =>$row['sale_rate'],
+					'purchaseQty' =>$row['purchase_qty'],
+					'productDID' => $row['productdId'],
+					'stockQty' =>$row['stock_qty'],
+					'stockQtyLimit' =>$row['stock_qty_limit'],
+					'onlineStockQty' =>$row['online_stock_qty'],
+					'offlineStockQty' =>$row['offline_stock_qty'],
+					'previousStockQty' =>$row['stock_qty'],
+					'previousOnlineStockQty' =>$row['online_stock_qty'],
+					'previousOfflineQty' =>$row['offline_stock_qty'],
+					'transitQty' =>$row['transit_qty'],
+					'createdDatetime' =>$row['created_datetime']
+				);
+		
+		$all_stock_data[] = array(
+			'getSelectedProductDetails' => 'getSelectedProductDetails', // on click of each product call this method
+			'StockMovementTransId' => $StockMovementTransId,
+			'productDetails' => $prod_details,
+			'prodCategory' => $categoryList,
+			'prodSubCategory' => $subCategoryList,
+			'uomDetails' => $UOMDetails,
+			'productStockMovementCount' =>$data['auto_code']['continues_count']
 		);
 		
 		print_r(json_encode($all_stock_data));
@@ -140,7 +206,7 @@ class Product extends CI_Controller
 					'offlineQty' =>$row['offline_stock_qty'],
 					'previousStockQty' =>$row['stock_qty'],
 					'previousOnlineStockQty' =>$row['online_stock_qty'],
-					'previousofflineQty' =>$row['offline_stock_qty'],
+					'previousOfflineQty' =>$row['offline_stock_qty'],
 					'transitQty' =>$row['transit_qty'],
 					'createdDatetime' =>$row['created_datetime']
 				);
@@ -197,7 +263,7 @@ class Product extends CI_Controller
 					'offlineQty' =>$row['offline_stock_qty'],
 					'previousStockQty' =>$row['stock_qty'],
 					'previousOnlineStockQty' =>$row['online_stock_qty'],
-					'previousofflineQty' =>$row['offline_stock_qty'],
+					'previousOfflineQty' =>$row['offline_stock_qty'],
 					'transitQty' =>$row['transit_qty'],
 					'createdDatetime' =>$row['created_datetime']
 				);
@@ -271,8 +337,9 @@ class Product extends CI_Controller
 		{
 		if($prodCode == $productCode)
 		{
+			print_r("adding new products //Kg and //Gram //Bundle ");
 			//Quantity calculation
-		if($uomType== 10009){
+		/* if($uomType== 10009){
 		$updatedpurchaseQty = $purchaseQty *1000;
 		$updatedstockQty = $stockQty *1000;
 		$updatedonlineQty = $onlineQty *1000;
@@ -359,11 +426,13 @@ class Product extends CI_Controller
 			
 			$product_message[] = array('message' => 'Product Added Successfully');
 
-			print_r(json_encode($product_message));
+			print_r(json_encode($product_message)); */
 			
 		}else
 		{
-			$oldBatchNo = $this->input->post('oldBatchNo');
+			print_r("update products //Kg and //Gram //Bundle");
+			
+			/* $oldBatchNo = $this->input->post('oldBatchNo');
 			$products = $this->Product_model->product_details_by_id('ASC',$productCode, $entCode,$oldBatchNo);	
 			//Quantity calculation
 			if($uomType== 10009){
@@ -437,18 +506,16 @@ class Product extends CI_Controller
 				
 				$product_message[] = array('message' => 'Product Updated Successfully');
 
-				print_r(json_encode($product_message));
+				print_r(json_encode($product_message)); */
 			
 		}
 		  
 		}else if($count == 2)//Box and //Packet and //Pcs
 		{
-			
-			
 			if($prodCode == $productCode){
 			
 			$oldBatchNo = $this->input->post('oldBatchNo');
-			/* $products = $this->Product_model->product_details_by_id('ASC',$productCode, $entCode,$oldBatchNo);		
+			$products = $this->Product_model->product_details_by_id('ASC',$productCode, $entCode,$oldBatchNo);		
 			if($uomType== 10024)
 				{
 						$updatedpurchaseQty = ( $purchaseQty * $packInBox) +  $products['purchase_qty'];
@@ -482,13 +549,11 @@ class Product extends CI_Controller
 						$purchaseRate = (double)$purchaseRate;
 						$saleRate = (double)$saleRate;
 						
-				} */
+				}
 			$batchno = $productCode.''.$prodExpDate.''.$purchaseRate.''.$saleRate;	
 		if($oldBatchNo == $batchno)
 		{
-			echo "<pre>";
-			print_r(3);
-			echo "</pre>";
+			print_r("update products //Box and //Packet and //Pcs batch maching");
 			
 			/* $data =array
 			(
@@ -742,7 +807,7 @@ class Product extends CI_Controller
 					'offlineQty' =>$row['offline_stock_qty'],
 					'previousStockQty' =>$row['stock_qty'],
 					'previousOnlineStockQty' =>$row['online_stock_qty'],
-					'previousofflineQty' =>$row['offline_stock_qty'],
+					'previousOfflineQty' =>$row['offline_stock_qty'],
 					'transitQty' =>$row['transit_qty'],
 					'createdDatetime' =>$row['created_datetime']
 				);
@@ -768,80 +833,96 @@ class Product extends CI_Controller
 	public function stockMovement() 
 	{ 
 		$entCode = $this->input->post('entCode');
-		$batchNo = $this->input->post('batchNo');
-		$transId = $this->input->post('transId');
-		$uomType = $this->input->post('uomType');
+		$productDID = $this->input->post('productId');
+		$StockMovementTransId = $this->input->post('stockMovementTransId');
+		$MoveCount = $this->input->post('stockMovementCount');
+		$prodCode = $this->input->post('productCode');
+		$prodName = $this->input->post('productName');
+		$prodBatch = $this->input->post('productBatch');
+		$uomType = $this->input->post('productUOM');
+		$previousOnlineStock = $this->input->post('previousOnlineStock');
+		$previousOfflineStock = $this->input->post('previousOfflineStock');
 		$onlineStock = $this->input->post('onlineStock');
 		$offlineStock = $this->input->post('offlineStock');
-		$transferQty = $this->input->post('transferQty'); 
 		
-		
-		
-		 if($uomType == 10009)
-				 {
-					$updatedonlineQty = $onlineStock *1000;
-					$updatedofflineQty = $offlineStock *1000;
-					$updatedtransferQty  = $transferQty  * 1000;
-					
-				}else if($uomType == 10008){
-					
-					$updatedonlineQty = $onlineStock;
-					$updatedofflineQty = $offlineStock;
-					$updatedtransferQty  = $transferQty;
-					
-				}else if($uomType == 10010){
-					
-					$updatedonlineQty = $onlineStock;
-					$updatedofflineQty = $offlineStock;
-					$updatedtransferQty  = $transferQty;
-					
-				}else if($uomType == 10024){
-					$updatedpurchaseQty = $purchaseQty * $packInBox;
-					$updatedstockQty = $stockQty * $packInBox;
-					$updatedonlineQty = $onlineStockQty * $packInBox;
-					$updatedofflineQty = $offlineQty * $packInBox;
-					$updatedstockQtyLimit  = ( $stockQtyLimit  * $packInBox);
-					$mrp = (double)$mrp / $packInBox;
-					$purchaseRate = (double)$purchaseRate / $packInBox;
-					$saleRate = (double)$saleRate / $packInBox;
-					
-					$updatedonlineQty = $onlineStock * $packInBox;
-					$updatedofflineQty = $offlineStock * $packInBox;
-					$updatedtransferQty  = $transferQty * $packInBox;
-					
-				}else if($uomType == 10011){
-					
-					$updatedonlineQty = $onlineStock;
-					$updatedofflineQty = $offlineStock;
-					$updatedtransferQty  = $transferQty;
-					
-				}else if($uomType == 10012){
-					
-					$updatedonlineQty = $onlineStock;
-					$updatedofflineQty = $offlineStock;
-					$updatedtransferQty  = $transferQty;
-				}
-		
-		
-		if($transId == 10026){
-			$data =array
-			(		
-			'online_stock_qty' =>$updatedonlineQty + $updatedtransferQty,
-			'offline_stock_qty' =>$updatedofflineQty - $updatedtransferQty
-			);
-			$this->Product_model->update_stock_movement_details($data,$productDID);
-		}else if($transId == 10027){
-			$data =array
-			(		
-			'online_stock_qty' =>$updatedonlineQty - $updatedtransferQty,
-			'offline_stock_qty' =>$updatedofflineQty + $updatedtransferQty
-			);
-			$this->Product_model->update_stock_movement_details($data,$productDID);	
-			
+		if($onlineStock < $previousOnlineStock){
+		$transType= "Online To Offline";
+		}else{
+		$transType= "Offline To Online";	
 		}
 		
+		if($transType == "Online To Offline"){
+				if($uomType == 10009)
+				 {
+					$transferQty = ($previousOnlineStock * 1000) - ($onlineStock * 1000) ; 
 					
+				}else if($uomType == 10008 || $uomType == 10010 || $uomType == 10011 || $uomType == 10012){
+					
+					$transferQty = $previousOnlineStock - $onlineStock; 
+					
+					
+				}else if($uomType == 10024){
+					
+					$transferQty = ($previousOnlineStock * $packInBox) - ($onlineStock * $packInBox); 
+					
+				}	
+				
+		}else{
+			if($uomType == 10009)
+				 {
+					$transferQty = ($previousOfflineStock * 1000) - ($offlineStock * 1000) ; 
+					
+				}else if($uomType == 10008 || $uomType == 10010 || $uomType == 10011 || $uomType == 10012){
+					
+					$transferQty = $previousOfflineStock - $offlineStock; 
+					
+					
+				}else if($uomType == 10024){
+					
+					$transferQty = ($previousOfflineStock * $packInBox) - ($offlineStock * $packInBox); 
+					
+				}
+				
+				
+		}
 		
+		$data =array
+				(
+				'StockMovementTransId'=>$StockMovementTransId,				
+				'ent_code' =>$entCode,
+				'product_code' =>$prodCode,
+				'product_name' =>$prodName,
+				'product_batch' =>$prodBatch,
+				'online_qty_before_movement' =>$previousOnlineStock,
+				'offline_qty_before_movement' =>$previousOfflineStock,
+				'movement_qty' =>$transferQty,
+				'movement_type' =>$transType,
+				'uom_type' =>$uomType,
+				);
+				$this->Product_model->add_to_stock_movement_table($data);
+		
+		$data =array
+				(		
+				'online_stock_qty' =>$onlineStock,
+				'offline_stock_qty' =>$offlineStock
+				);
+				$this->Product_model->update_stock_movement_details($data,$productDID);
+		
+		
+					
+		$datestring = date('Y-m-d');
+			$data =array
+			(
+				'last_updated'=>mdate($datestring),
+				'continues_count'=> (int)$MoveCount + 1
+			);
+		
+			
+			$this->Product_model->incriment_stock_movement_no($data,$entCode);
+			
+			$product_message[] = array('message' => 'Stock Moved Successfully');
+
+			print_r(json_encode($product_message));
 					
 					
 	}	
