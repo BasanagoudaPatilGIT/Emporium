@@ -59,7 +59,7 @@ class Product extends CI_Controller
 					'offlineStockQty' =>$row['offline_stock_qty'],
 					'previousStockQty' =>$row['stock_qty'],
 					'previousOnlineStockQty' =>$row['online_stock_qty'],
-					'previousOfflineQty' =>$row['offline_stock_qty'],
+					'previousOfflineStockQty' =>$row['offline_stock_qty'],
 					'transitQty' =>$row['transit_qty'],
 					'createdDatetime' =>$row['created_datetime']
 				);
@@ -125,7 +125,7 @@ class Product extends CI_Controller
 					'offlineStockQty' =>$row['offline_stock_qty'],
 					'previousStockQty' =>$row['stock_qty'],
 					'previousOnlineStockQty' =>$row['online_stock_qty'],
-					'previousOfflineQty' =>$row['offline_stock_qty'],
+					'previousOfflineStockQty' =>$row['offline_stock_qty'],
 					'transitQty' =>$row['transit_qty'],
 					'createdDatetime' =>$row['created_datetime']
 				);
@@ -206,7 +206,7 @@ class Product extends CI_Controller
 					'offlineQty' =>$row['offline_stock_qty'],
 					'previousStockQty' =>$row['stock_qty'],
 					'previousOnlineStockQty' =>$row['online_stock_qty'],
-					'previousOfflineQty' =>$row['offline_stock_qty'],
+					'previousOfflineStockQtys' =>$row['offline_stock_qty'],
 					'transitQty' =>$row['transit_qty'],
 					'createdDatetime' =>$row['created_datetime']
 				);
@@ -263,7 +263,7 @@ class Product extends CI_Controller
 					'offlineQty' =>$row['offline_stock_qty'],
 					'previousStockQty' =>$row['stock_qty'],
 					'previousOnlineStockQty' =>$row['online_stock_qty'],
-					'previousOfflineQty' =>$row['offline_stock_qty'],
+					'previousOfflineStockQty' =>$row['offline_stock_qty'],
 					'transitQty' =>$row['transit_qty'],
 					'createdDatetime' =>$row['created_datetime']
 				);
@@ -807,7 +807,7 @@ class Product extends CI_Controller
 					'offlineQty' =>$row['offline_stock_qty'],
 					'previousStockQty' =>$row['stock_qty'],
 					'previousOnlineStockQty' =>$row['online_stock_qty'],
-					'previousOfflineQty' =>$row['offline_stock_qty'],
+					'previousOfflineStockQty' =>$row['offline_stock_qty'],
 					'transitQty' =>$row['transit_qty'],
 					'createdDatetime' =>$row['created_datetime']
 				);
@@ -888,7 +888,7 @@ class Product extends CI_Controller
 		
 		$data =array
 				(
-				'StockMovementTransId'=>$StockMovementTransId,				
+				'transaction_no'=>$StockMovementTransId,				
 				'ent_code' =>$entCode,
 				'product_code' =>$prodCode,
 				'product_name' =>$prodName,
