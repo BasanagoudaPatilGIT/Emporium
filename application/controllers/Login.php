@@ -5,6 +5,8 @@
 		// Call the Model constructor
 		parent::__construct();
 		$this->load->model('Login_model');
+		$this->load->model('Product_model');
+		$this->load->model('Notification_model');
 	}
 	
 	function validate_login_credentials() {
@@ -12,7 +14,12 @@
 		$userPhoneno = $this->input->post('userName');
 		$userPassword = base64_encode($this->input->post('userPassword')); 
 		
+		//$userName = 'Ramesh';
+		//$userPhoneno = 'Ramesh';
+		//$userPassword = base64_encode('Ramesh'); 
+		
 		$data['login'] = $this->Login_model->get_user_detail($userName,$userPhoneno,$userPassword);
+		
 		if($data['login']['user_designation_index'] == 10018 || $data['login']['user_designation_index'] == 10016 || $data['login']['user_designation_index'] == 10015){
 			$imei = 0;
 		}else{
@@ -20,7 +27,6 @@
 		}
 		
 		$query = $this->Login_model->validate($userName,$userPhoneno,$userPassword,$imei);
-		
 		if ($query) {
 			$todaysdate = date('Y-m-d');
 			$exp = $this->Login_model->validate_expiry($imei,$todaysdate,$data['login']['user_phone_no']);
@@ -35,6 +41,7 @@
 				return $login_failed_data;
 			} else {
 				$data['login'] = $this->Login_model->get_user_detail($userName,$userPhoneno,$userPassword);
+				
 				$mobilogin = 1;
 				$userid = $data['login']['id'];
 				$data = array(
@@ -43,6 +50,7 @@
 								
 				$this->Login_model->update_logout($data,$userid);
 				$data['login'] = $this->Login_model->get_user_detail($userName,$userPhoneno,$userPassword);
+				$availableVersion = $this->Login_model->get_new_app_version();
 				$user_array[] = array(
 					'userId' => $data['login']['id'],
 					'entCode' => $data['login']['ent_code'],
@@ -61,6 +69,7 @@
 					'apartmentName'=>$data['login']['apartment_name'],		
 				);
 				if($data['login']['index_name'] == 'Admin'){
+				$notifications = 	
 				$menu_array[] = array(
 					'entityDetails' => "Entity",
 					'AddCategoryOrSubCategory' => "Add CategorySubCategory",
@@ -73,13 +82,15 @@
 					'mobiLogout' => "Logout"
 				);	
 				$dashboard_array[] = array(
-					'availableVersion'=>'v1.0.0',
-					'lowStockCount'=>2,
-					'inStockCount'=>5,
+					'availableVersion'=>$availableVersion,
+					'lowStockCount'=>10,
+					'inStockCount'=>10,
 				);
 				
 				
 				}else if($data['login']['index_name'] == 'Owner'){
+					$lowStockCount = count($this->Product_model->low_stock_details($data['login']['ent_code']));
+					$inStockCount = count($this->Product_model->in_stock_details($data['login']['ent_code']));
 					$menu_array[] = array(
 					'purchaseProductDetails' => "Purchase",
 					'getProductDetails' => "Stock",
@@ -99,11 +110,32 @@
 					'mobiLogout' => "Logout"
 				);	
 				$dashboard_array[] = array(
-					'availableVersion'=>'v1.0.0',
-					'lowStockCount'=>2,
-					'inStockCount'=>5,
+					'availableVersion'=>$availableVersion,
+					'lowStockCount'=>$lowStockCount,
+					'inStockCount'=>$inStockCount,
+				);
+				}else if($data['login']['index_name'] == 'Employee'){
+					$lowStockCount = count($this->Product_model->low_stock_details($data['login']['ent_code']));
+					$inStockCount = count($this->Product_model->in_stock_details($data['login']['ent_code']));
+					$menu_array[] = array(
+					'getProductDetails' => "Stock",
+					'orderDetails' => "Orders",
+					'billDetails' => "Invoice",
+				);
+				
+				$main_menu_array[] = array(
+					'orderDetails' => "Orders",
+					'billDetails' => "Invoice",
+					'getProductDetails' => "Stock",
+					'mobiLogout' => "Logout"
+				);	
+				$dashboard_array[] = array(
+					'availableVersion'=>$availableVersion,
+					'lowStockCount'=>$lowStockCount,
+					'inStockCount'=>$inStockCount,
 				);
 				}else if($data['login']['index_name'] == 'Customer') {
+					
 					$menu_array[] = array(
 					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
@@ -118,7 +150,7 @@
 					'mobiLogout' => "Logout"
 				);	
 					$dashboard_array[] = array(
-						'availableVersion'=>'v1.0.0',
+						'availableVersion'=>$availableVersion,
 						'lowStockCount'=>2,
 						'inStockCount'=>5,
 					);
@@ -148,6 +180,7 @@
 		$userId = $this->input->post('userId');
 		//$userId =1;
 		$data['login'] = $this->Login_model->get_user_detail_by_userId($userId);
+		$availableVersion = $this->Login_model->get_new_app_version();
 		$user_array[] = array(
 			'userId' => $data['login']['id'],
 			'entCode' => $data['login']['ent_code'],
@@ -178,13 +211,15 @@
 			'mobiLogout' => "Logout"
 		);	
 		$dashboard_array[] = array(
-			'availableVersion'=>'v1.0.0',
+			'availableVersion'=>$availableVersion,
 			'lowStockCount'=>2,
 			'inStockCount'=>5,
 		);
 		
 		
 		}else if($data['login']['index_name'] == 'Owner'){
+			$lowStockCount = count($this->Product_model->low_stock_details($data['login']['ent_code']));
+			$inStockCount = count($this->Product_model->in_stock_details($data['login']['ent_code']));
 			$menu_array[] = array(
 			'purchaseProductDetails' => "Purchase",
 			'getProductDetails' => "Stock",
@@ -203,28 +238,46 @@
 			'mobiLogout' => "Logout"
 		);	
 		$dashboard_array[] = array(
-			'availableVersion'=>'v1.0.0',
-			'lowStockCount'=>2,
-			'inStockCount'=>5,
+			'availableVersion'=>$availableVersion,
+			'lowStockCount'=>$lowStockCount,
+			'inStockCount'=>$inStockCount,
+		);
+		}else if($data['login']['index_name'] == 'Employee'){
+		$lowStockCount = count($this->Product_model->low_stock_details($data['login']['ent_code']));
+		$inStockCount = count($this->Product_model->in_stock_details($data['login']['ent_code']));
+		$menu_array[] = array(
+		'getProductDetails' => "Stock",
+		'orderDetails' => "Orders",
+		'billDetails' => "Invoice",
+		);
+		
+		$main_menu_array[] = array(
+			'orderDetails' => "Orders",
+			'billDetails' => "Invoice",
+			'getProductDetails' => "Stock",
+			'mobiLogout' => "Logout"
+		);	
+		$dashboard_array[] = array(
+			'availableVersion'=>$availableVersion,
+			'lowStockCount'=>$lowStockCount,
+			'inStockCount'=>$inStockCount,
 		);
 		}else if($data['login']['index_name'] == 'Customer') {
 			$menu_array[] = array(
-			'getProductDetails' => "Stock",
 			'orderDetails' => "Orders",
 			'ibillDetails' => "Invoice",
 			'getReport' => "Expence Report",
 			);
 			$main_menu_array[] = array(
-			'getProductDetails' => "Stock",
 			'orderDetails' => "Orders",
 			'billDetails' => "Invoice",
 			'getReport' => "Expense Report",
 			'mobiLogout' => "Logout"
 		);	
 			$dashboard_array[] = array(
-				'availableVersion'=>'v1.0.0',
-				'lowStockCount'=>2,
-				'inStockCount'=>5,
+				'availableVersion'=>$availableVersion,
+				'lowStockCount'=>$lowStockCount,
+				'inStockCount'=>$inStockCount,
 			);
 		}
 			

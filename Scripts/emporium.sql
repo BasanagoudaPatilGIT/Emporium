@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jun 22, 2019 at 01:08 PM
+-- Generation Time: Jun 24, 2019 at 12:46 PM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -44,6 +44,27 @@ INSERT INTO `tab_apartment` (`id`, `apartment_name`, `ent_code`) VALUES
 (0, '-Select-', '1'),
 (1, 'Other', '1'),
 (2, 'Bala Apartments', '10002');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tab_app_version`
+--
+
+CREATE TABLE IF NOT EXISTS `tab_app_version` (
+  `id` int(10) NOT NULL,
+  `app_version` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tab_app_version`
+--
+
+INSERT INTO `tab_app_version` (`id`, `app_version`, `created_datetime`) VALUES
+(1, 'v1.0.0', '2019-06-24 12:21:02'),
+(2, 'v1.0.1', '2019-06-24 12:21:02');
 
 -- --------------------------------------------------------
 
@@ -131,6 +152,7 @@ CREATE TABLE IF NOT EXISTS `tab_entity` (
   `emp_limit` int(10) NOT NULL,
   `created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `service_expiry_date` date NOT NULL,
+  `app_current_version` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `teid` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -139,9 +161,9 @@ CREATE TABLE IF NOT EXISTS `tab_entity` (
 -- Dumping data for table `tab_entity`
 --
 
-INSERT INTO `tab_entity` (`id`, `ent_code`, `ent_name`, `emp_limit`, `created_datetime`, `service_expiry_date`) VALUES
-(0, '0', '-Select-', 0, '2019-04-08 23:04:40', '2020-12-31'),
-(1, '10002', 'SS Stores', 2, '2019-04-08 23:04:40', '2020-12-31');
+INSERT INTO `tab_entity` (`id`, `ent_code`, `ent_name`, `emp_limit`, `created_datetime`, `service_expiry_date`, `app_current_version`) VALUES
+(0, '0', '-Select-', 0, '2019-04-08 23:04:40', '2020-12-31', 'v1.0.0'),
+(1, '10002', 'SS Stores', 2, '2019-04-08 23:04:40', '2020-12-31', 'v1.0.0');
 
 -- --------------------------------------------------------
 
@@ -218,6 +240,33 @@ INSERT INTO `tab_index` (`id`, `index_id`, `index_type`, `index_name`, `is_valid
 (26, 10026, 'stock_movement_index', 'Offline To Online', 1),
 (27, 10027, 'stock_movement_index', 'Online To Offline', 1),
 (28, 10028, 'invoice_status_index', 'Paid', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tab_notification`
+--
+
+CREATE TABLE IF NOT EXISTS `tab_notification` (
+  `id` int(10) NOT NULL,
+  `notification_type` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
+  `display_message` text COLLATE utf8_unicode_ci NOT NULL,
+  `created_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ent_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `created_by` int(10) NOT NULL,
+  `recieved_by` int(10) NOT NULL,
+  `read_status` int(10) NOT NULL,
+  `transaction_number` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tab_notification`
+--
+
+INSERT INTO `tab_notification` (`id`, `notification_type`, `display_message`, `created_datetime`, `ent_code`, `created_by`, `recieved_by`, `read_status`, `transaction_number`) VALUES
+(1, 'Order', 'Your order request sent and received by Shop, will be delivered shortly.', '2019-06-24 17:30:25', '10002', 2, 6, 0, '#O100022001'),
+(2, 'Order', 'One Order Requested by Customer with order number #O100022001 ', '2019-06-24 17:30:25', '10002', 6, 2, 0, '#O100022001');
 
 -- --------------------------------------------------------
 
@@ -341,7 +390,7 @@ INSERT INTO `tab_series` (`id`, `series_name`, `series_id`, `continues_count`, `
 (4, 'User Id', '#U', 111005, '2019-05-05 00:00:00', 10002),
 (5, 'Orders', '#O', 2002, '2019-06-15 12:19:36', 10002),
 (6, 'Invoice', '#In', 130001, '2019-06-15 11:24:44', 10002),
-(7, 'Stock Movement', '#SM', 1, '2019-06-15 11:24:44', 10002);
+(7, 'Stock Movement', '#SM', 7, '2019-06-22 00:00:00', 10002);
 
 -- --------------------------------------------------------
 
@@ -367,9 +416,9 @@ CREATE TABLE IF NOT EXISTS `tab_stock_d` (
 --
 
 INSERT INTO `tab_stock_d` (`id`, `stock_h_id`, `stock_qty`, `online_stock_qty`, `offline_stock_qty`, `transit_qty`, `created_datetime`, `product_id`) VALUES
-(1, 1, 27000, 21000, 6000, 1000, '2019-05-03 16:35:31', 1),
+(1, 1, 900, 300, 600, 1000, '2019-05-03 16:35:31', 1),
 (2, 2, 18500, 16500, 2000, 500, '2019-05-03 16:35:31', 2),
-(3, 3, 26, 17, 9, 1, '2019-05-03 16:35:31', 3),
+(3, 3, 10, 1, 9, 1, '2019-05-03 16:35:31', 3),
 (4, 4, 20000, 5000, 15000, 0, '2019-06-08 16:41:09', 4),
 (5, 5, 11000, 5000, 6000, 0, '2019-06-08 19:39:50', 5),
 (6, 5, 10000, 5000, 5000, 0, '2019-06-08 20:09:23', 5);
@@ -416,6 +465,7 @@ INSERT INTO `tab_stock_h` (`id`, `product_id`, `product_batch`, `packets_in_box`
 
 CREATE TABLE IF NOT EXISTS `tab_stock_movement` (
   `id` int(10) NOT NULL,
+  `transaction_no` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `ent_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `product_code` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `product_name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
@@ -425,8 +475,22 @@ CREATE TABLE IF NOT EXISTS `tab_stock_movement` (
   `movement_type` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `movement_qty` int(10) NOT NULL,
   `modified_datetime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `uom_type` int(10) NOT NULL
+  `uom_type` int(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tab_stock_movement`
+--
+
+INSERT INTO `tab_stock_movement` (`id`, `transaction_no`, `ent_code`, `product_code`, `product_name`, `product_batch`, `online_qty_before_movement`, `offline_qty_before_movement`, `movement_type`, `movement_qty`, `modified_datetime`, `uom_type`) VALUES
+(1, '#SM100021', '10002', '#P10002-104', 'Brinjal', '#P10002-1042019-06-030.020.022', 21000, 6000, 'Online To Offline', 1000000, '2019-06-22 18:57:16', 10009),
+(2, '#SM100022', '10002', '#P10002-104', 'Brinjal', '#P10002-1042019-06-030.020.022', 20000, 7000, 'Online To Offline', 1000000, '2019-06-22 18:59:13', 10009),
+(3, '#SM100023', '10002', '#P10002-104', 'Brinjal', '#P10002-1042019-06-030.020.022', 19000, 8000, 'Offline To Online', 1000000, '2019-06-22 19:01:39', 10009),
+(4, '#SM100024', '10002', '#P10002-104', 'Brinjal', '#P10002-1042019-06-030.020.022', 19000, 8000, 'Offline To Online', 0, '2019-06-22 19:02:14', 10009),
+(5, '#SM100025', '10002', '#P10002-104', 'Brinjal', '#P10002-1042019-06-030.020.022', 19000, 8000, 'Offline To Online', 1000000, '2019-06-22 19:03:44', 10009),
+(6, '#SM100026', '10002', '#P10002-104', 'Brinjal', '#P10002-1042019-06-030.020.022', 20000, 7000, 'Offline To Online', 1000000, '2019-06-22 19:05:18', 10009);
 
 -- --------------------------------------------------------
 
@@ -611,12 +675,12 @@ CREATE TABLE IF NOT EXISTS `tab_user` (
 
 INSERT INTO `tab_user` (`id`, `ent_code`, `user_full_name`, `user_name`, `user_password`, `user_gender_index`, `user_age`, `user_dob`, `user_phone_no`, `user_email_id`, `user_address`, `user_address_prof`, `user_imei`, `user_designation_index`, `user_status_index`, `user_image`, `user_login_status`, `created_datetime`, `user_emp_id`, `user_id`, `user_flat_id`) VALUES
 (1, '10001', 'Basanagouda Patil', 'basupatil', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 7259999282, 'basupail71@gmail.com', 'No Address', 'proof', 0, 10015, 10013, 'Capture.jpg', 0, '2019-04-09 10:13:14', '', '', 0),
-(2, '10002', 'Raghu Ram .R', 'raghuram', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 0, 10016, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
-(3, '10002', 'BalaKumar', 'balakumar', 'YmFsYWt1bWFy', 10019, '28', '1990-04-06', 9611429417, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009876, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
+(2, '10002', 'Raghu Ram .R', 'raghuram', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 0, 10016, 10013, 'Capture.jpg', 0, '2019-04-09 10:13:14', '', '', 0),
+(3, '10002', 'BalaKumar', 'balakumar', 'YmFsYWt1bWFy', 10019, '28', '1990-04-06', 9611429417, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 358240051111110, 10017, 10013, 'Capture.jpg', 0, '2019-04-09 10:13:14', '', '', 0),
 (4, '10002', 'Ganesh', 'ganesh', 'Z2FuZXNo', 10019, '30', '1988-04-06', 8611429418, 'ganesh@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009877, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (5, '10002', 'Vijay', 'vijay', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654321, 'vijay@gmail.com', 'Address', 'Address proof', 645678765677879, 10017, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '', '', 0),
-(6, '10002', 'Ramesh R', 'Ramesh', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654329, 'ramesh@gmail.com', 'Address', 'Address proof', 0, 10018, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '0', '111001', 2),
-(7, '10002', 'Akash M', 'Akash', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654322, 'akash@gmail.com', 'Address', 'Address proof', 0, 10018, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '0', '111002', 1),
+(6, '10002', 'Ramesh R', 'Ramesh', 'UmFtZXNo', 10019, '28', '1990-04-01', 9087654329, 'ramesh@gmail.com', 'Address', 'Address proof', 0, 10018, 10013, 'Capture.jpg', 1, '2019-04-12 12:32:32', '0', '111001', 2),
+(7, '10002', 'Akash M', 'Akash', 'QWthc2g=', 10019, '28', '1990-04-01', 9087654322, 'akash@gmail.com', 'Address', 'Address proof', 0, 10018, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '0', '111002', 1),
 (8, '10002', 'John Snow', '9685743210', 'Sm9oblNub3c=', 10019, '', '1958-05-05', 9685743210, 'john.snow@gmail.com', '', '', 0, 10018, 10013, 'Capture.jpg', 1, '2019-05-05 16:31:00', '', '#U10002111003', 2);
 
 -- --------------------------------------------------------

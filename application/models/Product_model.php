@@ -370,6 +370,22 @@ class Product_model extends CI_Model
     $query = $this->db->query($sql,array($entCode,'Active'));
     return $query->result_array();
 	 }
+	 
+	 public function in_stock_details($entCode)
+    {
+     $sql = "SELECT * FROM tab_product p JOIN (SELECT id AS producthId,product_id,product_batch,packets_in_box, product_pack_date, 
+	 product_exp_date, mrp,tax_percent, purchase_rate,sale_rate,purchase_qty,MAX(created_datetime) 
+	 latestCreation FROM (SELECT * FROM tab_stock_h ORDER BY id DESC) AS h GROUP BY product_id) t1 
+	 ON(p.id = t1.product_id) LEFT JOIN (SELECT product_id,productdId, SUM(stock_qty) AS total_stock_qty ,SUM(online_stock_qty) AS total_online_stock_qty,
+	 SUM(offline_stock_qty) AS total_offline_stock_qty,SUM(transit_qty) AS total_transit_qty FROM (SELECT d.id as productdId,d.stock_h_id, 
+	 d.stock_qty,d.online_stock_qty,d.offline_stock_qty,d.transit_qty,d.created_datetime,d.product_id FROM tab_stock_d as d ORDER BY product_id DESC) 
+	 sd GROUP BY product_id) AS de ON(p.id = de.product_id) JOIN (SELECT category_index, category_name AS category_index_name FROM tab_category) AS tc 
+	 ON (p.category_index = tc.category_index) JOIN (SELECT sub_category_index, sub_category_name AS sub_category_index_name FROM tab_sub_category) AS ts 
+	 ON (p.sub_category_index = ts.sub_category_index) JOIN (SELECT index_id, index_name AS product_status_index_name FROM tab_index) AS ti 
+	 ON (p.product_status_index = ti.index_id) WHERE p.stock_qty_limit <= de.total_stock_qty AND p.ent_code= ? AND ti.product_status_index_name = ?";
+    $query = $this->db->query($sql,array($entCode,'Active'));
+    return $query->result_array();
+	 }
 	
 	public function get_productcode($entCode)
     {
@@ -465,5 +481,6 @@ class Product_model extends CI_Model
 	$this->db->where('d.id', $productDID);
     $this->db->update('tab_stock_d as d', $data);		
     }
+	
 	
  }

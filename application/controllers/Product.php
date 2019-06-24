@@ -257,14 +257,14 @@ class Product extends CI_Controller
 					'saleRate' =>$row['sale_rate'],
 					'purchaseQty' =>$row['purchase_qty'],
 					'productDID' => $row['productdId'],
-					'stockQty' =>$row['stock_qty'],
+					'stockQty' =>$row['total_stock_qty'],
 					'stockQtyLimit' =>$row['stock_qty_limit'],
-					'onlineStockQty' =>$row['online_stock_qty'],
-					'offlineQty' =>$row['offline_stock_qty'],
-					'previousStockQty' =>$row['stock_qty'],
-					'previousOnlineStockQty' =>$row['online_stock_qty'],
-					'previousOfflineStockQty' =>$row['offline_stock_qty'],
-					'transitQty' =>$row['transit_qty'],
+					'onlineStockQty' =>$row['total_online_stock_qty'],
+					'offlineQty' =>$row['total_offline_stock_qty'],
+					'previousStockQty' =>$row['total_stock_qty'],
+					'previousOnlineStockQty' =>$row['total_online_stock_qty'],
+					'previousOfflineStockQty' =>$row['total_offline_stock_qty'],
+					'transitQty' =>$row['total_transit_qty'],
 					'createdDatetime' =>$row['created_datetime']
 				);
 			
