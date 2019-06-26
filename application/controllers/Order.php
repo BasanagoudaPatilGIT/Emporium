@@ -10,6 +10,7 @@ class Order extends CI_Controller {
 		$this->load->model('Product_model');
 		$this->load->model('User_model');
 		$this->load->model('Index_model');
+		$this->load->model('Notification_model');
 		
 		
 	}
@@ -169,6 +170,8 @@ class Order extends CI_Controller {
 		//$transactionNetAmt = '10.321';
 		$userPhoneNo = $this->input->post('userPhoneNo');
 		$userPassword = base64_encode($userPhoneNo);
+		$ownerDetails = $this->User_model->get_owner_id($entCode);
+		
 		if($userId == 0){
 			
 			$data['auto_code'] = $this->User_model->get_user_number($entCode);
@@ -304,6 +307,20 @@ class Order extends CI_Controller {
 		
 		$this->Order_model->incriment_order_no($data,$entCode);
 		
+		$data = array(
+			'notification_type'=>'Order',
+			'display_message'=>'One Order Requested by Customer with order number: '+$orderNumber,
+			'ent_code' => $entCode,
+			'created_by' => $userId,
+			'recieved_by' => $ownerDetails['id'],
+			'read_status'=>0,
+			'transaction_number'=>$orderNumber
+		);
+		
+		$this->Notification_model->add_notification_details($data);
+		
+		
+		
 		
 	$new_order_generated = array(
 			'message' => 'Order saved successfully'
@@ -314,12 +331,22 @@ class Order extends CI_Controller {
 	
 	
 	public function getEachOrderDetails() {
-		//$entCode = $this->input->post('entCode');
-		$entCode = 10002;
-		//$orderId = $this->input->post('orderId');
-		$orderId = 1;
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
+		$orderNumber = $this->input->post('orderNumber');
+		//$orderId = 1;
+		$viewType = $this->input->post('viewType');
 		
-		$data['order_header'] = $this->Order_model->get_order_h_details($orderId,$entCode);
+		$notification = $this->Notification_model->get_notification_details_by_transaction_number($orderNumber)
+		
+		if($viewType == 1 && $notification['read_status' == 0]){
+		$data = array(
+			'read_status'=>1,
+		);
+		
+		$this->Notification_model->update_notification_status($orderNumber,$data);
+		}
+		$data['order_header'] = $this->Order_model->get_order_h_details($orderNumber,$entCode);
 	
 		$orderdetails = $this->Order_model->get_order_d_details($data['order_header']['id'],$entCode);
 		
@@ -378,9 +405,10 @@ class Order extends CI_Controller {
 	public function cancelOrder() {
 	//$entCode = 10002;
 	//$orderNumber = "#O-120001" ;
+	$userId = $this->input->post('userId');
 	$entCode = $this->input->post('entCode');
 	$orderNumber = $this->input->post('orderNumber');
-		
+	$ownerId = $this->User_model->get_owner_id($entCode);	
 		$data = array(
 			'order_status_index'=>10005,
 			'order_view_status'=>10005,
@@ -447,14 +475,49 @@ class Order extends CI_Controller {
 		   $this->Product_model->update_stock_details_by_batchno($entCode,$productDetails['producthId'],$data);
 		}
 	}
+	$tranDetails = $this->Notification_model->get_notification_details_by_transaction_number($orderNumber);
 	
+	
+	if($tranDetails['created_by'] == $userId){
+	$data = array(
+			'notification_type'=>'Order',
+			'display_message'=>'Order number :'+$orderNumber+' is cancelled by Customer',
+			'ent_code' => $entCode,
+			'created_by' => $userId,
+			'recieved_by' => $ownerId,
+			'read_status'=>0,
+			'transaction_number'=>$orderNumber
+		);
+		
+		$this->Notification_model->add_notification_details($data);
+	}else{
+		$data = array(
+			'notification_type'=>'Order',
+			'display_message'=>'Your Order number :'+$orderNumber+' is cancelled by Owner',
+			'ent_code' => $entCode,
+			'created_by' => $ownerId,
+			'recieved_by' => $userId,
+			'read_status'=>0,
+			'transaction_number'=>$orderNumber
+		);
+		
+		$this->Notification_model->add_notification_details($data);
+	}
 	$order_cancallation = array(
 			'message' => 'Order Cancelled Successfully'
 		);
 			
 		print_r(json_encode($order_cancallation));
 	
-	
 	}
+	
+	public function details() {
+		$orderNumber = '#O100022001';
+		$tranDetails = $this->Notification_model->get_notification_details_by_transaction_number($orderNumber);
+		
+		print_r($tranDetails);
+		
+	}
+	
 	
 }

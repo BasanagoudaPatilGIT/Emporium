@@ -11,6 +11,7 @@ class Invoice extends CI_Controller {
 		$this->load->model('User_model');
 		$this->load->model('Index_model');
 		$this->load->model('Order_model');
+		$this->load->model('Notification_model');
 		
 		
 	}
@@ -153,6 +154,8 @@ class Invoice extends CI_Controller {
 		$transactionNetAmt = $this->input->post('transactionNetAmt');
 		$delCharges = $this->input->post('delCharges');
 		
+		$ownerId = $this->User_model->get_owner_id($entCode);
+		
 	if($userId == 0){
 			
 			$data['auto_code'] = $this->User_model->get_user_number($entCode);
@@ -285,6 +288,18 @@ class Invoice extends CI_Controller {
 		
 		$this->Invoice_model->incriment_bill_no($data,$entCode);
 		
+		$data = array(
+			'notification_type'=>'Order',
+			'display_message'=>'Bill generated and Bill number is: '+$billNumber+',click to view details',
+			'ent_code' => $entCode,
+			'created_by' => $$ownerId,
+			'recieved_by' => $userId,
+			'read_status'=>0,
+			'transaction_number'=>$billNumber
+		);
+		
+		$this->Notification_model->add_notification_details($data);
+		
 		
 	$new_bill_generated = array(
 			'message' => 'Bill Generated Successfully'
@@ -299,6 +314,17 @@ class Invoice extends CI_Controller {
 		//$entCode = 10002;
 		$billNumber = $this->input->post('billNumber');
 		//$billNumber = "#In10002130001";
+		$viewType = $this->input->post('viewType');
+		
+		$notification = $this->Notification_model->get_notification_details_by_transaction_number($billNumber)
+		
+		if($viewType == 1 && $notification['read_status' == 0]){
+		$data = array(
+			'read_status'=>1,
+		);
+		
+		$this->Notification_model->update_notification_status($billNumber,$data);
+		}
 		
 		$data['bill_header'] = $this->Invoice_model->get_bill_h_details($billNumber,$entCode);
 	

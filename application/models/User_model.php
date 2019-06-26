@@ -45,6 +45,17 @@ class User_model extends CI_Model
 	return $query->row_array();
     }
 	
+	public function get_owner_id($entCode)
+    {
+	$this->db->select('p.*');
+	$this->db->from('tab_user as p');
+	$this->db->where('p.ent_code', $entCode);
+	$this->db->where('p.user_designation_index', 10016);
+	$query = $this->db->get();
+	
+	return $query->row_array();
+    }
+	
 	
 	
 	public function edit_record($id,$data)

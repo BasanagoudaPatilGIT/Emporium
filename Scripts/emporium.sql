@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jun 24, 2019 at 12:46 PM
+-- Generation Time: Jun 26, 2019 at 01:18 PM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -265,8 +265,7 @@ CREATE TABLE IF NOT EXISTS `tab_notification` (
 --
 
 INSERT INTO `tab_notification` (`id`, `notification_type`, `display_message`, `created_datetime`, `ent_code`, `created_by`, `recieved_by`, `read_status`, `transaction_number`) VALUES
-(1, 'Order', 'Your order request sent and received by Shop, will be delivered shortly.', '2019-06-24 17:30:25', '10002', 2, 6, 0, '#O100022001'),
-(2, 'Order', 'One Order Requested by Customer with order number #O100022001 ', '2019-06-24 17:30:25', '10002', 6, 2, 0, '#O100022001');
+(2, 'Order', 'One Order Requested by Customer with order number #O100022001', '2019-06-24 17:30:25', '10002', 6, 2, 0, '#O100022001');
 
 -- --------------------------------------------------------
 

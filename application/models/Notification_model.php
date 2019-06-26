@@ -7,7 +7,7 @@ class Notification_model extends CI_Model
 		$this->load->database();
 	}
 	
-	public function add_product_details($data)
+	public function add_notification_details($data)
 	{
 		//SELECT MAX ID
 		$max_id = 1;
@@ -24,9 +24,9 @@ class Notification_model extends CI_Model
 	}
 	
 	
-	public function update_notification_status($id,$data)
+	public function update_notification_status($tranNumber,$data)
     {
-    $this->db->where('id', $id);
+    $this->db->where('transaction_number', $tranNumber);
     $this->db->update('tab_notification', $data);		
     }
 	
@@ -44,6 +44,43 @@ class Notification_model extends CI_Model
     }
 	$query = $this->db->query();			
     return $query->result_array();
+    }
+	
+	public function get_order_notification_details($order_by = 'DESC',$entCode,$userId)
+    {
+    $this->db->select('n.*');
+	$this->db->from('tab_notification as n');
+	$this->db->where('n.ent_code', $entCode);
+	$this->db->where('n.recieved_by',$recievedBy);
+	$this->db->where('n.notification_type', 'Order');
+    if($order_by != ''){
+    $this->db->order_by('n.id',$order_by);
+    }
+	$query = $this->db->query();			
+    return $query->result_array();
+    }
+	
+	public function get_bill_notification_details($order_by = 'DESC',$entCode,$userId)
+    {
+    $this->db->select('n.*');
+	$this->db->from('tab_notification as n');
+	$this->db->where('n.ent_code', $entCode);
+	$this->db->where('n.recieved_by',$recievedBy);
+	$this->db->where('n.notification_type', 'Bill');
+    if($order_by != ''){
+    $this->db->order_by('n.id',$order_by);
+    }
+	$query = $this->db->query();			
+    return $query->result_array();
+    }
+	
+	public function get_notification_details_by_transaction_number($transactionNumber)
+    {
+    $this->db->select('n.*');
+	$this->db->from('tab_notification as n');
+	$this->db->where('n.transaction_number',$transactionNumber);
+	$query = $this->db->get();			
+    return $query->row_array();
     }
 	
  }
