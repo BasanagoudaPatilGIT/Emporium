@@ -14,7 +14,7 @@ class Login_model extends CI_Model
 		$sql = "SELECT * FROM tab_user where (user_name= ? or user_phone_no=?) and user_password= ? and user_imei= ?";
     	$query = $this->db->query($sql,array($userName,$userPhoneno,$userpassword,$userIMEI));
     	 $query->row_array();
-		print_r( $query->row_array() );
+		//print_r( $query->row_array() );
 		if($query->num_rows() == 1)
 		{
 			return $query->row_array();
@@ -85,7 +85,7 @@ class Login_model extends CI_Model
 	
 	public function get_new_app_version()
 	{
-		$sql= "SELECT app_version FROM tab_app_version ORDER BY id DESC LIMIT 1";
+		$sql= "SELECT * FROM tab_app_version ORDER BY id DESC LIMIT 1";
 		$query = $this->db->query($sql);
 		
 		return $query->row_array();

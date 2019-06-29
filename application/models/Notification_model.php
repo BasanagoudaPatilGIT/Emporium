@@ -37,12 +37,12 @@ class Notification_model extends CI_Model
     $this->db->select('n.*');
 	$this->db->from('tab_notification as n');
 	$this->db->where('n.ent_code', $entCode);
-	$this->db->where('n.recieved_by',$recievedBy);
+	$this->db->where('n.recieved_by',$userId);
 	$this->db->where('n.read_status', 0);
-    if($order_by != ''){
+    if($order_by != ''){l
     $this->db->order_by('n.id',$order_by);
     }
-	$query = $this->db->query();			
+	$query = $this->db->get();			
     return $query->result_array();
     }
 	
