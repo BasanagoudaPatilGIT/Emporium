@@ -39,7 +39,7 @@ class Notification_model extends CI_Model
 	$this->db->where('n.ent_code', $entCode);
 	$this->db->where('n.recieved_by',$userId);
 	$this->db->where('n.read_status', 0);
-    if($order_by != ''){l
+    if($order_by != ''){
     $this->db->order_by('n.id',$order_by);
     }
 	$query = $this->db->get();			
