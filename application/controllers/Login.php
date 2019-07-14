@@ -7,16 +7,17 @@
 		$this->load->model('Login_model');
 		$this->load->model('Product_model');
 		$this->load->model('Notification_model');
+		$this->load->model('User_model');
 	}
 	
 	function validate_login_credentials() {
-	//	$userName = $this->input->post('userName');
-	//	$userPhoneno = $this->input->post('userName');
-	//	$userPassword = base64_encode($this->input->post('userPassword')); 
+		$userName = $this->input->post('userName');
+		$userPhoneno = $this->input->post('userName');
+		$userPassword = base64_encode($this->input->post('userPassword')); 
 		
-		$userName = 'raghuram';
-		$userPhoneno = 'raghuram';
-		$userPassword = base64_encode('raghuram');
+		//$userName = 'raghuram';
+		//$userPhoneno = 'raghuram';
+		//$userPassword = base64_encode('raghuram');
 		
 		$data['login'] = $this->Login_model->get_user_detail($userName,$userPhoneno,$userPassword);
 		
@@ -93,6 +94,7 @@
 					$lowStockCount = count($this->Product_model->low_stock_details($data['login']['ent_code']));
 					$inStockCount = count($this->Product_model->in_stock_details($data['login']['ent_code']));
 					$Notification = count($this->Notification_model->get_pending_notification_details($order_by = 'DESC',$data['login']['ent_code'],$data['login']['id']));
+					$Users = count($this->User_model->get_all_user_details($data['login']['ent_code']));
 					$menu_array[] = array(
 					'purchaseProductDetails' => "Purchase",
 					'getProductDetails' => "Stock",
@@ -115,7 +117,8 @@
 					'availableVersion'=>$availableVersion['app_version'],
 					'lowStockCount'=>$lowStockCount,
 					'inStockCount'=>$inStockCount,
-					'notification'=>$Notification
+					'notification'=>$Notification,
+					'users'=>$Users,
 				);
 				}else if($data['login']['index_name'] == 'Employee'){
 					$lowStockCount = count($this->Product_model->low_stock_details($data['login']['ent_code']));

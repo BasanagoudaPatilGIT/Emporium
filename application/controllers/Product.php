@@ -230,7 +230,15 @@ class Product extends CI_Controller
 	public function purchaseProductDetails() { //working as expected. 
 		$entCode = $this->input->post('entCode');
 		//$entCode = 10002;
-		$stock = $this->Product_model->low_stock_details($entCode);				
+		$data['auto_code'] = $this->Product_model->get_productcode($entCode);
+		$categoryList = $this->Product_model->get_product_category($entCode);
+		$subCategoryList = $this->Product_model->get_product_sub_category();
+		$UOMDetails = $this->Product_model->get_uom_details();
+		$prodCode = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].'-'.$data['auto_code']['continues_count'];
+		
+						
+		$stock = $this->Product_model->low_stock_details($entCode);	
+				
 		
 		if (count($stock) >0) {
 			foreach($stock as $row)
@@ -271,6 +279,10 @@ class Product extends CI_Controller
 			$all_stock_data[] = array(
 				'getProductDetails' =>'getProductDetails',
 				'getSelectedProductDetails' => 'getSelectedProductDetails',
+				'productCode' => $prodCode,
+				'prodCategory' => $categoryList,
+				'prodSubCategory' => $subCategoryList,
+				'uomDetails' => $UOMDetails,
 				'stockDetails' => $all_stock
 			);		
 			print_r(json_encode($all_stock_data));
@@ -313,18 +325,13 @@ class Product extends CI_Controller
 		
 		$count = 0;
 		
-		for($i = 0; $i<$uomcount; $i++ )
-		{
-			if($tabUomDetails[$i]['_id'] == 10008  ||$tabUomDetails[$i]['_id'] == 10009 ||$tabUomDetails[$i]['_id'] == 10010){
+		if($tabUomDetails[$i]['_id'] == 10008  ||$tabUomDetails[$i]['_id'] == 10009 ||$tabUomDetails[$i]['_id'] == 10010){
 				$count = 1;
-				break;
 				
-			}else if($tabUomDetails[$i]['_id'] == 10024 ||$tabUomDetails[$i]['_id'] == 10011||$tabUomDetails[$i]['_id'] == 10012 )
+		}else if($tabUomDetails[$i]['_id'] == 10024 ||$tabUomDetails[$i]['_id'] == 10011||$tabUomDetails[$i]['_id'] == 10012 )
 			{
-				$count = 2;
-			    break;				
+				$count = 2;			
 			}
-		}
 		$data['auto_code'] = $this->Product_model->get_productcode($entCode);
 	
 		$prodCode = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].'-'.$data['auto_code']['continues_count'];
@@ -335,11 +342,11 @@ class Product extends CI_Controller
 		
 		if($count == 1)//Kg and //Gram //Bundle
 		{
-		if($prodCode == $productCode)
+		/*if($prodCode == $productCode)
 		{
-			print_r("adding new products //Kg and //Gram //Bundle ");
+			
 			//Quantity calculation
-		/* if($uomType== 10009){
+		if($uomType== 10009){
 		$updatedpurchaseQty = $purchaseQty *1000;
 		$updatedstockQty = $stockQty *1000;
 		$updatedonlineQty = $onlineQty *1000;
@@ -349,7 +356,7 @@ class Product extends CI_Controller
 		$purchaseRate = (double)$purchaseRate / 1000;
 		$saleRate = (double)$saleRate / 1000;
 		
-		}else if($uomType== 10008){
+		}else if($uomType== 10008 || $uomType == 10010){
 		
 		$updatedpurchaseQty = $purchaseQty;
 		$updatedstockQty = $stockQty;
@@ -360,16 +367,6 @@ class Product extends CI_Controller
 		$purchaseRate = (double)$purchaseRate;
 		$saleRate = (double)$saleRate;
 		
-		}else if($uomType == 10010){
-		
-		$updatedpurchaseQty = $purchaseQty;
-		$updatedstockQty = $stockQty;
-		$updatedonlineQty = $onlineQty;
-		$updatedofflineQty = $offlineQty;
-		$updatedstockQtyLimit = $stockQtyLimit;
-		$mrp = (double)$mrp;
-		$purchaseRate = (double)$purchaseRate;
-		$saleRate = (double)$saleRate;
 		}
 		
 		$batchno = $productCode.''.$prodExpDate.''.$purchaseRate.''.$saleRate;
@@ -426,13 +423,11 @@ class Product extends CI_Controller
 			
 			$product_message[] = array('message' => 'Product Added Successfully');
 
-			print_r(json_encode($product_message)); */
+			print_r(json_encode($product_message));
 			
 		}else
 		{
-			print_r("update products //Kg and //Gram //Bundle");
-			
-			/* $oldBatchNo = $this->input->post('oldBatchNo');
+			$oldBatchNo = $this->input->post('oldBatchNo');
 			$products = $this->Product_model->product_details_by_id('ASC',$productCode, $entCode,$oldBatchNo);	
 			//Quantity calculation
 			if($uomType== 10009){
@@ -445,23 +440,12 @@ class Product extends CI_Controller
 			$purchaseRate = (double)$purchaseRate / 1000;
 			$saleRate = (double)$saleRate / 1000;
 			
-			}else if($uomType== 10008){
+			}else if($uomType== 10008 || $uomType == 10010){
 			
 			$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
 			$updatedstockQty = $stockQty  + $products['stock_qty'];
 			$updatedonlineQty = $onlineQty;
 			$updatedofflineQty = $offlineQty;
-			$updatedstockQtyLimit = $stockQtyLimit;
-			$mrp = (double)$mrp;
-			$purchaseRate = (double)$purchaseRate;
-			$saleRate = (double)$saleRate;
-			
-			}else if($uomType == 10010){
-			
-			$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
-			$updatedstockQty = $stockQty  + $products['stock_qty'];
-			$updatedonlineQty = $onlineQty ;
-			$updatedofflineQty = $offlineQty ;
 			$updatedstockQtyLimit = $stockQtyLimit;
 			$mrp = (double)$mrp;
 			$purchaseRate = (double)$purchaseRate;
@@ -506,9 +490,9 @@ class Product extends CI_Controller
 				
 				$product_message[] = array('message' => 'Product Updated Successfully');
 
-				print_r(json_encode($product_message)); */
+				print_r(json_encode($product_message));
 			
-		}
+		}*/
 		  
 		}else if($count == 2)//Box and //Packet and //Pcs
 		{
@@ -527,18 +511,7 @@ class Product extends CI_Controller
 						$purchaseRate = (double)$purchaseRate / $packInBox;
 						$saleRate = (double)$saleRate / $packInBox;
 						
-				}else if($uomType== 10011){
-						
-						$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
-						$updatedstockQty = $stockQty  + $products['stock_qty'];
-						$updatedonlineQty = $onlineQty + $products['online_stock_qty'];
-						$updatedofflineQty = $offlineQty + $products['offline_stock_qty'];
-						$updatedstockQtyLimit = $stockQtyLimit;
-						$mrp = (double)$mrp;
-						$purchaseRate = (double)$purchaseRate;
-						$saleRate = (double)$saleRate;
-						
-				}else if($uomType == 10012){
+				}else if($uomType== 10011 || $uomType == 10012 ){
 						
 						$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
 						$updatedstockQty = $stockQty  + $products['stock_qty'];

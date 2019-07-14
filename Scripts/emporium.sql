@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jun 26, 2019 at 01:18 PM
+-- Generation Time: Jul 14, 2019 at 04:22 PM
 -- Server version: 5.6.12-log
 -- PHP Version: 5.4.12
 
@@ -63,8 +63,7 @@ CREATE TABLE IF NOT EXISTS `tab_app_version` (
 --
 
 INSERT INTO `tab_app_version` (`id`, `app_version`, `created_datetime`) VALUES
-(1, 'v1.0.0', '2019-06-24 12:21:02'),
-(2, 'v1.0.1', '2019-06-24 12:21:02');
+(1, 'v1.0.0', '2019-06-24 12:21:02');
 
 -- --------------------------------------------------------
 
@@ -90,6 +89,17 @@ CREATE TABLE IF NOT EXISTS `tab_bill_d` (
   KEY `bhid` (`bill_h_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+--
+-- Dumping data for table `tab_bill_d`
+--
+
+INSERT INTO `tab_bill_d` (`id`, `bill_h_id`, `product_code`, `product_name`, `product_batch`, `product_uom_index`, `order_qty`, `bill_qty`, `tax_amount`, `tax_percent`, `sale_rate`, `product_status_index`, `sub_total`) VALUES
+(1, 1, '#P10002-106', 'Puha', '#P10002-1062019-06-032510.0000', 10010, 0, 1, 0.3000, 3.0000, 10.0000, 10006, 10.3000),
+(2, 2, '#P10002-106', 'Puha', '#P10002-1062019-06-032510.0000', 10010, 0, 1, 0.3000, 3.0000, 10.0000, 10006, 10.3000),
+(3, 3, '#P10002-104', 'Brinjal', '#P10002-1042019-06-030.020.022', 10008, 0, 200, 0.0880, 2.0000, 0.0220, 10006, 4.4880),
+(4, 3, '#P10002-106', 'Puha', '#P10002-1062019-06-032510.0000', 10010, 0, 1, 0.3000, 3.0000, 10.0000, 10006, 10.3000),
+(5, 3, '#P10002-109', 'Testing', '#P10002-1092019-09-060.0110.011', 10009, 0, 1, 0.2200, 2.0000, 0.0110, 10006, 11.2200);
+
 -- --------------------------------------------------------
 
 --
@@ -113,6 +123,15 @@ CREATE TABLE IF NOT EXISTS `tab_bill_h` (
   PRIMARY KEY (`id`),
   KEY `tbhid` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tab_bill_h`
+--
+
+INSERT INTO `tab_bill_h` (`id`, `ent_code`, `user_id`, `bill_number`, `bill_total_amount`, `bill_tax_amount`, `delivery_charges`, `bill_net_amount`, `bill_created_datetime`, `order_id`, `bill_status_index`, `payment_status`, `payment_mode`) VALUES
+(1, '10002', 8, '#In10002130001', 10.0000, 0.3000, 0.0000, 10.0000, '2019-07-14 12:59:30', 0, 10022, 0, 0),
+(2, '10002', 8, '#In10002130001', 10.0000, 0.3000, 0.0000, 10.0000, '2019-07-14 13:00:18', 0, 10022, 0, 0),
+(3, '10002', 8, '#In10002130002', 25.4000, 1.0280, 0.0000, 26.0000, '2019-07-14 17:47:01', 0, 10022, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -265,7 +284,8 @@ CREATE TABLE IF NOT EXISTS `tab_notification` (
 --
 
 INSERT INTO `tab_notification` (`id`, `notification_type`, `display_message`, `created_datetime`, `ent_code`, `created_by`, `recieved_by`, `read_status`, `transaction_number`) VALUES
-(2, 'Order', 'One Order Requested by Customer with order number #O100022001', '2019-06-24 17:30:25', '10002', 6, 2, 0, '#O100022001');
+(2, 'Order', 'One Order Requested by Customer with order number #O100022001', '2019-06-24 17:30:25', '10002', 6, 2, 0, '#O100022001'),
+(3, 'Order', 'Bill generated and Bill number is: #In10002130002,click to view details', '2019-07-14 17:47:01', '10002', 2, 8, 0, '#In10002130002');
 
 -- --------------------------------------------------------
 
@@ -359,7 +379,10 @@ INSERT INTO `tab_product` (`id`, `ent_code`, `product_code`, `product_name`, `pr
 (2, '10002', '#P10002-105', 'broccoli', 'Broccoli is popular and widely eaten. It has a distinctive ‘mustardy’ taste and well known health benefits. The stalks, buds and most of the leaves of broccoli are edible.', 10013, 11001, 20001, '2019-05-03 16:35:31', 10000),
 (3, '10002', '#P10002-106', 'Puha', 'Traditionally it was one of the staple green vegetables of the Maori and is still eaten today. Puha can be found growing wild. The smooth leaved puha is the most popular, however, the slightly bitter and prickly leaved puha is also eaten.', 10013, 11001, 20002, '2019-05-03 16:35:31', 15),
 (4, '10002', '#P10002-109', 'Testing', '', 10013, 11001, 20001, '2019-06-08 19:39:50', 10000),
-(5, '10002', '#P10002-110', 'TestG', '', 10013, 11002, 20003, '2019-06-08 20:09:23', 5000);
+(5, '10002', '#P10002-110', 'TestG', '', 10013, 11002, 20003, '2019-06-08 20:09:23', 5000),
+(6, '10002', '#P10002-111', 'Product as kg', '', 10013, 11001, 20001, '2019-07-14 18:03:32', 8000),
+(7, '10002', '#P10002-112', 'roduct as grams', '', 10013, 11001, 20001, '2019-07-14 18:06:22', 10),
+(8, '10002', '#P10002-113', 'Product as bundle', '', 10013, 11001, 20002, '2019-07-14 18:11:01', 50);
 
 -- --------------------------------------------------------
 
@@ -384,12 +407,12 @@ CREATE TABLE IF NOT EXISTS `tab_series` (
 
 INSERT INTO `tab_series` (`id`, `series_name`, `series_id`, `continues_count`, `last_updated`, `ent_code`) VALUES
 (1, 'Entity', 'Ent', 10003, '2019-04-12 00:00:00', 0),
-(2, 'Product Code', '#P', 111, '2019-06-08 00:00:00', 10002),
+(2, 'Product Code', '#P', 114, '2019-07-14 00:00:00', 10002),
 (3, 'Employee Code', '#E', 1001, '2019-04-12 00:00:00', 10002),
 (4, 'User Id', '#U', 111005, '2019-05-05 00:00:00', 10002),
 (5, 'Orders', '#O', 2002, '2019-06-15 12:19:36', 10002),
-(6, 'Invoice', '#In', 130001, '2019-06-15 11:24:44', 10002),
-(7, 'Stock Movement', '#SM', 7, '2019-06-22 00:00:00', 10002);
+(6, 'Invoice', '#In', 130003, '2019-07-14 12:17:01', 10002),
+(7, 'Stock Movement', '#SM', 8, '2019-07-14 00:00:00', 10002);
 
 -- --------------------------------------------------------
 
@@ -415,12 +438,14 @@ CREATE TABLE IF NOT EXISTS `tab_stock_d` (
 --
 
 INSERT INTO `tab_stock_d` (`id`, `stock_h_id`, `stock_qty`, `online_stock_qty`, `offline_stock_qty`, `transit_qty`, `created_datetime`, `product_id`) VALUES
-(1, 1, 900, 300, 600, 1000, '2019-05-03 16:35:31', 1),
-(2, 2, 18500, 16500, 2000, 500, '2019-05-03 16:35:31', 2),
-(3, 3, 10, 1, 9, 1, '2019-05-03 16:35:31', 3),
-(4, 4, 20000, 5000, 15000, 0, '2019-06-08 16:41:09', 4),
+(1, 1, 700, 300, 400, 1000, '2019-05-03 16:35:31', 1),
+(2, 2, 18500, 14000, 4000, 500, '2019-05-03 16:35:31', 2),
+(3, 3, 7, 1, 6, 1, '2019-05-03 16:35:31', 3),
+(4, 4, 29000, 15000, 14000, 0, '2019-06-08 16:41:09', 4),
 (5, 5, 11000, 5000, 6000, 0, '2019-06-08 19:39:50', 5),
-(6, 5, 10000, 5000, 5000, 0, '2019-06-08 20:09:23', 5);
+(6, 6, 10000, 6000, 4000, 0, '2019-07-14 18:03:33', 6),
+(7, 7, 25500, 20000, 5500, 0, '2019-07-14 18:06:23', 7),
+(8, 8, 120, 61, 49, 0, '2019-07-14 18:11:01', 8);
 
 -- --------------------------------------------------------
 
@@ -453,8 +478,11 @@ INSERT INTO `tab_stock_h` (`id`, `product_id`, `product_batch`, `packets_in_box`
 (1, 1, '#P10002-1042019-06-030.020.022', 0, '2019-05-03', '2019-06-03', 0.0220, 2.00, 0.0200, 0.0220, 27000, '2019-05-03 16:35:31'),
 (2, 2, '#P10002-1052019-06-03200000.0200', 0, '2019-05-03', '2019-06-03', 0.0200, 2.00, 0.0180, 0.0200, 20000, '2019-05-03 16:35:31'),
 (3, 3, '#P10002-1062019-06-032510.0000', 0, '2019-05-03', '2019-06-03', 10.0000, 3.00, 8.0000, 10.0000, 25, '2019-05-03 16:35:31'),
-(4, 4, '#P10002-1092019-09-060.0110.011', 0, '2019-08-22', '2019-09-06', 0.0110, 2.00, 0.0110, 0.0110, 11000, '2019-06-08 19:39:50'),
-(5, 5, '#P10002-1102020-01-210.0110.011', 0, '2019-10-21', '2020-01-21', 0.0110, 2.00, 0.0110, 0.0110, 10000, '2019-06-08 20:09:23');
+(4, 4, '#P10002-1092019-09-060.0110.011', 0, '2019-08-22', '2019-09-06', 0.0110, 2.00, 0.0110, 0.0110, 21000, '2019-06-08 19:39:50'),
+(5, 5, '#P10002-1102020-01-210.0110.011', 0, '2019-10-21', '2020-01-21', 0.0110, 2.00, 0.0110, 0.0110, 10000, '2019-06-08 20:09:23'),
+(6, 6, '#P10002-1112020-07-140.010.01', 0, '2019-07-14', '2020-07-14', 0.0100, 2.00, 0.0100, 0.0100, 10000, '2019-07-14 18:03:32'),
+(7, 7, '#P10002-1122021-07-141010', 0, '2020-07-14', '2021-07-14', 10.0000, 2.00, 10.0000, 10.0000, 25500, '2019-07-14 18:06:22'),
+(8, 8, '#P10002-1132022-07-1455', 0, '2021-07-14', '2022-07-14', 6.0000, 2.00, 5.0000, 5.0000, 120, '2019-07-14 18:11:01');
 
 -- --------------------------------------------------------
 
@@ -489,7 +517,8 @@ INSERT INTO `tab_stock_movement` (`id`, `transaction_no`, `ent_code`, `product_c
 (3, '#SM100023', '10002', '#P10002-104', 'Brinjal', '#P10002-1042019-06-030.020.022', 19000, 8000, 'Offline To Online', 1000000, '2019-06-22 19:01:39', 10009),
 (4, '#SM100024', '10002', '#P10002-104', 'Brinjal', '#P10002-1042019-06-030.020.022', 19000, 8000, 'Offline To Online', 0, '2019-06-22 19:02:14', 10009),
 (5, '#SM100025', '10002', '#P10002-104', 'Brinjal', '#P10002-1042019-06-030.020.022', 19000, 8000, 'Offline To Online', 1000000, '2019-06-22 19:03:44', 10009),
-(6, '#SM100026', '10002', '#P10002-104', 'Brinjal', '#P10002-1042019-06-030.020.022', 20000, 7000, 'Offline To Online', 1000000, '2019-06-22 19:05:18', 10009);
+(6, '#SM100026', '10002', '#P10002-104', 'Brinjal', '#P10002-1042019-06-030.020.022', 20000, 7000, 'Offline To Online', 1000000, '2019-06-22 19:05:18', 10009),
+(7, '#SM100027', '10002', '#P10002-105', 'broccoli', '#P10002-1052019-06-03200000.0200', 16500, 2000, 'Online To Offline', 2500000, '2019-07-14 17:50:15', 10009);
 
 -- --------------------------------------------------------
 
@@ -674,7 +703,7 @@ CREATE TABLE IF NOT EXISTS `tab_user` (
 
 INSERT INTO `tab_user` (`id`, `ent_code`, `user_full_name`, `user_name`, `user_password`, `user_gender_index`, `user_age`, `user_dob`, `user_phone_no`, `user_email_id`, `user_address`, `user_address_prof`, `user_imei`, `user_designation_index`, `user_status_index`, `user_image`, `user_login_status`, `created_datetime`, `user_emp_id`, `user_id`, `user_flat_id`) VALUES
 (1, '10001', 'Basanagouda Patil', 'basupatil', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 7259999282, 'basupail71@gmail.com', 'No Address', 'proof', 0, 10015, 10013, 'Capture.jpg', 0, '2019-04-09 10:13:14', '', '', 0),
-(2, '10002', 'Raghu Ram .R', 'raghuram', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 0, 10016, 10013, 'Capture.jpg', 0, '2019-04-09 10:13:14', '', '', 0),
+(2, '10002', 'Raghu Ram .R', 'raghuram', 'cmFnaHVyYW0=', 10019, '28', '1990-04-06', 9611429415, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 0, 10016, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (3, '10002', 'BalaKumar', 'balakumar', 'YmFsYWt1bWFy', 10019, '28', '1990-04-06', 9611429417, 'user@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 358240051111110, 10017, 10013, 'Capture.jpg', 0, '2019-04-09 10:13:14', '', '', 0),
 (4, '10002', 'Ganesh', 'ganesh', 'Z2FuZXNo', 10019, '30', '1988-04-06', 8611429418, 'ganesh@gmail.com', 'Rohan Vasantha Apartment, Maratha Halli', 'proof', 123456789009877, 10017, 10013, 'Capture.jpg', 1, '2019-04-09 10:13:14', '', '', 0),
 (5, '10002', 'Vijay', 'vijay', 'dmlqYXk=', 10019, '28', '1990-04-01', 9087654321, 'vijay@gmail.com', 'Address', 'Address proof', 645678765677879, 10017, 10013, 'Capture.jpg', 0, '2019-04-12 12:32:32', '', '', 0),

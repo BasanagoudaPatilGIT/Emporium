@@ -309,7 +309,7 @@ class Order extends CI_Controller {
 		
 		$data = array(
 			'notification_type'=>'Order',
-			'display_message'=>'One Order Requested by Customer with order number: '+$orderNumber,
+			'display_message'=>'One Order Requested by Customer with order number: '.$orderNumber,
 			'ent_code' => $entCode,
 			'created_by' => $userId,
 			'recieved_by' => $ownerDetails['id'],
@@ -337,7 +337,7 @@ class Order extends CI_Controller {
 		//$orderId = 1;
 		$viewType = $this->input->post('viewType');
 		
-		$notification = $this->Notification_model->get_notification_details_by_transaction_number($orderNumber)
+		$notification = $this->Notification_model->get_notification_details_by_transaction_number($orderNumber);
 		
 		if($viewType == 1 && $notification['read_status' == 0]){
 		$data = array(
@@ -481,10 +481,10 @@ class Order extends CI_Controller {
 	if($tranDetails['created_by'] == $userId){
 	$data = array(
 			'notification_type'=>'Order',
-			'display_message'=>'Order number :'+$orderNumber+' is cancelled by Customer',
+			'display_message'=>'Order number: '.$orderNumber.' is cancelled by Customer',
 			'ent_code' => $entCode,
 			'created_by' => $userId,
-			'recieved_by' => $ownerId,
+			'recieved_by' => $ownerId['id'],
 			'read_status'=>0,
 			'transaction_number'=>$orderNumber
 		);
@@ -493,9 +493,9 @@ class Order extends CI_Controller {
 	}else{
 		$data = array(
 			'notification_type'=>'Order',
-			'display_message'=>'Your Order number :'+$orderNumber+' is cancelled by Owner',
+			'display_message'=>'Your Order number: '.$orderNumber.' is cancelled by Owner',
 			'ent_code' => $entCode,
-			'created_by' => $ownerId,
+			'created_by' => $ownerId['id'],
 			'recieved_by' => $userId,
 			'read_status'=>0,
 			'transaction_number'=>$orderNumber
@@ -513,7 +513,7 @@ class Order extends CI_Controller {
 	
 	public function details() {
 		$orderNumber = '#O100022001';
-		$tranDetails = $this->Notification_model->get_notification_details_by_transaction_number($orderNumber);
+		$ownerId = $this->User_model->get_owner_id($entCode);
 		
 		print_r($tranDetails);
 		

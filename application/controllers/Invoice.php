@@ -290,9 +290,9 @@ class Invoice extends CI_Controller {
 		
 		$data = array(
 			'notification_type'=>'Order',
-			'display_message'=>'Bill generated and Bill number is: '+$billNumber+',click to view details',
+			'display_message'=>'Bill generated and Bill number is: '.$billNumber.',click to view details',
 			'ent_code' => $entCode,
-			'created_by' => $$ownerId,
+			'created_by' => $ownerId['id'],
 			'recieved_by' => $userId,
 			'read_status'=>0,
 			'transaction_number'=>$billNumber
@@ -316,7 +316,7 @@ class Invoice extends CI_Controller {
 		//$billNumber = "#In10002130001";
 		$viewType = $this->input->post('viewType');
 		
-		$notification = $this->Notification_model->get_notification_details_by_transaction_number($billNumber)
+		$notification = $this->Notification_model->get_notification_details_by_transaction_number($billNumber);
 		
 		if($viewType == 1 && $notification['read_status' == 0]){
 		$data = array(
