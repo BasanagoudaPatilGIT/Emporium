@@ -153,8 +153,9 @@ class Invoice extends CI_Controller {
 		$transactionTaxAmt = $this->input->post('transactionTaxAmt');
 		$transactionNetAmt = $this->input->post('transactionNetAmt');
 		$delCharges = $this->input->post('delCharges');
-		
-		$ownerId = $this->User_model->get_owner_id($entCode);
+		$userPhoneNo = $this->input->post('userPhoneNo');
+		$userPassword = base64_encode($userPhoneNo);
+		$ownerDetails = $this->User_model->get_owner_id($entCode);
 		
 	if($userId == 0){
 			
@@ -289,10 +290,10 @@ class Invoice extends CI_Controller {
 		$this->Invoice_model->incriment_bill_no($data,$entCode);
 		
 		$data = array(
-			'notification_type'=>'Order',
-			'display_message'=>'Bill generated and Bill number is: '.$billNumber.',click to view details',
+			'notification_type'=>'Bill',
+			'display_message'=>'Bill generated with Bill number: '.$billNumber.',click to view details',
 			'ent_code' => $entCode,
-			'created_by' => $ownerId['id'],
+			'created_by' => $ownerDetails['id'],
 			'recieved_by' => $userId,
 			'read_status'=>0,
 			'transaction_number'=>$billNumber
@@ -375,9 +376,6 @@ class Invoice extends CI_Controller {
 			'cancelBill' => 'Cancel'
 		);
 		
-		/* echo"<pre>";
-		print_r($bill_details);
-		echo"</pre>"; */
 		
 		
 	print_r(json_encode($each_bill_details));	
@@ -396,6 +394,8 @@ class Invoice extends CI_Controller {
 		$transactionTaxAmt = $this->input->post('transactionTaxAmt');
 		$transactionNetAmt = $this->input->post('transactionNetAmt');
 		$delCharges = $this->input->post('delCharges');
+		
+		$ownerDetails = $this->User_model->get_owner_id($entCode);
 		
 		$data = array(
 			'ent_code'=>$entCode,
@@ -501,6 +501,18 @@ class Invoice extends CI_Controller {
 	
 	$this->Order_model->update_order_h_status($entCode,$orderNumber,$data);
 	
+	$data = array(
+			'notification_type'=>'Bill',
+			'display_message'=>'Your Order is converted to bill with Bill number: '.$billNumber.',click to view details',
+			'ent_code' => $entCode,
+			'created_by' => $ownerDetails['id'],
+			'recieved_by' => $userId,
+			'read_status'=>0,
+			'transaction_number'=>$billNumber
+		);
+		
+		$this->Notification_model->add_notification_details($data);
+	
 	$new_bill_generated = array(
 			'message' => 'Bill Generated Successfully'
 		);
@@ -518,7 +530,7 @@ class Invoice extends CI_Controller {
 	$entCode = $this->input->post('entCode');
 	$billNumber = $this->input->post('billNumber');
 	$orderNumber = $this->input->post('orderNumber');
-		
+	$ownerDetails = $this->User_model->get_owner_id($entCode);	
 		$data = array(
 			'bill_status_index'=>10023,
 		);
@@ -623,6 +635,18 @@ class Invoice extends CI_Controller {
 		}
 	}
 	
+	$data = array(
+			'notification_type'=>'Bill',
+			'display_message'=>'Your Invoice number:'.$billNumber.' is cancelled by Owner',
+			'ent_code' => $entCode,
+			'created_by' => $ownerDetails['id'],
+			'recieved_by' => $userId,
+			'read_status'=>0,
+			'transaction_number'=>$billNumber
+		);
+		
+		$this->Notification_model->add_notification_details($data);
+	
 	$invoice_cancallation = array(
 			'message' => 'Invoice Cancelled Successfully'
 		);
@@ -695,5 +719,7 @@ class Invoice extends CI_Controller {
 		
 		print_r(json_encode($each_order_details));	
 	}
+	
+	
 	
 }

@@ -11,22 +11,23 @@
 	}
 	
 	function validate_login_credentials() {
-		$userName = $this->input->post('userName');
-		$userPhoneno = $this->input->post('userName');
-		$userPassword = base64_encode($this->input->post('userPassword')); 
+		//$userName = $this->input->post('userName');
+	//	$userPhoneno = $this->input->post('userName');
+		//$userPassword = base64_encode($this->input->post('userPassword')); 
 		
-		//$userName = 'raghuram';
-		//$userPhoneno = 'raghuram';
-		//$userPassword = base64_encode('raghuram');
+		$userName = 'raghuram';
+		$userPhoneno = 'raghuram';
+		$userPassword = base64_encode('raghuram'); 
+	//	$userPassword = 'raghuram';
 		
-		$data['login'] = $this->Login_model->get_user_detail($userName,$userPhoneno,$userPassword);
+		$data['login'] = $this->Login_model->get_user_designation_detail($userName,$userPhoneno,$userPassword);
 		
-		if($data['login']['user_designation_index'] == 10018 || $data['login']['user_designation_index'] == 10016 || $data['login']['user_designation_index'] == 10015){
+		if($data['login']['user_designation_index'] != 10017){// || $data['login']['user_designation_index'] != 10016
 			$imei = 0;
 		}else{
 			$imei = $this->input->post('userIMEI');
+			//$imei = 358240051111110;
 		}
-		
 		$query = $this->Login_model->validate($userName,$userPhoneno,$userPassword,$imei);
 		if ($query) {
 			$todaysdate = date('Y-m-d');
@@ -70,7 +71,7 @@
 					'apartmentName'=>$data['login']['apartment_name'],		
 				);
 				if($data['login']['index_name'] == 'Admin'){
-				//$notifications = 	
+				$notifications = 	
 				$menu_array[] = array(
 					'entityDetails' => "Entity",
 					'AddCategoryOrSubCategory' => "Add CategorySubCategory",
@@ -83,10 +84,9 @@
 					'mobiLogout' => "Logout"
 				);	
 				$dashboard_array[] = array(
-					'availableVersion'=>$availableVersion['app_version'],
+					'availableVersion'=>$availableVersion,
 					'lowStockCount'=>10,
 					'inStockCount'=>10,
-					'notification'=>$Notification
 				);
 				
 				
@@ -94,7 +94,6 @@
 					$lowStockCount = count($this->Product_model->low_stock_details($data['login']['ent_code']));
 					$inStockCount = count($this->Product_model->in_stock_details($data['login']['ent_code']));
 					$Notification = count($this->Notification_model->get_pending_notification_details($order_by = 'DESC',$data['login']['ent_code'],$data['login']['id']));
-					$Users = count($this->User_model->get_all_user_details($data['login']['ent_code']));
 					$menu_array[] = array(
 					'purchaseProductDetails' => "Purchase",
 					'getProductDetails' => "Stock",
@@ -114,16 +113,17 @@
 					'mobiLogout' => "Logout"
 				);	
 				$dashboard_array[] = array(
-					'availableVersion'=>$availableVersion['app_version'],
+					'availableVersion'=>$availableVersion,
 					'lowStockCount'=>$lowStockCount,
 					'inStockCount'=>$inStockCount,
-					'notification'=>$Notification,
-					'users'=>$Users,
+					'pendingNotification'=>$Notification,
+					'viewPendingNotificationDetails'=>'viewPendingNotificationDetails'
 				);
 				}else if($data['login']['index_name'] == 'Employee'){
 					$lowStockCount = count($this->Product_model->low_stock_details($data['login']['ent_code']));
 					$inStockCount = count($this->Product_model->in_stock_details($data['login']['ent_code']));
-					$Notification = count($this->Notification_model->get_pending_notification_details($order_by = 'DESC',$data['login']['ent_code'],$data['login']['id']));
+					$ownerDetails = $this->User_model->get_owner_id($data['login']['ent_code']);
+					$Notification = count($this->Notification_model->get_pending_notification_details($order_by = 'DESC',$data['login']['ent_code'],$ownerDetails['id']));
 					$menu_array[] = array(
 					'getProductDetails' => "Stock",
 					'orderDetails' => "Orders",
@@ -137,11 +137,11 @@
 					'mobiLogout' => "Logout"
 				);	
 				$dashboard_array[] = array(
-					'availableVersion'=>$availableVersion['app_version'],
+					'availableVersion'=>$availableVersion,
 					'lowStockCount'=>$lowStockCount,
 					'inStockCount'=>$inStockCount,
-					'inStockCount'=>$inStockCount,
-					'notification'=>$Notification
+					'pendingNotification'=>$Notification,
+					'viewPendingNotificationDetails'=>'viewPendingNotificationDetails'
 				);
 				}else if($data['login']['index_name'] == 'Customer') {
 					$Notification = count($this->Notification_model->get_pending_notification_details($order_by = 'DESC',$data['login']['ent_code'],$data['login']['id']));
@@ -162,7 +162,8 @@
 						'availableVersion'=>$availableVersion,
 						'lowStockCount'=>2,
 						'inStockCount'=>5,
-						'notification'=>$Notification
+						'pendingNotification'=>$Notification,
+						'viewPendingNotificationDetails'=>'viewPendingNotificationDetails'
 					);
 				}
 					
@@ -188,7 +189,7 @@
 	
 	function reloadHome() {
 		$userId = $this->input->post('userId');
-		//$userId =1;
+		//$userId =2;
 		$data['login'] = $this->Login_model->get_user_detail_by_userId($userId);
 		$availableVersion = $this->Login_model->get_new_app_version();
 		$user_array[] = array(
@@ -209,7 +210,6 @@
 			'apartmentName'=>$data['login']['apartment_name'],		
 		);
 		if($data['login']['index_name'] == 'Admin'){
-		$Notification = count($this->Notification_model->get_pending_notification_details($order_by = 'DESC',$data['login']['ent_code'],$data['login']['id']));
 		$menu_array[] = array(
 			'entityDetails' => "Entity",
 			'AddCategoryOrSubCategory' => "Add CategorySubCategory",
@@ -222,91 +222,98 @@
 			'mobiLogout' => "Logout"
 		);	
 		$dashboard_array[] = array(
-			'availableVersion'=>$availableVersion['app_version'],
+			'availableVersion'=>$availableVersion,
 			'lowStockCount'=>2,
 			'inStockCount'=>5,
-			'notification'=>$Notification
 		);
 		
 		
-		}else if($data['login']['index_name'] == 'Owner'){
-		$Notification = count($this->Notification_model->get_pending_notification_details($order_by = 'DESC',$data['login']['ent_code'],$data['login']['id']));
-			$lowStockCount = count($this->Product_model->low_stock_details($data['login']['ent_code']));
-			$inStockCount = count($this->Product_model->in_stock_details($data['login']['ent_code']));
-			$menu_array[] = array(
-			'purchaseProductDetails' => "Purchase",
-			'getProductDetails' => "Stock",
-			'orderDetails' => "Orders",
-			'billDetails' => "Invoice",
-		);
-		
-		$main_menu_array[] = array(
-			'purchaseProductDetails' => "Purchase",
-			'getProductDetails' => "Stock",
-			'orderDetails' => "Orders",
-			'billDetails' => "Invoice",
-			'loadUploadProducts' => "Upload Products",
-			'employeeDetails' => "Employee",
-			'getReport' => "Expense Report",
-			'mobiLogout' => "Logout"
-		);	
-		$dashboard_array[] = array(
-			'availableVersion'=>$availableVersion['app_version'],
-			'lowStockCount'=>$lowStockCount,
-			'inStockCount'=>$inStockCount,
-			'notification'=>$Notification
-		);
-		}else if($data['login']['index_name'] == 'Employee'){
-		$Notification = count($this->Notification_model->get_pending_notification_details($order_by = 'DESC',$data['login']['ent_code'],$data['login']['id']));
+		}else if($data['login']['index_name'] == 'Owner')
+		{
 		$lowStockCount = count($this->Product_model->low_stock_details($data['login']['ent_code']));
 		$inStockCount = count($this->Product_model->in_stock_details($data['login']['ent_code']));
+		$Notification = count($this->Notification_model->get_pending_notification_details($order_by = 'DESC',$data['login']['ent_code'],$userId));
 		$menu_array[] = array(
+		'purchaseProductDetails' => "Purchase",
 		'getProductDetails' => "Stock",
 		'orderDetails' => "Orders",
 		'billDetails' => "Invoice",
 		);
 		
 		$main_menu_array[] = array(
+			'purchaseProductDetails' => "Purchase",
 			'orderDetails' => "Orders",
 			'billDetails' => "Invoice",
 			'getProductDetails' => "Stock",
-			'mobiLogout' => "Logout"
-		);	
-		$dashboard_array[] = array(
-			'availableVersion'=>$availableVersion['app_version'],
-			'lowStockCount'=>$lowStockCount,
-			'inStockCount'=>$inStockCount,
-			'notification'=>$Notification
-		);
-		}else if($data['login']['index_name'] == 'Customer') {
-		$Notification = count($this->Notification_model->get_pending_notification_details($order_by = 'DESC',$data['login']['ent_code'],$data['login']['id']));
-			$menu_array[] = array(
-			'orderDetails' => "Orders",
-			'billDetails' => "Invoice",
-			'getReport' => "Expence Report",
-			);
-			$main_menu_array[] = array(
-			'orderDetails' => "Orders",
-			'billDetails' => "Invoice",
+			'getProductDetailsForMovement' => "Stock Movement",
+			'loadUploadProducts' => "Upload Products",
+			'employeeDetails' => "Employee",
 			'getReport' => "Expense Report",
 			'mobiLogout' => "Logout"
 		);	
-			$dashboard_array[] = array(
-				'availableVersion'=>$availableVersion['app_version'],
-				'lowStockCount'=>$lowStockCount,
-				'inStockCount'=>$inStockCount,
-				'notification'=>$Notification
-			);
-		}
-			
-		$mobile_login_data[] = array(
-			'userDetails' => $user_array,
-			'menuDetails' => $menu_array,
-			'dashboardDetails' => $dashboard_array,
-			'mainMenuDetails' => $main_menu_array
+		$dashboard_array[] = array(
+			'availableVersion'=>$availableVersion,
+			'lowStockCount'=>$lowStockCount,
+			'inStockCount'=>$inStockCount,
+			'pendingNotification'=>$Notification,
+			'viewPendingNotificationDetails'=>'viewPendingNotificationDetails'
 		);
-		
-		print_r(json_encode($mobile_login_data));
+		}else if($data['login']['index_name'] == 'Employee'){
+					$lowStockCount = count($this->Product_model->low_stock_details($data['login']['ent_code']));
+					$inStockCount = count($this->Product_model->in_stock_details($data['login']['ent_code']));
+					$ownerDetails = $this->User_model->get_owner_id($data['login']['ent_code']);
+					$Notification = count($this->Notification_model->get_pending_notification_details($order_by = 'DESC',$data['login']['ent_code'],$ownerDetails['id']));
+					$menu_array[] = array(
+					'getProductDetails' => "Stock",
+					'orderDetails' => "Orders",
+					'billDetails' => "Invoice",
+				);
+				
+				$main_menu_array[] = array(
+					'orderDetails' => "Orders",
+					'billDetails' => "Invoice",
+					'getProductDetails' => "Stock",
+					'mobiLogout' => "Logout"
+				);	
+				$dashboard_array[] = array(
+					'availableVersion'=>$availableVersion,
+					'lowStockCount'=>$lowStockCount,
+					'inStockCount'=>$inStockCount,
+					'pendingNotification'=>$Notification,
+					'viewPendingNotificationDetails'=>'viewPendingNotificationDetails'
+				);
+				}else if($data['login']['index_name'] == 'Customer') {
+					$Notification = count($this->Notification_model->get_pending_notification_details($order_by = 'DESC',$data['login']['ent_code'],$userId));
+					$menu_array[] = array(
+					'getProductDetails' => "Stock",
+					'orderDetails' => "Orders",
+					'billDetails' => "Invoice",
+					'getReport' => "Expence Report",
+					);
+					$main_menu_array[] = array(
+					'getProductDetails' => "Stock",
+					'orderDetails' => "Orders",
+					'billDetails' => "Invoice",
+					'getReport' => "Expense Report",
+					'mobiLogout' => "Logout"
+				);	
+					$dashboard_array[] = array(
+						'availableVersion'=>$availableVersion,
+						'lowStockCount'=>2,
+						'inStockCount'=>5,
+						'pendingNotification'=>$Notification,
+						'viewPendingNotificationDetails'=>'viewPendingNotificationDetails'
+					);
+				}
+			
+				$mobile_login_data[] = array(
+					'userDetails' => $user_array,
+					'menuDetails' => $menu_array,
+					'dashboardDetails' => $dashboard_array,
+					'mainMenuDetails' => $main_menu_array
+				);
+				
+				print_r(json_encode($mobile_login_data));
 
 		
 	}

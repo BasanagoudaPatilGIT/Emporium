@@ -56,7 +56,7 @@ class Notification_model extends CI_Model
     if($order_by != ''){
     $this->db->order_by('n.id',$order_by);
     }
-	$query = $this->db->query();			
+	$query = $this->db->get();			
     return $query->result_array();
     }
 	
@@ -70,7 +70,7 @@ class Notification_model extends CI_Model
     if($order_by != ''){
     $this->db->order_by('n.id',$order_by);
     }
-	$query = $this->db->query();			
+	$query = $this->db->get();			
     return $query->result_array();
     }
 	

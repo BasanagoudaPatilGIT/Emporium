@@ -67,6 +67,7 @@ class Product extends CI_Controller
 		$all_stock_data[] = array(
 			'addUpdateProduct' => 'Add/Update Product', // on click of save button on add new product screen
 			'getSelectedProductDetails' => 'getSelectedProductDetails', // on click of each product call this method
+			'getProductCode' => 'getProductCode', // on click of each product call this method
 			'productCode' => $prodCode,
 			'productDetails' => $prod_details,
 			'prodCategory' => $categoryList,
@@ -78,7 +79,37 @@ class Product extends CI_Controller
 		print_r(json_encode($all_stock_data));
 		
 		
+	}else {
+			$no_stock_data[] = array(
+				'' => ''
+			);
+				
+			print_r(json_encode($no_stock_data));
+		}
 	}
+	
+	public function getProductCode() { //working as expected. 
+		$entCode = $this->input->post('entCode');
+		//$entCode = 10002;
+		$data['auto_code'] = $this->Product_model->get_productcode($entCode);
+		$categoryList = $this->Product_model->get_product_category($entCode);
+		$subCategoryList = $this->Product_model->get_product_sub_category();
+		$UOMDetails = $this->Product_model->get_uom_details();
+		$prodCode = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].'-'.$data['auto_code']['continues_count'];
+		
+						
+		$product_code_data[] = array(
+			'addUpdateProduct' => 'Add/Update Product', // on click of save button on add new product screen
+			'getSelectedProductDetails' => 'getSelectedProductDetails', // on click of each product call this method
+			'productCode' => $prodCode,
+			'prodCategory' => $categoryList,
+			'prodSubCategory' => $subCategoryList,
+			'uomDetails' => $UOMDetails,
+			'productCount' =>$data['auto_code']['continues_count']
+			);
+				
+			print_r(json_encode($product_code_data));
+		
 	}
 	
 	
@@ -143,7 +174,13 @@ class Product extends CI_Controller
 		print_r(json_encode($all_stock_data));
 		
 		
-	}
+	}else {
+			$no_stock_data[] = array(
+				'' => ''
+			);
+				
+			print_r(json_encode($no_stock_data));
+		}
 	}
 	
 	public function getSelectedProductDetails() {//working as expected. 
@@ -216,6 +253,7 @@ class Product extends CI_Controller
 			$all_stock_data[] = array(
 				'getProductDetails' =>'getProductDetails',
 				'stockDetails' => $all_stock,
+				'getProductCode' => 'getProductCode', 
 			);
 			print_r(json_encode($all_stock_data));
 		 } else {
@@ -230,15 +268,7 @@ class Product extends CI_Controller
 	public function purchaseProductDetails() { //working as expected. 
 		$entCode = $this->input->post('entCode');
 		//$entCode = 10002;
-		$data['auto_code'] = $this->Product_model->get_productcode($entCode);
-		$categoryList = $this->Product_model->get_product_category($entCode);
-		$subCategoryList = $this->Product_model->get_product_sub_category();
-		$UOMDetails = $this->Product_model->get_uom_details();
-		$prodCode = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].'-'.$data['auto_code']['continues_count'];
-		
-						
-		$stock = $this->Product_model->low_stock_details($entCode);	
-				
+		$stock = $this->Product_model->low_stock_details($entCode);				
 		
 		if (count($stock) >0) {
 			foreach($stock as $row)
@@ -279,11 +309,8 @@ class Product extends CI_Controller
 			$all_stock_data[] = array(
 				'getProductDetails' =>'getProductDetails',
 				'getSelectedProductDetails' => 'getSelectedProductDetails',
-				'productCode' => $prodCode,
-				'prodCategory' => $categoryList,
-				'prodSubCategory' => $subCategoryList,
-				'uomDetails' => $UOMDetails,
-				'stockDetails' => $all_stock
+				'stockDetails' => $all_stock,
+				'getProductCode' => 'getProductCode',
 			);		
 			print_r(json_encode($all_stock_data));
 		 } else {
@@ -325,13 +352,18 @@ class Product extends CI_Controller
 		
 		$count = 0;
 		
-		if($tabUomDetails[$i]['_id'] == 10008  ||$tabUomDetails[$i]['_id'] == 10009 ||$tabUomDetails[$i]['_id'] == 10010){
+		for($i = 0; $i<$uomcount; $i++ )
+		{
+			if($tabUomDetails[$i]['_id'] == 10008  ||$tabUomDetails[$i]['_id'] == 10009 ||$tabUomDetails[$i]['_id'] == 10010){
 				$count = 1;
+				break;
 				
-		}else if($tabUomDetails[$i]['_id'] == 10024 ||$tabUomDetails[$i]['_id'] == 10011||$tabUomDetails[$i]['_id'] == 10012 )
+			}else if($tabUomDetails[$i]['_id'] == 10024 ||$tabUomDetails[$i]['_id'] == 10011||$tabUomDetails[$i]['_id'] == 10012 )
 			{
-				$count = 2;			
+				$count = 2;
+			    break;				
 			}
+		}
 		$data['auto_code'] = $this->Product_model->get_productcode($entCode);
 	
 		$prodCode = $data['auto_code']['series_id'].''.$data['auto_code']['ent_code'].'-'.$data['auto_code']['continues_count'];
@@ -342,11 +374,11 @@ class Product extends CI_Controller
 		
 		if($count == 1)//Kg and //Gram //Bundle
 		{
-		/*if($prodCode == $productCode)
+		if($prodCode == $productCode)
 		{
 			
 			//Quantity calculation
-		if($uomType== 10009){
+		 if($uomType== 10009){
 		$updatedpurchaseQty = $purchaseQty *1000;
 		$updatedstockQty = $stockQty *1000;
 		$updatedonlineQty = $onlineQty *1000;
@@ -356,7 +388,7 @@ class Product extends CI_Controller
 		$purchaseRate = (double)$purchaseRate / 1000;
 		$saleRate = (double)$saleRate / 1000;
 		
-		}else if($uomType== 10008 || $uomType == 10010){
+		}else if($uomType== 10008){
 		
 		$updatedpurchaseQty = $purchaseQty;
 		$updatedstockQty = $stockQty;
@@ -367,6 +399,16 @@ class Product extends CI_Controller
 		$purchaseRate = (double)$purchaseRate;
 		$saleRate = (double)$saleRate;
 		
+		}else if($uomType == 10010){
+		
+		$updatedpurchaseQty = $purchaseQty;
+		$updatedstockQty = $stockQty;
+		$updatedonlineQty = $onlineQty;
+		$updatedofflineQty = $offlineQty;
+		$updatedstockQtyLimit = $stockQtyLimit;
+		$mrp = (double)$mrp;
+		$purchaseRate = (double)$purchaseRate;
+		$saleRate = (double)$saleRate;
 		}
 		
 		$batchno = $productCode.''.$prodExpDate.''.$purchaseRate.''.$saleRate;
@@ -423,7 +465,7 @@ class Product extends CI_Controller
 			
 			$product_message[] = array('message' => 'Product Added Successfully');
 
-			print_r(json_encode($product_message));
+			print_r(json_encode($product_message)); 
 			
 		}else
 		{
@@ -440,12 +482,23 @@ class Product extends CI_Controller
 			$purchaseRate = (double)$purchaseRate / 1000;
 			$saleRate = (double)$saleRate / 1000;
 			
-			}else if($uomType== 10008 || $uomType == 10010){
+			}else if($uomType== 10008){
 			
 			$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
 			$updatedstockQty = $stockQty  + $products['stock_qty'];
 			$updatedonlineQty = $onlineQty;
 			$updatedofflineQty = $offlineQty;
+			$updatedstockQtyLimit = $stockQtyLimit;
+			$mrp = (double)$mrp;
+			$purchaseRate = (double)$purchaseRate;
+			$saleRate = (double)$saleRate;
+			
+			}else if($uomType == 10010){
+			
+			$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
+			$updatedstockQty = $stockQty  + $products['stock_qty'];
+			$updatedonlineQty = $onlineQty ;
+			$updatedofflineQty = $offlineQty ;
 			$updatedstockQtyLimit = $stockQtyLimit;
 			$mrp = (double)$mrp;
 			$purchaseRate = (double)$purchaseRate;
@@ -492,7 +545,7 @@ class Product extends CI_Controller
 
 				print_r(json_encode($product_message));
 			
-		}*/
+		}
 		  
 		}else if($count == 2)//Box and //Packet and //Pcs
 		{
@@ -500,6 +553,11 @@ class Product extends CI_Controller
 			
 			$oldBatchNo = $this->input->post('oldBatchNo');
 			$products = $this->Product_model->product_details_by_id('ASC',$productCode, $entCode,$oldBatchNo);		
+			
+			$batchno = $productCode.''.$prodExpDate.''.$purchaseRate.''.$saleRate;	
+		if($oldBatchNo == $batchno)
+		{
+			
 			if($uomType== 10024)
 				{
 						$updatedpurchaseQty = ( $purchaseQty * $packInBox) +  $products['purchase_qty'];
@@ -511,7 +569,18 @@ class Product extends CI_Controller
 						$purchaseRate = (double)$purchaseRate / $packInBox;
 						$saleRate = (double)$saleRate / $packInBox;
 						
-				}else if($uomType== 10011 || $uomType == 10012 ){
+				}else if($uomType== 10011){
+						
+						$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
+						$updatedstockQty = $stockQty  + $products['stock_qty'];
+						$updatedonlineQty = $onlineQty + $products['online_stock_qty'];
+						$updatedofflineQty = $offlineQty + $products['offline_stock_qty'];
+						$updatedstockQtyLimit = $stockQtyLimit;
+						$mrp = (double)$mrp;
+						$purchaseRate = (double)$purchaseRate;
+						$saleRate = (double)$saleRate;
+						
+				}else if($uomType == 10012){
 						
 						$updatedpurchaseQty = $purchaseQty  +  $products['purchase_qty'];
 						$updatedstockQty = $stockQty  + $products['stock_qty'];
@@ -523,12 +592,8 @@ class Product extends CI_Controller
 						$saleRate = (double)$saleRate;
 						
 				}
-			$batchno = $productCode.''.$prodExpDate.''.$purchaseRate.''.$saleRate;	
-		if($oldBatchNo == $batchno)
-		{
-			print_r("update products //Box and //Packet and //Pcs batch maching");
 			
-			/* $data =array
+			$data =array
 			(
 			'product_status_index'=>10013,
 			'stock_qty_limit'=>$updatedstockQtyLimit,
@@ -564,14 +629,10 @@ class Product extends CI_Controller
 			
 			$product_message[] = array('message' => 'Product updated successfully');
 
-			print_r(json_encode($product_message)); */
+			print_r(json_encode($product_message));
 		}else{
 				
-				echo "<pre>";
-			print_r(4);
-			echo "</pre>";
-				
-				/* if($uomType== 10024){
+			if($uomType== 10024){
 				$updatedpurchaseQty = $purchaseQty * $packInBox;
 				$updatedstockQty = $stockQty * $packInBox;
 				$updatedonlineQty = $onlineQty * $packInBox;
@@ -642,16 +703,13 @@ class Product extends CI_Controller
 					
 					$product_message[] = array('message' => 'Product updated successfully');
 
-					print_r(json_encode($product_message)); */
+					print_r(json_encode($product_message));
 			}			
 				
 			}else
 			{
-			echo "<pre>";
-			print_r(5);
-			echo "</pre>";
 			//Quantity calculation
-				/* if($uomType== 10024){
+				 if($uomType== 10024){
 				$updatedpurchaseQty = $purchaseQty * $packInBox;
 				$updatedstockQty = $stockQty * $packInBox;
 				$updatedonlineQty = $onlineQty * $packInBox;
@@ -734,7 +792,7 @@ class Product extends CI_Controller
 				
 				$product_message[] = array('message' => 'Product added successfully');
 
-				print_r(json_encode($product_message)); */
+				print_r(json_encode($product_message));
 					
 				
 			}

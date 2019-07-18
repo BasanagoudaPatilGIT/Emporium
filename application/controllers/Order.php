@@ -408,7 +408,7 @@ class Order extends CI_Controller {
 	$userId = $this->input->post('userId');
 	$entCode = $this->input->post('entCode');
 	$orderNumber = $this->input->post('orderNumber');
-	$ownerId = $this->User_model->get_owner_id($entCode);	
+	$$ownerDetails = $this->User_model->get_owner_id($entCode);	
 		$data = array(
 			'order_status_index'=>10005,
 			'order_view_status'=>10005,
@@ -484,7 +484,7 @@ class Order extends CI_Controller {
 			'display_message'=>'Order number: '.$orderNumber.' is cancelled by Customer',
 			'ent_code' => $entCode,
 			'created_by' => $userId,
-			'recieved_by' => $ownerId['id'],
+			'recieved_by' => $ownerDetails['id'],
 			'read_status'=>0,
 			'transaction_number'=>$orderNumber
 		);
@@ -495,7 +495,7 @@ class Order extends CI_Controller {
 			'notification_type'=>'Order',
 			'display_message'=>'Your Order number: '.$orderNumber.' is cancelled by Owner',
 			'ent_code' => $entCode,
-			'created_by' => $ownerId['id'],
+			'created_by' => $ownerId,
 			'recieved_by' => $userId,
 			'read_status'=>0,
 			'transaction_number'=>$orderNumber
@@ -513,7 +513,7 @@ class Order extends CI_Controller {
 	
 	public function details() {
 		$orderNumber = '#O100022001';
-		$ownerId = $this->User_model->get_owner_id($entCode);
+		$tranDetails = $this->Notification_model->get_notification_details_by_transaction_number($orderNumber);
 		
 		print_r($tranDetails);
 		
